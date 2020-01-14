@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Title</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body style="margin: auto;padding: 0;">
+
+<div id="app">
+  <input type="range" v-model="zoom" min="0.05" max="10" step="0.1" style="width:100%" />
+  <label>
+    Zoom:
+    <input type="number" v-model="zoom">
+  </label>
+  <label>
+    Auto-spectate
+    <input type="checkbox" v-model="autoSpectate" />
+  </label>
+  <label v-show="!autoSpectate">
+    Lock camera
+    <input type="checkbox" v-model="lockCamera"  />
+  </label>
+  <input v-for="player in orderedPlayers" type="button" :value="`${player.name} (${Math.round(player.points)}) points`"
+         @click="focusPlayer(player)" :style="{backgroundColor: player.fillColor}" />
+  <br>
+  Game progress: {{ Math.round(progress * 100) }} %
+</div>
+<canvas id="mon-canvas" style="border: 1px solid black;width:100%;margin: auto"></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.5.0/fabric.min.js"></script>
+<script src="index.js"></script>
+
+</body>
+</html>
