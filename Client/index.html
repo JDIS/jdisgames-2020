@@ -26,7 +26,10 @@
   <br>
   Game progress: {{ Math.round(progress * 100) }} %
 </div>
-<canvas id="mon-canvas" style="border: 1px solid black;width:100%;margin: auto"></canvas>
+<div style="position:relative">
+  <canvas id="mon-canvas" style="border: 1px solid black;width:100%;margin: auto;position:absolute;top:0;"></canvas>
+  <canvas id="minimap" style="border: 1px solid green;position:absolute;top:5px;left:5px"></canvas>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.5.0/fabric.min.js"></script>
 <script src="index.js"></script>

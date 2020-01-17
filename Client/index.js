@@ -1,8 +1,9 @@
 const GRID_SIZE = 250
 const MAP_WIDTH = 5000
 const MAP_HEIGHT = 5000
-const MAX_ZOOM = 4;
-const MIN_ZOOM = 0.05;
+const MINIMAP_WIDTH = 100
+const MAX_ZOOM = 4
+const MIN_ZOOM = 0.05
 const GRID_STROKE = 1
 const GRID_COLOR = 'rgb(150,150,150)'
 const NAME_OFFSET = -50
@@ -143,6 +144,7 @@ let app = new Vue({
         zoom: 0.45,
         focusedPlayer: null,
         canvas: null,
+        minimap: null,
         lockCamera: false,
         thickGrid: null,
         thinGrid: null,
@@ -196,6 +198,7 @@ let app = new Vue({
         fabric.perfLimitSizeTotal = 22500000;
         fabric.maxCacheSideLimit = 11000;
         this.canvas = new fabric.Canvas('mon-canvas', {
+            position: 'absolute',
             width: 500,
             height: 500,
             selection: false,
@@ -204,6 +207,7 @@ let app = new Vue({
         this.canvas.setZoom(this.zoom)
         window.addEventListener('resize', this.resizeCanvas, false);
         this.resizeCanvas();
+        this.initMinimap()
         fabric.Object.prototype.hasBorders = false
         fabric.Object.prototype.hasControls = false
         fabric.Object.prototype.originX = 'center'
@@ -265,6 +269,9 @@ let app = new Vue({
             this.canvas.add(tank)
             tank.bringToFront()
             player.tank = tank
+
+            this.minimap.add(tank)
+
             const nameText = new fabric.Text(player.name, {
                 top: tank.top + NAME_OFFSET,
                 left: tank.left,
@@ -286,6 +293,7 @@ let app = new Vue({
         this.players = gameState.players
 
         this.canvas.renderAll()
+        this.minimap.renderAll()
 
         window.requestAnimationFrame(this.doFrame)
 
@@ -303,6 +311,7 @@ let app = new Vue({
             this.centerPan()
             this.hideIfUnzoomed()
             this.canvas.renderAll()
+            this.renderMinimap()
             frameNumber++
             window.requestAnimationFrame(this.doFrame)
         },
@@ -423,6 +432,38 @@ let app = new Vue({
             this.canvas.add(this.thickGrid)
             this.canvas.add(this.thinGrid)
         },
+        initMinimap() {
+            this.minimap = new fabric.StaticCanvas('minimap', {
+                position: 'absolute',
+                backgroundColor: 'white',
+                width: MINIMAP_WIDTH,
+                height: MINIMAP_WIDTH,
+                selection: false,
+                renderOnAddRemove: false
+            })
+            this.minimap.setZoom(MINIMAP_WIDTH / MAP_HEIGHT)
+
+            this.minimap.viewPort = new fabric.Rect({
+                width: 0,
+                height: 0,
+                left: 0,
+                top: 0,
+                stroke: 'black',
+                strokeWidth: 50,
+                fill: null,
+                objectCaching: false
+            })
+            this.minimap.add(this.minimap.viewPort)
+        },
+        renderMinimap() {
+            const canvasWidth = this.canvas.getWidth() * (1/this.zoom)
+            const canvasHeight = this.canvas.getHeight() * (1/this.zoom)
+            this.minimap.viewPort.width = canvasWidth
+            this.minimap.viewPort.height = canvasHeight
+            this.minimap.viewPort.left = (canvasWidth / 2) - this.canvas.viewportTransform[4] * (1/this.zoom)
+            this.minimap.viewPort.top = (canvasHeight / 2) - this.canvas.viewportTransform[5] * (1/this.zoom)
+            this.minimap.renderAll()
+        },
         focusPlayer(player) {
             this.focusedPlayer = player
             this.lockCamera = true
@@ -440,7 +481,9 @@ let app = new Vue({
                 stroke: 'black',
                 strokeWidth: 3,
                 originX: 'center',
-                originY: 'center'
+                originY: 'center',
+                objectCaching: false
+
             })
             const tankRect = new fabric.Rect({
                 width:27,
@@ -449,11 +492,13 @@ let app = new Vue({
                 top:-27,
                 centeredRotation: false,
                 originX: 'center',
-                originY: 'center'
+                originY: 'center',
+                objectCaching: false
             })
             const tank = new fabric.Group([tankCircle], {
                 originX: 'center',
                 originY: 'center',
+                objectCaching: false // Needed since the players are also rendered on the minimap.
             })
             tank.add(tankRect)
 
