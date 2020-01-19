@@ -11,8 +11,8 @@ const HEALTH_OFFSET = 50
 const HEALTHBAR_WIDTH = 50
 const SELECTED_TANK_OUTLINE_COLOR = 'rgb(0,255,0)'
 // in ms
-const CANVAS_UPDATE_RATE = 1000 / 1
-const ANIMATION_DURATION = 1000 / 1
+const CANVAS_UPDATE_RATE = 1000 / 3
+const ANIMATION_DURATION = 1000 / 3
 const colors = ['red', 'blue', 'yellow', 'cyan', 'purple', 'orange']
 const linear = (t, b, c, d) => {
     return b + (t/d) * c
@@ -21,28 +21,7 @@ let frameNumber = 0
 let lastUpdateTimestamp = Date.now()
 
 const DEBRIS_TYPE = [1, 2]
-function createDebris1(id) {
-    return new fabric.Rect({
-        width: 25,
-        height: 25,
-        angle: id % 360,
-        stroke: 'black',
-        strokeWidth: 3,
-        fill: 'grey'
-    })
 
-}
-function createDebris2(id) {
-    return new fabric.Triangle({
-        width: 35,
-        height: 30 ,
-        angle: id % 360,
-        stroke: 'green',
-        strokeWidth: 3,
-        fill: 'white'
-    })
-
-}
 function createHealthBar() {
     const background = new fabric.Rect({
         width: HEALTHBAR_WIDTH,
@@ -94,7 +73,7 @@ function generateSampleMap() {
 
     for (let i = 0; i < 700; i++) {
         const debris = {
-            id: i,
+            id: Math.round(Math.random() * 50000000000000).toString(),
             type: 1,
             position: [Math.random() * MAP_WIDTH, Math.random() * MAP_HEIGHT],
             health: Math.random(),
@@ -104,7 +83,7 @@ function generateSampleMap() {
 
     for (let i = 0; i < 100; i++) {
         const debris = {
-            id: i,
+            id: i.toString(),
             type: 2,
             position: [Math.random() * MAP_WIDTH, Math.random() * MAP_HEIGHT],
             health: Math.random(),
@@ -114,28 +93,6 @@ function generateSampleMap() {
 
 
     return JSON.stringify(gameState)
-}
-function generateNextFrame(players, progress) {
-    newPlayers = []
-    for (let i = 0; i < players.length; i++) {
-        const newPlayer = {}
-        newPlayer.id = players[i].id
-        newPlayer.name = players[i].name
-        newPlayer.health = Math.random()
-        newPlayer.position = players[i].position
-        newPlayer.angle = Math.random() * 360
-        newPlayer.points = players[i].points + (Math.random() * 100)
-        newPlayer.fillColor = players[i].fillColor
-        newPlayer.position[0] = newPlayer.position[0] + (Math.floor(Math.random() * 40) - 10)
-        newPlayer.position[1] = newPlayer.position[1] + (Math.floor(Math.random() * 40) - 10)
-
-        newPlayers.push(newPlayer)
-    }
-
-    return JSON.stringify({
-        progress: (progress + 0.003) % 1,
-        players: newPlayers
-    })
 }
 
 let app = new Vue({
@@ -149,6 +106,8 @@ let app = new Vue({
         thickGrid: null,
         thinGrid: null,
         players: [],
+        projectiles: {},
+        debris: {},
         progress: 0,
         autoSpectate: false
     },
@@ -252,10 +211,11 @@ let app = new Vue({
         this.progress = gameState.progress
 
         gameState.debris.forEach((debris) => {
-            const generator = debris.type === 1 ? createDebris1 : createDebris2
+            const generator = debris.type === 1 ? this.createDebris1 : this.createDebris2
             const fabricObj = generator(debris.id)
             fabricObj.left = debris.position[0]
             fabricObj.top = debris.position[1]
+            this.debris[debris.id] = fabricObj
             this.canvas.add(fabricObj)
         })
 
@@ -315,8 +275,58 @@ let app = new Vue({
             frameNumber++
             window.requestAnimationFrame(this.doFrame)
         },
+        drawAndRemoveProjectiles(updatedProjectiles) {
+            const newProjectileIds = new Set()
+            updatedProjectiles.forEach(projectile => {
+                newProjectileIds.add(projectile.id)
+                if (!this.projectiles[projectile.id]) {
+                    const newProjectile = this.createProjectile(this.players.find(player => player.id === projectile.belongsTo));
+                    this.projectiles[projectile.id] = newProjectile
+                    this.canvas.add(newProjectile)
+                    newProjectile.sendToBack()
+                }
+            })
+            updatedProjectiles.forEach(projectile => {
+                this.projectiles[projectile.id].animate('left', projectile.position[0], {
+                    onChange: null,
+                    duration: ANIMATION_DURATION,
+                    easing: linear
+                })
+                this.projectiles[projectile.id].animate('top', projectile.position[1], {
+                    onChange: null,
+                    duration: ANIMATION_DURATION,
+                    easing: linear
+                })
+            })
+            const allProjectilesIds = new Set(Object.keys(this.projectiles))
+            const intersection = new Set([...allProjectilesIds].filter(x => !newProjectileIds.has(x)))
+            intersection.forEach(id => {
+                this.canvas.remove(this.projectiles[id])
+                delete this.projectiles[id]
+            })
+        },
+        drawAndRemoveDebris(updatedDebris) {
+            const newDebrisIds = new Set()
+            updatedDebris.forEach(debris => {
+                newDebrisIds.add(debris.id)
+                if (!this.debris[debris.id]) {
+                    const newDebris = this.createDebris1(Math.random() * 5000000000000);
+                    newDebris.left = debris.position[0]
+                    newDebris.top = debris.position[1]
+                    this.debris[debris.id] = newDebris
+                    this.canvas.add(newDebris)
+                    newDebris.sendToBack()
+                }
+            })
+            const allDebrisIds = new Set(Object.keys(this.debris))
+            const difference = new Set([...allDebrisIds].filter(x => !newDebrisIds.has(x)))
+            difference.forEach(id => {
+                this.canvas.remove(this.debris[id])
+                delete this.debris[id]
+            })
+        },
         animateCanvas() {
-            const updatedGameState = JSON.parse(generateNextFrame(this.players, this.progress));
+            const updatedGameState = JSON.parse(this.generateNextFrame(this.players, this.progress));
             this.progress = updatedGameState.progress
             const updatedPlayers = updatedGameState.players
             updatedPlayers.forEach((updatedPlayer) => {
@@ -362,8 +372,11 @@ let app = new Vue({
                     duration: ANIMATION_DURATION,
                     easing: linear
                 })
+
+            })
+            this.drawAndRemoveProjectiles(updatedGameState.projectiles);
+            this.drawAndRemoveDebris(updatedGameState.debris)
             lastUpdateTimestamp = Date.now()
-        })
         },
         hideIfUnzoomed() {
             if (this.zoom < 0.25) {
@@ -506,18 +519,116 @@ let app = new Vue({
             return tank
 
         },
-        createProjectile(belongsTo) {
+        createProjectile(player) {
 
             const projectile = new fabric.Circle({
                 radius: 15,
-                fill: belongsTo.fill,
+                fill: player.fillColor,
                 stroke: 'black',
                 strokeWidth: 3,
+                left: player.position[0],
+                top: player.position[1],
                 originX: 'center',
                 originY: 'center'
             })
 
+            projectile.belongsTo = player
+
             return projectile
+
+        },
+        generateNextFrame(players, progress) {
+            const newProjectiles = []
+            const newPlayers = []
+            for (let i = 0; i < players.length; i++) {
+                const newPlayer = {}
+                newPlayer.id = players[i].id
+                newPlayer.name = players[i].name
+                newPlayer.health = Math.random()
+                newPlayer.position = players[i].position
+                newPlayer.angle = Math.random() * 360
+                newPlayer.points = players[i].points + (Math.random() * 100)
+                newPlayer.fillColor = players[i].fillColor
+                newPlayer.position[0] = newPlayer.position[0] + (Math.floor(Math.random() * 40) - 10)
+                newPlayer.position[1] = newPlayer.position[1] + (Math.floor(Math.random() * 40) - 10)
+
+                if (frameNumber % 3 === 0) {
+                    newProjectiles.push({
+                        id: Math.round(Math.random() * 500000000000).toString(),
+                        position: [newPlayer.position[0] + 100, newPlayer.position[1] + 60],
+                        fillColor: newPlayer.fillColor,
+                        belongsTo: newPlayer.id,
+
+                    })
+                }
+
+                newPlayers.push(newPlayer)
+            }
+
+            Object.keys(this.projectiles).map((id) => {
+                if (Math.random() < 0.7) {
+                    newProjectiles.push({
+                        belongsTo: this.projectiles[id].belongsTo,
+                        fillColor: this.projectiles[id].fill,
+                        position: [this.projectiles[id].left + 100, this.projectiles[id].top + 60],
+                        id: id
+                    })
+                }
+            })
+
+            const debris = []
+            Object.keys(this.debris).map((id) => {
+                if (Math.random() < 0.99) {
+                    debris.push({
+                        id: id,
+                        type: this.debris[id].type,
+                        position: [this.debris[id].left, this.debris[id].top],
+                        health: this.debris[id].health,
+                    })
+                }
+            })
+
+            for (let i = 0; i < 800; i++) {
+                if (Math.random() >= 0.99) {
+                    debris.push({
+                        id: Math.round(Math.random() * 50000000000000).toString(),
+                        type: Math.random() > 7/8 ? 2 : 1,
+                        position: [Math.random() * MAP_WIDTH, Math.random() * MAP_HEIGHT],
+                        health: Math.random()
+                    })
+                }
+            }
+
+            return JSON.stringify({
+                progress: (progress + 0.003) % 1,
+                players: newPlayers,
+                projectiles: newProjectiles,
+                debris: debris
+            })
+        },
+        createDebris1(id) {
+            const debris = new fabric.Rect({
+                width: 25,
+                height: 25,
+                angle: id % 360,
+                stroke: 'black',
+                strokeWidth: 3,
+                fill: 'grey'
+            })
+            debris.id = id
+            return debris
+        },
+        createDebris2(id) {
+            const debris = new fabric.Triangle({
+                width: 35,
+                height: 30 ,
+                angle: id % 360,
+                stroke: 'green',
+                strokeWidth: 3,
+                fill: 'white'
+            });
+            debris.id = id
+            return debris
 
         }
     }
