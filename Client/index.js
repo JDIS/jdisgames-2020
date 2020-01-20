@@ -13,7 +13,7 @@ const SELECTED_TANK_OUTLINE_COLOR = 'rgb(0,255,0)'
 // in ms
 const CANVAS_UPDATE_RATE = 1000 / 3
 const ANIMATION_DURATION = 1000 / 3
-const colors = ['red', 'blue', 'yellow', 'cyan', 'purple', 'orange']
+const colors = ['#F60000', '#FF8C00', '#FFEE00', '#4DE94C', '#3783FF', '#4815AA', '#234E85', '#6E7C74', '#C7B763', '#D09D48', '#CA6220', '#C63501']
 const linear = (t, b, c, d) => {
     return b + (t/d) * c
 }
@@ -479,6 +479,7 @@ let app = new Vue({
         },
         focusPlayer(player) {
             this.focusedPlayer = player
+            this.autoSpectate = false
             this.lockCamera = true
         },
         resizeCanvas() {
