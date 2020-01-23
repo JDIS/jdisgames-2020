@@ -1,0 +1,56 @@
+h1 {
+  text-align: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+#canvas-container {
+  position: relative;
+}
+
+#invisible {
+  height: 0;
+  width: 100%
+}
+
+#text-progress {
+  flex-basis: content;
+  margin-right: 5px;
+}
+#progress {
+  flex-grow: 99999;
+  height: 10px;
+  display: inline;
+  margin-left: 5px;
+}
+
+.scoreboard {
+  cursor: pointer;
+}
+
+.rank {
+  text-align:right;
+  width:20px;
+  margin-right: 5px;
+  display: inline-block;
+}
+
+.player-name {
+  width: 100%;
+  margin: 0;
+  border:none;
+  display: inline-block;
+  cursor:pointer;
+  text-align: center;
+}
+
+.points {
+  font-size: 1rem;
+  display: inline-block;
+  width: 30px;
+}
