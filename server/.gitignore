@@ -39,3 +39,6 @@ npm-debug.log
 
 # Sobelow
 .sobelow
+
+# https certs
+/priv/cert/

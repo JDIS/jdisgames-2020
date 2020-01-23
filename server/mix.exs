@@ -13,8 +13,8 @@ defmodule Diep.MixProject do
       aliases: aliases(),
       deps: deps(),
       dialyzer: [
-        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
-        ignore_warnings: ".dialyzer_ignore.exs"
+        plt_add_apps: [:ex_unit],
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
       ]
     ]
   end
@@ -51,8 +51,8 @@ defmodule Diep.MixProject do
 
       # dev, test
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 0.5.1", only: [:dev, :test], runtime: false},
-      {:sobelow, "~> 0.9.3", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 0.5.1", only: [:dev, :test], runtime: false}
+      # {:sobelow, "~> 0.9.3", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -64,12 +64,22 @@ defmodule Diep.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
-      quality: ["format", "credo --strict", "sobelow --verbose", "dialyzer", "test"],
+      quality: [
+        "format",
+        "credo --strict",
+        # "sobelow --verbose",
+        "xref unreachable",
+        "xref deprecated",
+        "dialyzer",
+        "test"
+      ],
       "quality.ci": [
         "test",
         "format --check-formatted",
         "credo --strict",
-        "sobelow --exit",
+        "xref unreachable",
+        "xref deprecated",
+        # "sobelow --exit",
         "dialyzer --halt-exit-status"
       ],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
