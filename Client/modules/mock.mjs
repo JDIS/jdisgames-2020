@@ -2,8 +2,8 @@
  * Module to deal with mocking logic to fake game updates if we don't have a server to test with.
  */
 
-import {CANVAS_UPDATE_RATE, COLORS, HEALTHBAR_WIDTH, MAP_HEIGHT, MAP_WIDTH} from "./constants.mjs"
 import app from "../index.mjs"
+import {CANVAS_UPDATE_RATE, COLORS, HEALTHBAR_WIDTH, MAP_HEIGHT, MAP_WIDTH} from "./constants.mjs"
 
 export function mockNetworkInit() {
     window.setInterval(() => {
@@ -97,8 +97,8 @@ export function generateNextFrame(players, progress, projectiles, debris) {
         newPlayer.angle = Math.random() * 360
         newPlayer.points = players[i].points + (Math.random() * 100)
         newPlayer.fillColor = players[i].fillColor
-        newPlayer.position[0] = newPlayer.position[0] + (Math.floor(Math.random() * 40) - 10)
-        newPlayer.position[1] = newPlayer.position[1] + (Math.floor(Math.random() * 40) - 10)
+        newPlayer.position[0] = newPlayer.position[0] + (Math.sin(Math.random() * 2 * 3.14159) * 60)
+        newPlayer.position[1] = newPlayer.position[1] + (Math.sin(Math.random() * 2 * 3.14159) * 60)
 
         if (Math.random() < 0.2) {
             newProjectiles.push({

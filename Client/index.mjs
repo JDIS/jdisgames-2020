@@ -1,33 +1,15 @@
 import Vue from 'https://cdn.jsdelivr.net/npm/vue@2.6.0/dist/vue.esm.browser.js'
-import {
-    ANIMATION_DURATION,
-    CANVAS_UPDATE_RATE,
-    HEALTH_OFFSET,
-    HEALTHBAR_WIDTH,
-    linear,
-    MAX_ZOOM,
-    MIN_ZOOM,
-    NAME_OFFSET,
-    SELECTED_TANK_OUTLINE_COLOR
-} from "./modules/constants.mjs"
+import {createDebris1, createDebris2, createGrid, createMinimap, createProjectile, createTank, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.mjs"
+import {ANIMATION_DURATION, CANVAS_UPDATE_RATE, FADE_DURATION, HEALTH_OFFSET, HEALTHBAR_WIDTH, linear, MAX_ZOOM, MIN_ZOOM, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR} from "./modules/constants.mjs"
 import {createHealthBar, generateSampleMap} from "./modules/mock.mjs"
-import {
-    createDebris1,
-    createDebris2,
-    createGrid,
-    createMinimap,
-    createProjectile,
-    createTank,
-    DrawnElements,
-    initFabricCreateMinimap
-} from "./modules/canvas.mjs"
-import {getDifference} from "./modules/utils.mjs"
 import {networkInit} from "./modules/network.mjs"
+import {getDifference} from "./modules/utils.mjs"
 
 export default new Vue({
     el: '#app',
     data: {
         zoom: 0.45,
+        fullScreen: false,
         focusedPlayer: null,
         mainCanvas: null,
         minimap: null,
@@ -77,10 +59,13 @@ export default new Vue({
             } else {
                 this.mainCanvas.hoverCursor = 'move'
             }
+        },
+        fullScreen() {
+            window.setTimeout(this.resizeCanvas, 100)
         }
     },
     mounted() {
-        this.mainCanvas = initFabricCreateMinimap()
+        this.mainCanvas = initFabricAndCreateMainCanvas()
         this.mainCanvas.setZoom(this.zoom)
         window.addEventListener('resize', this.resizeCanvas, false)
         this.resizeCanvas()
@@ -152,6 +137,7 @@ export default new Vue({
 
         this.elements.players = gameState.players
 
+        this.autoSpectate = true
         this.mainCanvas.renderAll()
         this.minimap.renderAll()
 
@@ -178,7 +164,7 @@ export default new Vue({
                     const newProjectile = createProjectile(this.elements.players.find(player => player.id === projectile.belongsTo))
                     this.elements.projectiles[projectile.id] = newProjectile
                     this.mainCanvas.add(newProjectile)
-                    newProjectile.sendToBack()
+                    newProjectile.sendBackwards(this.elements.players[0])
                 }
             })
             updatedProjectiles.forEach(projectile => {
@@ -193,10 +179,16 @@ export default new Vue({
                     easing: linear
                 })
             })
-            const intersection = getDifference(this.elements.projectiles, newProjectileIds)
-            intersection.forEach(id => {
-                this.mainCanvas.remove(this.elements.projectiles[id])
+            const difference = getDifference(this.elements.projectiles, newProjectileIds)
+            difference.forEach(id => {
+                const element = this.elements.projectiles[id]
                 delete this.elements.projectiles[id]
+                element.animate('opacity', 0, {
+                    easing: linear,
+                    duration: FADE_DURATION,
+                    onComplete: () => {this.mainCanvas.remove(element)},
+                    onChange: null
+                })
             })
         },
         drawAndRemoveDebris(updatedDebris) {
@@ -210,13 +202,19 @@ export default new Vue({
                     newDebris.top = debris.position[1]
                     this.elements.debris[debris.id] = newDebris
                     this.mainCanvas.add(newDebris)
-                    newDebris.sendToBack()
+                    newDebris.sendBackwards(this.elements.players[0])
                 }
             })
             const difference = getDifference(this.elements.debris, newDebrisIds)
             difference.forEach(id => {
-                this.mainCanvas.remove(this.elements.debris[id])
+                const debris = this.elements.debris[id]
                 delete this.elements.debris[id]
+                debris.animate('opacity', 0, {
+                    easing: linear,
+                    duration: FADE_DURATION,
+                    onComplete: () => {this.mainCanvas.remove(debris)},
+                    onChange: null
+                })
             })
         },
         /**
@@ -310,6 +308,9 @@ export default new Vue({
 
             this.mainCanvas.add(this.elements.thinGrid)
             this.mainCanvas.add(this.elements.thickGrid)
+
+            thickGrid.sendToBack()
+            thinGrid.sendToBack()
         },
         renderMinimap() {
             const canvasWidth = this.mainCanvas.getWidth() * (1/this.zoom)
@@ -326,8 +327,8 @@ export default new Vue({
             this.lockCamera = true
         },
         resizeCanvas() {
-            this.mainCanvas.setHeight(500)
-            this.mainCanvas.setWidth(800)
+            this.mainCanvas.setHeight(window.innerHeight * 0.95)
+            this.mainCanvas.setWidth(document.querySelector('#invisible').offsetWidth)
             this.mainCanvas.renderAll()
         },
     }

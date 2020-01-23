@@ -18,13 +18,18 @@ export class DrawnElements {
     }
 }
 
-export function initFabricCreateMinimap() {
+export function initFabricAndCreateMainCanvas() {
     fabric.perfLimitSizeTotal = 22500000
     fabric.maxCacheSideLimit = 11000
     fabric.Object.prototype.hasBorders = false
     fabric.Object.prototype.hasControls = false
     fabric.Object.prototype.originX = 'center'
     fabric.Object.prototype.originY = 'center'
+    fabric.Group.prototype.selectable = false
+    fabric.Group.prototype.originX = 'center'
+    fabric.Group.prototype.originY = 'center'
+    fabric.Group.prototype.hasBorders = false
+    fabric.Group.prototype.hasControls = false
 
     return new fabric.Canvas('mon-canvas', {
         position: 'absolute',
@@ -100,8 +105,8 @@ export function createProjectile(player) {
         fill: player.fillColor,
         stroke: 'black',
         strokeWidth: 3,
-        left: player.position[0],
-        top: player.position[1],
+        left: player.tank.left,
+        top: player.tank.top,
         originX: 'center',
         originY: 'center'
     })
