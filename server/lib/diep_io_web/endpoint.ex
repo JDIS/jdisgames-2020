@@ -2,7 +2,7 @@ defmodule Diep.IoWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :diep_io
 
   socket "/socket", Diep.IoWeb.UserSocket,
-    websocket: true,
+    websocket: [compress: true],
     longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
