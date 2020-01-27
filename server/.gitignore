@@ -42,3 +42,7 @@ npm-debug.log
 
 # https certs
 /priv/cert/
+
+# IDE files
+.elixir_ls
+*.iml 
