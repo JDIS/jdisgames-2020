@@ -74,7 +74,7 @@ defmodule Diep.MixProject do
         "test"
       ],
       "quality.ci": [
-        "test",
+        "test --raise",
         "format --check-formatted",
         "credo --strict",
         "xref unreachable",
