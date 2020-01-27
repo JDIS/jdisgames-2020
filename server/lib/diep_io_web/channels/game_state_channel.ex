@@ -1,12 +1,9 @@
 defmodule Diep.IoWeb.GameStateChannel do
+  @moduledoc false
   use Diep.IoWeb, :channel
 
-  def join("game_state:main_game", payload, socket) do
-    if authorized?(payload) do
-      {:ok, socket}
-    else
-      {:error, %{reason: "unauthorized"}}
-    end
+  def join("game_state:main_game", _payload, socket) do
+    {:ok, socket}
   end
 
   def handle_in("new_state", payload, socket) do
@@ -15,12 +12,6 @@ defmodule Diep.IoWeb.GameStateChannel do
   end
 
   def handle_in("new_action", _payload, socket) do
-    # TODO: Handle a new_action messages
     {:noreply, socket}
-  end
-
-  # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
   end
 end

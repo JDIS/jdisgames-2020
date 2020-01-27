@@ -10,12 +10,12 @@ defmodule Diep.IoWeb.GameStateChannelTest do
   end
 
   test "new_state broadcasts to game_state:lobby", %{socket: socket} do
-    push socket, "new_state", %{"state" => "new"}
+    push(socket, "new_state", %{"state" => "new"})
     assert_broadcast "new_state", %{"state" => "new"}
   end
 
   test "broadcasts are pushed to the client", %{socket: socket} do
-    broadcast_from! socket, "broadcast", %{"some" => "data"}
+    broadcast_from!(socket, "broadcast", %{"some" => "data"})
     assert_push "broadcast", %{"some" => "data"}
   end
 end
