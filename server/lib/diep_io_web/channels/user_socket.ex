@@ -2,7 +2,7 @@ defmodule Diep.IoWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", Diep.IoWeb.RoomChannel
+  channel "game_state:*", Diep.IoWeb.GameStateChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
