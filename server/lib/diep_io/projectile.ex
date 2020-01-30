@@ -9,7 +9,7 @@ defmodule Diep.Io.Projectile do
 
   @type t :: %__MODULE__{
           radius: integer,
-          speed: float,
+          speed: integer,
           damage: integer
         }
 
@@ -21,6 +21,6 @@ defmodule Diep.Io.Projectile do
   @spec default_radius() :: integer
   def default_radius, do: @default_radius
 
-  @spec default_speed() :: float
+  @spec default_speed() :: integer
   def default_speed, do: @default_speed
 end
