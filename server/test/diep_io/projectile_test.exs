@@ -1,7 +1,7 @@
 defmodule ProjectileTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Projectile, as: Projectile
+  alias Diep.Io.Projectile
 
   @damage 10
   @expected_projectile %Projectile{
