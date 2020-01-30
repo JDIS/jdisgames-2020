@@ -1,7 +1,8 @@
 defmodule GameloopTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.{Gameloop, Tank}
+  alias Diep.Io.Core.Tank
+  alias Diep.Io.Gameloop
 
   @expected_tank %Tank{
     name: "Tank",

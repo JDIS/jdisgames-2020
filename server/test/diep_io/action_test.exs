@@ -1,7 +1,7 @@
 defmodule ActionTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Action
+  alias Diep.Io.Core.Action
 
   @tank_id "Tank"
   @action_details [destination: {0, 0}, target: {0, 0}, purchase: Diep.Io.Upgrades.MaxHP]

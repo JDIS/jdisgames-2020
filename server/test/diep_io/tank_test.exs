@@ -1,7 +1,7 @@
 defmodule TankTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Tank
+  alias Diep.Io.Core.Tank
   alias Diep.Io.Upgrades.MaxHP
 
   @expected_tank %Tank{

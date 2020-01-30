@@ -1,7 +1,7 @@
 defmodule Diep.Io.Gameloop do
   @moduledoc false
 
-  alias Diep.Io.Tank
+  alias Diep.Io.Core.Tank
 
   use GenServer
 

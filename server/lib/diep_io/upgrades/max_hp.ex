@@ -1,7 +1,8 @@
 defmodule Diep.Io.Upgrades.MaxHP do
   @moduledoc false
 
-  alias Diep.Io.{Tank, Upgrades}
+  alias Diep.Io.Core.Tank
+  alias Diep.Io.Upgrades
 
   @behaviour Upgrades.Upgrade
 

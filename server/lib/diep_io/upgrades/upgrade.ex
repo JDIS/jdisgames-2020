@@ -1,7 +1,7 @@
 defmodule Diep.Io.Upgrades.Upgrade do
   @moduledoc false
 
-  alias Diep.Io.Tank
+  alias Diep.Io.Core.Tank
 
   @callback prices() :: [non_neg_integer]
   @callback price(non_neg_integer) :: non_neg_integer

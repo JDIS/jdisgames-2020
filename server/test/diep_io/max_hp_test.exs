@@ -1,7 +1,8 @@
 defmodule MaxHPTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.{Tank, Upgrades}
+  alias Diep.Io.Core.Tank
+  alias Diep.Io.Upgrades
   alias Upgrades.MaxHP
 
   setup do
