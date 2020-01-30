@@ -14,7 +14,7 @@ defmodule ProjectileTest do
     [projectile: Projectile.new(@damage)]
   end
 
-  test "Can create a projectile", %{projectile: projectile} do
+  test "new/1 creates a projectile", %{projectile: projectile} do
     assert projectile == @expected_projectile
   end
 end
