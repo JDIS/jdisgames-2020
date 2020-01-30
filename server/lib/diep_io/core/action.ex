@@ -1,4 +1,4 @@
-defmodule Diep.Io.Action do
+defmodule Diep.Io.Core.Action do
   @moduledoc false
 
   @enforce_keys [:tank_id]

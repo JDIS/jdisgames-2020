@@ -1,4 +1,4 @@
-defmodule Diep.Io.Projectile do
+defmodule Diep.Io.Core.Projectile do
   @moduledoc false
 
   @default_radius 15

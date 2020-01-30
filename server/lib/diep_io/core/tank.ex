@@ -1,4 +1,4 @@
-defmodule Diep.Io.Tank do
+defmodule Diep.Io.Core.Tank do
   @moduledoc false
 
   alias Diep.Io.Upgrades
