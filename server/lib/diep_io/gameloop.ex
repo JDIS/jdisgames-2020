@@ -1,19 +1,9 @@
 defmodule Diep.Io.Gameloop do
   @moduledoc false
 
-  alias Diep.Io.Core.Tank
+  alias Diep.Io.Core.GameState
 
   use GenServer
-
-  @type gameloop_state() :: %{
-          in_progress: boolean(),
-          tanks: [Tank.t()]
-        }
-
-  @default_state %{
-    in_progress: false,
-    tanks: []
-  }
 
   # Client
 
@@ -27,7 +17,7 @@ defmodule Diep.Io.Gameloop do
     GenServer.cast(__MODULE__, :start_game)
   end
 
-  @spec get_state() :: gameloop_state()
+  @spec get_state() :: GameState.t()
   def get_state do
     GenServer.call(__MODULE__, :state)
   end
@@ -36,7 +26,7 @@ defmodule Diep.Io.Gameloop do
 
   @impl true
   def init([tank_names]) do
-    {:ok, initialize_state(tank_names)}
+    {:ok, GameState.new(tank_names)}
   end
 
   @impl true
@@ -47,7 +37,7 @@ defmodule Diep.Io.Gameloop do
   @impl true
   def handle_cast(:start_game, %{:in_progress => false} = state) do
     send(self(), :loop)
-    {:noreply, %{state | :in_progress => true}}
+    {:noreply, GameState.start_game(state)}
   end
 
   @impl true
@@ -57,23 +47,7 @@ defmodule Diep.Io.Gameloop do
 
   @impl true
   def handle_info(:loop, state) do
-    IO.puts("loop")
     Process.send_after(self(), :loop, 1000)
     {:noreply, state}
-  end
-
-  # Private functions
-
-  defp initialize_state(tank_names) do
-    @default_state
-    |> initialize_tanks(tank_names)
-  end
-
-  defp initialize_tanks(state, tank_names) do
-    tanks =
-      tank_names
-      |> Enum.map(&Tank.new/1)
-
-    %{state | tanks: tanks}
   end
 end

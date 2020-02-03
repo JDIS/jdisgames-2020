@@ -1,7 +1,7 @@
 defmodule GameloopTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.Tank
+  alias Diep.Io.Core.{GameState, Tank}
   alias Diep.Io.Gameloop
 
   @expected_tank %Tank{
@@ -18,7 +18,7 @@ defmodule GameloopTest do
   end
 
   test "get_state/0 returns expected initial test" do
-    assert %{
+    assert %GameState{
              in_progress: false,
              tanks: [@expected_tank]
            } == Gameloop.get_state()
