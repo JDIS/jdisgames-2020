@@ -1,21 +1,31 @@
 defmodule Diep.Io.Core.Tank do
   @moduledoc false
 
+  alias Diep.Io.Core.Position
   alias Diep.Io.Upgrades
 
   @default_hp 100
   @default_speed 10
   @default_upgrades %{Diep.Io.Upgrades.MaxHP => 0}
 
-  @enforce_keys [:name, :current_hp, :max_hp, :speed]
-  defstruct [:name, :max_hp, :current_hp, :speed, experience: 0, upgrades: @default_upgrades]
+  @enforce_keys [:name, :current_hp, :max_hp, :speed, :position]
+  defstruct [
+    :name,
+    :max_hp,
+    :current_hp,
+    :speed,
+    :position,
+    experience: 0,
+    upgrades: @default_upgrades
+  ]
 
   @type t :: %__MODULE__{
           name: String.t(),
           max_hp: integer,
           current_hp: integer,
           speed: integer,
-          experience: integer
+          experience: integer,
+          position: Position.t()
         }
 
   @spec new(String.t()) :: t()
@@ -24,7 +34,8 @@ defmodule Diep.Io.Core.Tank do
       name: name,
       current_hp: @default_hp,
       max_hp: @default_hp,
-      speed: @default_speed
+      speed: @default_speed,
+      position: {0, 0}
     }
   end
 
@@ -62,6 +73,11 @@ defmodule Diep.Io.Core.Tank do
       true -> tank |> remove_from_value(:experience, price) |> upgrade.apply()
       false -> tank
     end
+  end
+
+  @spec move(t(), Position.t()) :: t()
+  def move(tank, position) do
+    set_value(tank, :position, position)
   end
 
   @spec default_hp() :: integer

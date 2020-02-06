@@ -10,7 +10,8 @@ defmodule TankTest do
     max_hp: Tank.default_hp(),
     speed: Tank.default_speed(),
     upgrades: Tank.default_upgrades(),
-    experience: 0
+    experience: 0,
+    position: {0, 0}
   }
 
   setup do
@@ -73,5 +74,10 @@ defmodule TankTest do
     non_upgraded_tank = Tank.buy_upgrade(tank, MaxHP)
 
     assert non_upgraded_tank == tank
+  end
+
+  test "move/2 changes the tank's position", %{tank: tank} do
+    new_position = {42, 69}
+    assert Tank.move(tank, new_position).position == new_position
   end
 end
