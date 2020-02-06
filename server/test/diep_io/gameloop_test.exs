@@ -9,7 +9,8 @@ defmodule GameloopTest do
     current_hp: Tank.default_hp(),
     max_hp: Tank.default_hp(),
     speed: Tank.default_speed(),
-    experience: 0
+    experience: 0,
+    position: {0, 0}
   }
 
   setup do
@@ -20,7 +21,7 @@ defmodule GameloopTest do
   test "get_state/0 returns expected initial test" do
     assert %GameState{
              in_progress: false,
-             tanks: [@expected_tank]
+             tanks: %{@expected_tank.name => @expected_tank}
            } == Gameloop.get_state()
   end
 
