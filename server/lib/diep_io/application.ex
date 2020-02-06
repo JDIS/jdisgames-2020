@@ -1,6 +1,7 @@
 defmodule Diep.Io.Application do
   @moduledoc false
 
+  alias Diep.Io.ActionStorage
   alias Diep.Io.Repo, as: Repo
   alias Diep.IoWeb.Endpoint, as: Endpoint
 
@@ -14,6 +15,7 @@ defmodule Diep.Io.Application do
       Endpoint
     ]
 
+    :ok = ActionStorage.init()
     opts = [strategy: :one_for_one, name: Diep.Io.Supervisor]
     Supervisor.start_link(children, opts)
   end
