@@ -1,20 +1,24 @@
 defmodule Diep.Io.Core.GameState do
-  @moduledoc false
+  @moduledoc """
+  Module that handles most of the game's business logic
+  (handle player actions, debris generation, etc).
+  """
 
   alias Diep.Io.Core.{Action, Position, Tank}
+  alias Diep.Io.Users.User
 
   defstruct [:in_progress, :tanks]
 
   @type t :: %__MODULE__{
           in_progress: boolean(),
-          tanks: %{String.t() => Tank.t()}
+          tanks: %{integer() => Tank.t()}
         }
 
-  @spec new([String.t()]) :: t()
-  def new(tank_names) do
+  @spec new([User.t()]) :: t()
+  def new(users) do
     %__MODULE__{
       in_progress: false,
-      tanks: initialize_tanks(tank_names)
+      tanks: initialize_tanks(users)
     }
   end
 
@@ -46,6 +50,6 @@ defmodule Diep.Io.Core.GameState do
     end)
   end
 
-  defp initialize_tanks(tank_names),
-    do: tank_names |> Map.new(fn name -> {name, Tank.new(name)} end)
+  defp initialize_tanks(users),
+    do: users |> Map.new(fn user -> {user.id, Tank.new(user.name)} end)
 end

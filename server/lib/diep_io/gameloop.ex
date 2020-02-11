@@ -1,15 +1,18 @@
 defmodule Diep.Io.Gameloop do
-  @moduledoc false
-
-  alias Diep.Io.Core.GameState
+  @moduledoc """
+  Module that handles the time constraint of the server.
+  It is responsible for generating iterations.
+  """
 
   use GenServer
+  alias Diep.Io.Core.GameState
+  alias Diep.Io.UsersRepository
 
   # Client
 
-  @spec start_link([String.t()]) :: {:ok, pid()}
-  def start_link(tank_names) do
-    GenServer.start(__MODULE__, [tank_names], name: __MODULE__)
+  @spec start_link() :: {:ok, pid()}
+  def start_link(_ \\ nil) do
+    GenServer.start(__MODULE__, [], name: __MODULE__)
   end
 
   @spec start_game() :: :ok
@@ -25,8 +28,9 @@ defmodule Diep.Io.Gameloop do
   # Server (callbacks)
 
   @impl true
-  def init([tank_names]) do
-    {:ok, GameState.new(tank_names)}
+  def init([]) do
+    users = UsersRepository.list_users()
+    {:ok, GameState.new(users)}
   end
 
   @impl true

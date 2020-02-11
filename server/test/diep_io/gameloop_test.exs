@@ -1,11 +1,13 @@
 defmodule GameloopTest do
-  use ExUnit.Case, async: true
+  use Diep.Io.DataCase, async: false
 
   alias Diep.Io.Core.{GameState, Tank}
   alias Diep.Io.Gameloop
+  alias Diep.Io.UsersRepository
 
+  @user_name "Some user"
   @expected_tank %Tank{
-    name: "Tank",
+    name: @user_name,
     current_hp: Tank.default_hp(),
     max_hp: Tank.default_hp(),
     speed: Tank.default_speed(),
@@ -14,14 +16,15 @@ defmodule GameloopTest do
   }
 
   setup do
-    {:ok, _pid} = start_supervised({Gameloop, [@expected_tank.name]})
-    :ok
+    {:ok, user} = UsersRepository.create_user(%{name: @user_name})
+    {:ok, _pid} = start_supervised(Gameloop)
+    [users: [user]]
   end
 
-  test "get_state/0 returns expected initial test" do
+  test "get_state/0 returns expected initial test", %{users: users} do
     assert %GameState{
              in_progress: false,
-             tanks: %{@expected_tank.name => @expected_tank}
+             tanks: %{List.first(users).id => @expected_tank}
            } == Gameloop.get_state()
   end
 
