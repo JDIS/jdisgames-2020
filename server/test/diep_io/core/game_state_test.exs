@@ -2,17 +2,19 @@ defmodule GameStateTest do
   use ExUnit.Case, async: true
 
   alias Diep.Io.Core.{Action, GameState, Tank}
+  alias Diep.Io.Users.User
 
-  @tank_name "Tank"
-  @default_tank Tank.new(@tank_name)
+  @user_name "SomeUsername"
+  @user_id 420
+  @default_tank Tank.new(@user_name)
 
   @expected_game_state %GameState{
     in_progress: false,
-    tanks: %{@tank_name => @default_tank}
+    tanks: %{@user_id => @default_tank}
   }
 
   setup do
-    [game_state: GameState.new([@tank_name])]
+    [game_state: GameState.new([%User{name: @user_name, id: @user_id}])]
   end
 
   test "new/1 creates a default GameState", %{game_state: game_state} do
@@ -28,25 +30,25 @@ defmodule GameStateTest do
   end
 
   test "handle_players/2 does not move player if destination is nil", %{game_state: game_state} do
-    tank = game_state |> Map.get(:tanks) |> Map.get(@tank_name)
+    tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
 
     updated_tank =
       game_state
-      |> GameState.handle_players([Action.new(@tank_name)])
+      |> GameState.handle_players([Action.new(@user_id)])
       |> Map.get(:tanks)
-      |> Map.get(@tank_name)
+      |> Map.get(@user_id)
 
     assert tank.position == updated_tank.position
   end
 
   test "handle_players/2 moves player if given a destination", %{game_state: game_state} do
-    tank = game_state |> Map.get(:tanks) |> Map.get(@tank_name)
+    tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
 
     updated_tank =
       game_state
-      |> GameState.handle_players([Action.new(@tank_name, destination: {1, 1})])
+      |> GameState.handle_players([Action.new(@user_id, destination: {1, 1})])
       |> Map.get(:tanks)
-      |> Map.get(@tank_name)
+      |> Map.get(@user_id)
 
     assert tank.position != updated_tank.position
   end
