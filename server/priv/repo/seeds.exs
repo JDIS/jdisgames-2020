@@ -9,3 +9,7 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+require Logger
+
+users = 1..10 |> Enum.each(fn i -> Diep.Io.UsersRepository.create_user(%{name: "User#{i}"}) end)
+Logger.info("Seeded 10 users #{inspect(users)}")

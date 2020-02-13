@@ -3,11 +3,13 @@ defmodule Diep.Io.ActionStorage do
 
   alias :ets, as: Ets
   alias Diep.Io.Core.Action
+  require Logger
 
   @table_name :action_table
 
   @spec init(atom()) :: :ok
   def init(table_name \\ @table_name) do
+    Logger.debug("Initializing ActionStorage table with name #{table_name}")
     Ets.new(table_name, [:named_table, :public, write_concurrency: true])
     :ok
   end

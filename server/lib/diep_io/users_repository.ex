@@ -4,8 +4,8 @@ defmodule Diep.Io.UsersRepository do
   """
 
   alias Diep.Io.Repo
-
   alias Diep.Io.Users.User
+  require Logger
 
   @spec list_users() :: [%User{}]
   def list_users do
@@ -26,7 +26,7 @@ defmodule Diep.Io.UsersRepository do
   end
 
   @doc """
-  Generates a secret_key and creates a user.
+  Generates a secret_key and creates a user. Logs the status of the operation.
   Returns
       {:ok, %User{}} On success
       {:error, %Ecto.Changeset{}} On error
@@ -35,8 +35,21 @@ defmodule Diep.Io.UsersRepository do
   def create_user(attrs) do
     attrs_with_secret_key = Map.put(attrs, :secret_key, SecureRandom.uuid())
 
-    %User{}
-    |> User.changeset(attrs_with_secret_key)
-    |> Repo.insert()
+    result =
+      %User{}
+      |> User.changeset(attrs_with_secret_key)
+      |> Repo.insert()
+
+    case result do
+      {:ok, user} ->
+        Logger.info("Created user #{inspect(user)}")
+
+      {:error, error} ->
+        Logger.error("""
+        Error when creating a new user #{inspect(attrs)}: #{inspect(error)}
+        """)
+    end
+
+    result
   end
 end

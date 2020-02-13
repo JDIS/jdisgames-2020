@@ -7,6 +7,7 @@ defmodule Diep.Io.Gameloop do
   use GenServer
   alias Diep.Io.Core.GameState
   alias Diep.Io.UsersRepository
+  require Logger
 
   # Client
 
@@ -17,6 +18,7 @@ defmodule Diep.Io.Gameloop do
 
   @spec start_game() :: :ok
   def start_game do
+    Logger.info("Starting game")
     GenServer.cast(__MODULE__, :start_game)
   end
 
@@ -30,6 +32,7 @@ defmodule Diep.Io.Gameloop do
   @impl true
   def init([]) do
     users = UsersRepository.list_users()
+    Logger.info("Initializing gameloop with #{length(users)} users")
     {:ok, GameState.new(users)}
   end
 
