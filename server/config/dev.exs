@@ -47,8 +47,12 @@ config :diep_io, Diep.IoWeb.Endpoint,
     ]
   ]
 
-# Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :console,
+  format: "$time [$level] $metadata - $message\n",
+  level: :debug,
+  metadata: [:request_id],
+  utc_log: true,
+  sync_threshold: 100
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
