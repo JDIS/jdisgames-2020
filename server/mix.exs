@@ -69,8 +69,6 @@ defmodule Diep.MixProject do
         "format",
         "credo --strict",
         # "sobelow --verbose",
-        "xref unreachable",
-        "xref deprecated",
         "dialyzer",
         "test"
       ],
@@ -78,8 +76,6 @@ defmodule Diep.MixProject do
         "test --cover --raise",
         "format --check-formatted",
         "credo --strict",
-        "xref unreachable",
-        "xref deprecated",
         # "sobelow --exit",
         "dialyzer --halt-exit-status"
       ],

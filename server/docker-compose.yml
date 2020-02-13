@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+  db:
+    image: postgres:12.1-alpine
+    environment:
+      POSTGRES_USER: jdisgames2020
+      POSTGRES_PASSWORD: jdisgames2020
+      POSTGRES_DB: jdisgames2020_prod_db
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    restart: on-failure
+
+  server:
+
+    build:
+      context: .
+    environment:
+      DATABASE_URL: ecto://jdisgames2020:jdisgames2020@db:5432/jdisgames2020_prod_db
+    ports:
+      - "4000:4000"
+    restart: on-failure
+
