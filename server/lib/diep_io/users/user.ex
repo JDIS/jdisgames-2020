@@ -23,5 +23,6 @@ defmodule Diep.Io.Users.User do
     user
     |> cast(attrs, [:name, :secret_key])
     |> validate_required([:name, :secret_key])
+    |> unique_constraint(:name)
   end
 end

@@ -41,5 +41,11 @@ defmodule Diep.Io.UsersRepositoryTest do
     test "create_user/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = UsersRepository.create_user(@invalid_attrs)
     end
+
+    @tag :database
+    test "create_user/1 enforce an unique name contraint" do
+      UsersRepository.create_user(@valid_attrs)
+      assert {:error, %Ecto.Changeset{}} = UsersRepository.create_user(@valid_attrs)
+    end
   end
 end
