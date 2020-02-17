@@ -18,8 +18,6 @@ h6{font-size: 1.4rem; letter-spacing: 0; line-height: 1.2}
 
 .container{
   margin: 0 auto;
-  max-width: 80.0rem;
-  padding: 0 2.0rem;
   position: relative;
   width: 100%
 }
@@ -113,11 +111,15 @@ header nav li {
   white-space: nowrap;
 }
 header nav ul {
-  margin: 1rem;
   margin-top: 0;
+  display:inline-block;
+}
+header nav ul li {
+  margin: 1rem;
+  display: inline-block;
 }
 header nav a {
-  display: block;
+  display: inline-block;
 }
 
 @media (min-width: 40.0rem) { /* Small devices (landscape phones, 576px and up) */

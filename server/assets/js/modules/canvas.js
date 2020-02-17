@@ -2,7 +2,7 @@
  * Module to deal with elements that are drawn into canvases.
  */
 
-import {GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_WIDTH} from "./constants.mjs"
+import {GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_WIDTH} from "./constants.js"
 
 /**
  * Canvas elements to be drawn on the main canvas

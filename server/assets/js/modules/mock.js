@@ -2,8 +2,8 @@
  * Module to deal with mocking logic to fake game updates if we don't have a server to test with.
  */
 
-import app from "../index.mjs"
-import {CANVAS_UPDATE_RATE, COLORS, HEALTHBAR_WIDTH, MAP_HEIGHT, MAP_WIDTH} from "./constants.mjs"
+import app from "../spectate"
+import {CANVAS_UPDATE_RATE, COLORS, HEALTHBAR_WIDTH, MAP_HEIGHT, MAP_WIDTH} from "./constants.js"
 
 export function mockNetworkInit() {
     window.setInterval(() => {
