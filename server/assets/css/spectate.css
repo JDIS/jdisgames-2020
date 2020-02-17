@@ -4,6 +4,10 @@ h1 {
   padding-bottom: 10px;
 }
 
+hr {
+  margin: 1rem 0;
+}
+
 .flex {
   display: flex;
   align-items: center;

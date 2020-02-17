@@ -17,6 +17,7 @@ defmodule Diep.IoWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    get "/spectate", PageController, :spectate
   end
 
   # Other scopes may use custom stacks.

@@ -1,0 +1,6 @@
+<div id="app">
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.5.0/fabric.js"></script>
+<script src="<%= Routes.static_path(@conn, "/js/spectate.js") %>"></script>
+
+

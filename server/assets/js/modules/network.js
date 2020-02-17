@@ -1,4 +1,4 @@
-import {mockNetworkInit} from "./mock.mjs"
+import {mockNetworkInit} from "./mock.js"
 
 export function networkInit() {
     mockNetworkInit()
