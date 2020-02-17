@@ -7,18 +7,20 @@ defmodule Diep.Io.Core.GameState do
   alias Diep.Io.Core.{Action, Position, Tank}
   alias Diep.Io.Users.User
 
-  defstruct [:in_progress, :tanks]
+  defstruct [:in_progress, :tanks, :last_time]
 
   @type t :: %__MODULE__{
           in_progress: boolean(),
-          tanks: %{integer() => Tank.t()}
+          tanks: %{integer() => Tank.t()},
+          last_time: integer()
         }
 
   @spec new([User.t()]) :: t()
   def new(users) do
     %__MODULE__{
       in_progress: false,
-      tanks: initialize_tanks(users)
+      tanks: initialize_tanks(users),
+      last_time: 0
     }
   end
 
@@ -28,8 +30,8 @@ defmodule Diep.Io.Core.GameState do
   @spec stop_game(t()) :: t()
   def stop_game(game_state), do: %{game_state | in_progress: false}
 
-  @spec handle_players(t(), [Action.t()]) :: t()
-  def handle_players(game_state, actions) do
+  @spec handle_players([Action.t()], t()) :: t()
+  def handle_players(actions, game_state) do
     Enum.reduce(actions, game_state, &handle_action/2)
   end
 

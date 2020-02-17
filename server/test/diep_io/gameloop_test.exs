@@ -24,7 +24,8 @@ defmodule GameloopTest do
   test "get_state/0 returns expected initial test", %{users: users} do
     assert %GameState{
              in_progress: false,
-             tanks: %{List.first(users).id => @expected_tank}
+             tanks: %{List.first(users).id => @expected_tank},
+             last_time: 0
            } == Gameloop.get_state()
   end
 
