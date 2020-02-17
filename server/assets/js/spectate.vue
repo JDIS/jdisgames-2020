@@ -20,13 +20,13 @@
                         <div class="player-name">Team</div>
                         <strong class="points">Points</strong>
                     </div>
-                    <hr>
-                    <div v-for="(player, index) in orderedPlayers" class="flex scoreboard" @click="focusPlayer(player)">
+                    <div v-for="(tank, index) in orderedTanks" class="flex scoreboard" @click="focusPlayer(tank)">
                         <strong class="rank">{{index + 1}}</strong>
-                        <input class="player-name" type="button" :value="`${player.name}`"
-                               :style="{backgroundColor: player.fillColor}" />
-                        <strong class="points">{{ Math.round(player.points) }}</strong>
+                        <input class="player-name" type="button" :value="`${tank.name}`"
+                               :style="{backgroundColor: tank.fillColor}" />
+                        <strong class="points">{{ Math.round(tank.points) }}</strong>
                     </div>
+                    <hr>
                 </div>
             </div>
         </div>
@@ -39,6 +39,7 @@
     import {ANIMATION_DURATION, CANVAS_UPDATE_RATE, FADE_DURATION, HEALTH_OFFSET, HEALTHBAR_WIDTH, linear, MAX_ZOOM, MIN_ZOOM, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR} from "./modules/constants.js"
     import {createHealthBar, generateSampleMap} from "./modules/mock.js"
     import {getDifference} from "./modules/utils.js"
+    import {COLORS} from "./modules/constants";
 
     export default Vue.extend({
         name: 'Spectate',
@@ -58,10 +59,10 @@
         },
         computed: {
             /**
-             * @returns List of players ordered by their score in the current game.
+             * @returns List of tanks ordered by their score in the current game.
              */
-            orderedPlayers() {
-                return this.elements.players.sort((a, b) => a.points < b.points ? 1 : -1)
+            orderedTanks() {
+                return Object.values(this.elements.tanks).sort((a, b) => a.points < b.points ? 1 : -1)
             }
         },
         watch: {
@@ -138,54 +139,54 @@
             this.mainCanvas.on('mouse:up', () => {
                 this.mainCanvas.isDragging = false
             })
-
-            const gameState = JSON.parse(generateSampleMap())
-
-            gameState.players.forEach((player) => {
-                const tank = createTank(player.fillColor)
-                tank.left = player.position[0]
-                tank.top = player.position[1]
-                tank.angle = player.angle
-                tank.fill = player.fillColor
-                tank.id = player.id
-                this.mainCanvas.add(tank)
-                tank.bringToFront()
-                player.tank = tank
-
-                this.minimap.add(tank)
-
-                const nameText = new fabric.Text(player.name, {
-                    top: tank.top + NAME_OFFSET,
-                    left: tank.left,
-                    fontSize: 35,
-                    fontFamily: 'Sans-Serif',
-                    originX: 'center',
-                    originY: 'center'
-                })
-                player.nameText = nameText
-                this.mainCanvas.add(nameText)
-                const healthBar = createHealthBar()
-                player.healthBar = healthBar
-                healthBar.item(1).width = player.health * HEALTHBAR_WIDTH
-                healthBar.left = player.tank.left
-                healthBar.top = player.tank.top + HEALTH_OFFSET
-                this.mainCanvas.add(healthBar)
-            })
-
-            this.elements.players = gameState.players
-
-            this.autoSpectate = true
-            this.mainCanvas.renderAll()
-            this.minimap.renderAll()
-
-            window.requestAnimationFrame(this.doFrame)
-
         },
         methods: {
+            startRendering(gameState) {
+                Object.keys(gameState.tanks).forEach((id) => {
+                    let color = COLORS[id % COLORS.length];
+                    const tank = createTank(color)
+                    const player = gameState.tanks[id]
+                    player.fillColor = color
+                    tank.left = player.position[0]
+                    tank.top = player.position[1]
+                    tank.angle = player.angle
+                    tank.id = player.id
+                    this.mainCanvas.add(tank)
+                    tank.bringToFront()
+                    player.tank = tank
+
+                    this.minimap.add(tank)
+
+                    const nameText = new fabric.Text(player.name, {
+                        top: tank.top + NAME_OFFSET,
+                        left: tank.left,
+                        fontSize: 35,
+                        fontFamily: 'Sans-Serif',
+                        originX: 'center',
+                        originY: 'center'
+                    })
+                    player.nameText = nameText
+                    this.mainCanvas.add(nameText)
+                    const healthBar = createHealthBar()
+                    player.healthBar = healthBar
+                    healthBar.item(1).width = player.health * HEALTHBAR_WIDTH
+                    healthBar.left = player.tank.left
+                    healthBar.top = player.tank.top + HEALTH_OFFSET
+                    this.mainCanvas.add(healthBar)
+                })
+
+                this.elements.tanks = gameState.tanks
+
+                this.autoSpectate = true
+                this.mainCanvas.renderAll()
+                this.minimap.renderAll()
+
+                window.requestAnimationFrame(this.doFrame)
+            },
             doFrame() {
                 const now = Date.now()
                 if (this.autoSpectate && now - this.lastUpdateTimestamp > CANVAS_UPDATE_RATE) {
-                    this.focusedPlayer = this.orderedPlayers[0]
+                    this.focusedPlayer = this.orderedTanks[0]
                 }
                 this.centerPan()
                 this.hideIfUnzoomed()
@@ -198,10 +199,10 @@
                 updatedProjectiles.forEach(projectile => {
                     newProjectileIds.add(projectile.id)
                     if (!this.elements.projectiles[projectile.id]) {
-                        const newProjectile = createProjectile(this.elements.players.find(player => player.id === projectile.belongsTo))
+                        const newProjectile = createProjectile(Object.values(this.elements.tanks).find(player => player.id === projectile.belongsTo))
                         this.elements.projectiles[projectile.id] = newProjectile
                         this.mainCanvas.add(newProjectile)
-                        newProjectile.sendBackwards(this.elements.players[0])
+                        newProjectile.sendBackwards(this.elements.tanks[0])
                     }
                 })
                 updatedProjectiles.forEach(projectile => {
@@ -239,7 +240,7 @@
                         newDebris.top = debris.position[1]
                         this.elements.debris[debris.id] = newDebris
                         this.mainCanvas.add(newDebris)
-                        newDebris.sendBackwards(this.elements.players[0])
+                        newDebris.sendBackwards(this.elements.tanks[0])
                     }
                 })
                 const difference = getDifference(this.elements.debris, newDebrisIds)
@@ -260,66 +261,67 @@
              */
             animateCanvas(updatedGameState) {
                 this.progress = updatedGameState.progress
-                const updatedPlayers = updatedGameState.players
-                updatedPlayers.forEach((updatedPlayer) => {
-                    const associatedPlayer = this.elements.players.find((player) => player.id === updatedPlayer.id)
-                    associatedPlayer.points = updatedPlayer.points
-                    associatedPlayer.tank.animate('left', updatedPlayer.position[0], {
+                const updatedTanks = updatedGameState.tanks
+                Object.keys(updatedTanks).forEach((id) => {
+                    const updatedTank = updatedTanks[id]
+                    const associatedPlayer = this.elements.tanks[id]
+                    associatedPlayer.points = updatedTank.points
+                    associatedPlayer.tank.animate('left', updatedTank.position[0], {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
-                    associatedPlayer.tank.animate('top', updatedPlayer.position[1], {
+                    associatedPlayer.tank.animate('top', updatedTank.position[1], {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
-                    associatedPlayer.tank.animate('angle', updatedPlayer.angle, {
+                    // associatedPlayer.tank.animate('angle', updatedTank.angle, {
+                    //     onChange: null,
+                    //     duration: ANIMATION_DURATION,
+                    //     easing: linear
+                    // })
+                    associatedPlayer.nameText.animate('left', updatedTank.position[0], {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
-                    associatedPlayer.nameText.animate('left', updatedPlayer.position[0], {
+                    associatedPlayer.nameText.animate('top', updatedTank.position[1] + NAME_OFFSET, {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
-                    associatedPlayer.nameText.animate('top', updatedPlayer.position[1] + NAME_OFFSET, {
+                    associatedPlayer.healthBar.item(1).animate('width', updatedTank.health * HEALTHBAR_WIDTH, {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
-                    associatedPlayer.healthBar.item(1).animate('width', updatedPlayer.health * HEALTHBAR_WIDTH, {
+                    associatedPlayer.healthBar.animate('left', updatedTank.position[0], {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
-                    associatedPlayer.healthBar.animate('left', updatedPlayer.position[0], {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    associatedPlayer.healthBar.animate('top', updatedPlayer.position[1] + HEALTH_OFFSET, {
+                    associatedPlayer.healthBar.animate('top', updatedTank.position[1] + HEALTH_OFFSET, {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
 
                 })
-                this.drawAndRemoveProjectiles(updatedGameState.projectiles)
-                this.drawAndRemoveDebris(updatedGameState.debris)
+                // this.drawAndRemoveProjectiles(updatedGameState.projectiles)
+                // this.drawAndRemoveDebris(updatedGameState.debris)
                 this.lastUpdateTimestamp = Date.now()
             },
             hideIfUnzoomed() {
                 if (this.zoom < 0.25) {
                     this.elements.thinGrid.visible = false
-                    this.elements.players.forEach((player) => player.nameText.visible = false)
-                    this.elements.players.forEach((player) => player.healthBar.visible = false)
+                    Object.values(this.elements.tanks).forEach((player) => player.nameText.visible = false)
+                    Object.values(this.elements.tanks).forEach((player) => player.healthBar.visible = false)
                 }
                 if (this.zoom >= 0.25) {
                     this.elements.thinGrid.visible = true
-                    this.elements.players.forEach((player) => player.nameText.visible = true)
-                    this.elements.players.forEach((player) => player.healthBar.visible = true)
+                    Object.values(this.elements.tanks).forEach((player) => player.nameText.visible = true)
+                    Object.values(this.elements.tanks).forEach((player) => player.healthBar.visible = true)
                 }
             },
             doZoom(event=null) {

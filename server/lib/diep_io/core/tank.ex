@@ -8,6 +8,7 @@ defmodule Diep.Io.Core.Tank do
   @default_speed 10
   @default_upgrades %{Diep.Io.Upgrades.MaxHP => 0}
 
+  @derive Jason.Encoder
   @enforce_keys [:name, :current_hp, :max_hp, :speed, :position]
   defstruct [
     :name,

@@ -9,10 +9,10 @@ import {GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGH
  */
 export class DrawnElements {
 
-    constructor(thickGrid, thinGrid, players, projectiles, debris) {
+    constructor(thickGrid, thinGrid, tanks, projectiles, debris) {
         this.thickGrid = thickGrid
         this.thinGrid = thinGrid
-        this.players = players
+        this.tanks = tanks
         this.projectiles = projectiles
         this.debris = debris
     }

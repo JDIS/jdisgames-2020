@@ -1,17 +1,14 @@
 defmodule Diep.Io.Application do
   @moduledoc false
 
-  alias Diep.Io.ActionStorage
-  alias Diep.Io.Repo, as: Repo
+  alias Diep.Io.{ActionStorage, Repo}
   alias Diep.IoWeb.Endpoint, as: Endpoint
 
   use Application
 
   def start(_type, _args) do
     children = [
-      # Start the Ecto repository
       Repo,
-      # Start the endpoint when the application starts
       Endpoint
     ]
 

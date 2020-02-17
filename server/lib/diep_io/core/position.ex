@@ -2,12 +2,21 @@ defmodule Diep.Io.Core.Position do
   @moduledoc false
 
   alias :math, as: Math
+  alias Jason.Encoder
 
   @type t :: {integer, integer}
 
   @spec new(t(), t(), non_neg_integer) :: t()
   def new(from, to, speed) do
     travel(from, to, speed, distance(from, to))
+  end
+
+  defimpl Encoder, for: Tuple do
+    def encode(data, options) when is_tuple(data) do
+      data
+      |> Tuple.to_list()
+      |> Encoder.List.encode(options)
+    end
   end
 
   defp travel(_from, to, speed, distance) when distance <= speed, do: to

@@ -2,6 +2,7 @@ defmodule PositionTest do
   use ExUnit.Case, async: true
 
   alias Diep.Io.Core.Position
+  alias Jason
 
   @origin {0, 0}
 

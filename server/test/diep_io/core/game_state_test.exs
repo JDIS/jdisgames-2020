@@ -11,7 +11,9 @@ defmodule GameStateTest do
   @expected_game_state %GameState{
     in_progress: false,
     tanks: %{@user_id => @default_tank},
-    last_time: 0
+    last_time: 0,
+    map_width: 10_000,
+    map_height: 10_000
   }
 
   setup do

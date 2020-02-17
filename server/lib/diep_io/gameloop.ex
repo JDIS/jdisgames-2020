@@ -5,12 +5,13 @@ defmodule Diep.Io.Gameloop do
   """
 
   use GenServer
+  alias Diep.IoWeb.Endpoint
   alias Diep.Io.Core.{Action, GameState}
   alias Diep.Io.{ActionStorage, UsersRepository}
   alias :erlang, as: Erlang
   require Logger
 
-  @tickrate floor(1000 / 1)
+  @tickrate floor(1000 / 3)
 
   # Client
 
@@ -70,6 +71,8 @@ defmodule Diep.Io.Gameloop do
       |> Enum.map(fn id -> ActionStorage.get_action(id) end)
       |> GameState.handle_players(state)
 
+    broadcast(updated_state)
+
     end_time = Erlang.monotonic_time()
 
     Process.send_after(self(), :loop, calculate_time_to_wait(end_time - begin_time))
@@ -78,5 +81,9 @@ defmodule Diep.Io.Gameloop do
 
   defp calculate_time_to_wait(elapsed_time) do
     max(@tickrate - Erlang.convert_time_unit(elapsed_time, :native, :millisecond), 0)
+  end
+
+  defp broadcast(state) do
+    Endpoint.broadcast!("game_state", "new_state", state)
   end
 end
