@@ -7,12 +7,15 @@ defmodule Diep.Io.Core.GameState do
   alias Diep.Io.Core.{Action, Position, Tank}
   alias Diep.Io.Users.User
 
-  defstruct [:in_progress, :tanks, :last_time]
+  @derive {Jason.Encoder, except: [:in_progress]}
+  defstruct [:in_progress, :tanks, :last_time, :map_width, :map_height]
 
   @type t :: %__MODULE__{
           in_progress: boolean(),
           tanks: %{integer() => Tank.t()},
-          last_time: integer()
+          last_time: integer(),
+          map_width: integer(),
+          map_height: integer()
         }
 
   @spec new([User.t()]) :: t()
@@ -20,7 +23,9 @@ defmodule Diep.Io.Core.GameState do
     %__MODULE__{
       in_progress: false,
       tanks: initialize_tanks(users),
-      last_time: 0
+      last_time: 0,
+      map_width: 10_000,
+      map_height: 10_000
     }
   end
 

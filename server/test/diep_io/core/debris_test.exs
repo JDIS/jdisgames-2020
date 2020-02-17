@@ -35,4 +35,8 @@ defmodule DebrisTest do
   test "is_alive?/1 determines if the given debris is alive", %{debris: debris} do
     assert Debris.is_alive?(debris)
   end
+
+  test "get_points/1 gives the correct amount of points", %{debris: debris} do
+    assert Debris.get_points(debris) == 20
+  end
 end

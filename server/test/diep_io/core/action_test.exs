@@ -4,7 +4,11 @@ defmodule ActionTest do
   alias Diep.Io.Core.Action
 
   @tank_id "Tank"
-  @action_details [destination: {0, 0}, target: {0, 0}, purchase: Diep.Io.Upgrades.MaxHP]
+  @action_details [
+    destination: {0, 0},
+    target: {0, 0},
+    purchase: Diep.Io.Upgrades.MaxHP
+  ]
 
   setup do
     [default_action: Action.new(@tank_id), complete_action: Action.new(@tank_id, @action_details)]
