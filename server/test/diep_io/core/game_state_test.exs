@@ -10,7 +10,8 @@ defmodule GameStateTest do
 
   @expected_game_state %GameState{
     in_progress: false,
-    tanks: %{@user_id => @default_tank}
+    tanks: %{@user_id => @default_tank},
+    last_time: 0
   }
 
   setup do
@@ -33,8 +34,8 @@ defmodule GameStateTest do
     tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
 
     updated_tank =
-      game_state
-      |> GameState.handle_players([Action.new(@user_id)])
+      [Action.new(@user_id)]
+      |> GameState.handle_players(game_state)
       |> Map.get(:tanks)
       |> Map.get(@user_id)
 
@@ -45,8 +46,8 @@ defmodule GameStateTest do
     tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
 
     updated_tank =
-      game_state
-      |> GameState.handle_players([Action.new(@user_id, destination: {1, 1})])
+      [Action.new(@user_id, destination: {1, 1})]
+      |> GameState.handle_players(game_state)
       |> Map.get(:tanks)
       |> Map.get(@user_id)
 

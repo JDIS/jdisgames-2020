@@ -14,9 +14,9 @@ defmodule Diep.Io.ActionStorage do
     :ok
   end
 
-  @spec store_action(atom(), any, Action.t()) :: true
-  def store_action(table_name \\ @table_name, tank_id, action) do
-    Ets.insert(table_name, {tank_id, action})
+  @spec store_action(atom(), Action.t()) :: true
+  def store_action(table_name \\ @table_name, action) do
+    Ets.insert(table_name, {action.tank_id, action})
   end
 
   @spec get_action(atom(), any) :: Action.t()
