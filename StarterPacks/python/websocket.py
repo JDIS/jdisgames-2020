@@ -1,11 +1,11 @@
 import asyncio
-import json
-import websockets
 import logging
 
+import websockets
 from async_generator import asynccontextmanager
-from message import Message, JoinMessage
+
 from channel import Channel
+from message import Message
 
 logging.basicConfig(level=logging.INFO)
 
@@ -15,14 +15,14 @@ class Socket:
         self._channels = {}
 
     @asynccontextmanager
-    async def connect(self, endpoint):
+    async def connect(self, endpoint) -> 'Socket':
         try:
             self._websocket = await websockets.connect(endpoint)
             yield self
         finally:
             await self._websocket.close()
 
-    async def channel(self, topic):
+    async def channel(self, topic) -> Channel:
         if self._channels.get(topic):
             return self._channels[topic]
 

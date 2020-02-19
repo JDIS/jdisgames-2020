@@ -1,7 +1,5 @@
-import asyncio
-import logging
+from message import JoinMessage, Message
 
-from message import Message, JoinMessage
 
 class Channel:
     def __init__(self, topic, socket):
@@ -14,7 +12,7 @@ class Channel:
         self.on(Message.PHX_REPLY, on_reply)
 
     @classmethod
-    async def create(self, topic, socket):
+    async def create(self, topic, socket) -> 'Channel':
         channel = Channel(topic, socket)
         await socket.send(JoinMessage(topic))
         return channel
@@ -25,4 +23,3 @@ class Channel:
     async def handle(self, message):
         if self._callbacks.get(message.event):
             return await self._callbacks[message.event](message.payload)
-            
