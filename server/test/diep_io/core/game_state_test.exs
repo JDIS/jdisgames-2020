@@ -4,6 +4,7 @@ defmodule GameStateTest do
   alias Diep.Io.Core.{Action, GameState, Tank}
   alias Diep.Io.Users.User
 
+  @max_ticks 324
   @user_name "SomeUsername"
   @user_id 420
   @default_tank Tank.new(@user_name)
@@ -13,11 +14,13 @@ defmodule GameStateTest do
     tanks: %{@user_id => @default_tank},
     last_time: 0,
     map_width: 10_000,
-    map_height: 10_000
+    map_height: 10_000,
+    ticks: 1,
+    max_ticks: @max_ticks
   }
 
   setup do
-    [game_state: GameState.new([%User{name: @user_name, id: @user_id}])]
+    [game_state: GameState.new([%User{name: @user_name, id: @user_id}], @max_ticks)]
   end
 
   test "new/1 creates a default GameState", %{game_state: game_state} do

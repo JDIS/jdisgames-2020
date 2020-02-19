@@ -7,25 +7,29 @@ defmodule Diep.Io.Core.GameState do
   alias Diep.Io.Core.{Action, Position, Tank}
   alias Diep.Io.Users.User
 
-  @derive {Jason.Encoder, except: [:in_progress]}
-  defstruct [:in_progress, :tanks, :last_time, :map_width, :map_height]
+  @derive {Jason.Encoder, except: [:in_progress, :last_time]}
+  defstruct [:in_progress, :tanks, :last_time, :map_width, :map_height, :ticks, :max_ticks]
 
   @type t :: %__MODULE__{
           in_progress: boolean(),
           tanks: %{integer() => Tank.t()},
           last_time: integer(),
           map_width: integer(),
-          map_height: integer()
+          map_height: integer(),
+          ticks: integer(),
+          max_ticks: integer()
         }
 
-  @spec new([User.t()]) :: t()
-  def new(users) do
+  @spec new([User.t()], integer()) :: t()
+  def new(users, max_ticks) do
     %__MODULE__{
       in_progress: false,
       tanks: initialize_tanks(users),
       last_time: 0,
       map_width: 10_000,
-      map_height: 10_000
+      map_height: 10_000,
+      ticks: 1,
+      max_ticks: max_ticks
     }
   end
 
@@ -34,6 +38,21 @@ defmodule Diep.Io.Core.GameState do
 
   @spec stop_game(t()) :: t()
   def stop_game(game_state), do: %{game_state | in_progress: false}
+
+  @doc """
+    Increase the tick count by one. If the new count is equal to the max number of ticks
+    in a game, also stop the game.
+  """
+  @spec increase_ticks(t()) :: t()
+  def increase_ticks(game_state) do
+    updated_state = Map.put(game_state, :ticks, game_state.ticks + 1)
+    max_ticks = updated_state.max_ticks
+
+    case updated_state.ticks do
+      x when x > max_ticks -> stop_game(updated_state)
+      _ -> updated_state
+    end
+  end
 
   @spec handle_players([Action.t()], t()) :: t()
   def handle_players(actions, game_state) do
