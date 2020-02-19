@@ -37,7 +37,7 @@
     import Vue from "vue"
     import {createDebris1, createDebris2, createGrid, createMinimap, createProjectile, createTank, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.js"
     import {ANIMATION_DURATION, CANVAS_UPDATE_RATE, FADE_DURATION, HEALTH_OFFSET, HEALTHBAR_WIDTH, linear, MAX_ZOOM, MIN_ZOOM, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR} from "./modules/constants.js"
-    import {createHealthBar, generateSampleMap} from "./modules/mock.js"
+    import {createHealthBar} from "./modules/mock.js"
     import {getDifference} from "./modules/utils.js"
     import {COLORS} from "./modules/constants";
 
@@ -260,7 +260,7 @@
              * @param updatedGameState
              */
             animateCanvas(updatedGameState) {
-                this.progress = updatedGameState.progress
+                this.progress = updatedGameState.ticks / updatedGameState.max_ticks
                 const updatedTanks = updatedGameState.tanks
                 Object.keys(updatedTanks).forEach((id) => {
                     const updatedTank = updatedTanks[id]

@@ -7,6 +7,7 @@ defmodule GameloopTest do
   alias Diep.Io.Gameloop
   alias Diep.Io.UsersRepository
 
+  @game_time 1000
   @user_name "Some user"
   @tank_id 555
   @expected_tank %Tank{
@@ -20,7 +21,7 @@ defmodule GameloopTest do
 
   setup do
     {:ok, user} = UsersRepository.create_user(%{name: @user_name})
-    {:ok, _pid} = start_supervised(Gameloop)
+    {:ok, _pid} = start_supervised({Gameloop, [@game_time]})
     [users: [user]]
   end
 
@@ -30,7 +31,9 @@ defmodule GameloopTest do
              tanks: %{List.first(users).id => @expected_tank},
              last_time: 0,
              map_width: 10_000,
-             map_height: 10_000
+             map_height: 10_000,
+             ticks: 1,
+             max_ticks: @game_time
            } == Gameloop.get_state()
   end
 
@@ -41,10 +44,33 @@ defmodule GameloopTest do
 
   test "A gameloop loop with a valid destination moves the desired tank" do
     ActionStorage.store_action(Action.new(@tank_id, %{destination: {500, 0}}))
-    state = GameState.new([%{id: @tank_id, name: "some_name"}])
+
+    state =
+      GameState.new([%{id: @tank_id, name: "some_name"}], @game_time) |> GameState.start_game()
+
     {:noreply, result} = Gameloop.handle_info(:loop, state)
     {x, y} = result.tanks[@tank_id].position
     assert x > 0
     assert y == 0
+  end
+
+  test "A single iterations of handle_info does not stop the game with a game time of 2" do
+    ActionStorage.store_action(Action.new(@tank_id, %{destination: {500, 0}}))
+    state = GameState.new([%{id: @tank_id, name: "some_name"}], 2) |> GameState.start_game()
+    {:noreply, result} = Gameloop.handle_info(:loop, state)
+    assert result.in_progress == true
+  end
+
+  test "A single iterations of handle_info stops the game with a game time of 1" do
+    ActionStorage.store_action(Action.new(@tank_id, %{destination: {500, 0}}))
+    state = GameState.new([%{id: @tank_id, name: "some_name"}], 1) |> GameState.start_game()
+    {:noreply, result} = Gameloop.handle_info(:loop, state)
+    assert result.in_progress == false
+  end
+
+  test "Cannot do a loop if the game is not in progress" do
+    state = GameState.new([%{id: @tank_id, name: "some_name"}], 2)
+    assert state.in_progress == false
+    assert_raise FunctionClauseError, fn -> Gameloop.handle_info(:loop, state) end
   end
 end
