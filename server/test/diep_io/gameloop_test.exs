@@ -2,22 +2,13 @@ defmodule GameloopTest do
   use Diep.Io.DataCase, async: false
 
   alias Diep.Io.ActionStorage
-  alias Diep.Io.Core.Action
-  alias Diep.Io.Core.{GameState, Tank}
+  alias Diep.Io.Core.{Action, GameState}
   alias Diep.Io.Gameloop
   alias Diep.Io.UsersRepository
 
   @game_time 1000
   @user_name "Some user"
   @tank_id 555
-  @expected_tank %Tank{
-    name: @user_name,
-    current_hp: Tank.default_hp(),
-    max_hp: Tank.default_hp(),
-    speed: Tank.default_speed(),
-    experience: 0,
-    position: {0, 0}
-  }
 
   setup do
     {:ok, user} = UsersRepository.create_user(%{name: @user_name})
@@ -25,16 +16,8 @@ defmodule GameloopTest do
     [users: [user]]
   end
 
-  test "get_state/0 returns expected initial test", %{users: users} do
-    assert %GameState{
-             in_progress: false,
-             tanks: %{List.first(users).id => @expected_tank},
-             last_time: 0,
-             map_width: 10_000,
-             map_height: 10_000,
-             ticks: 1,
-             max_ticks: @game_time
-           } == Gameloop.get_state()
+  test "get_state/0 returns expected initial test" do
+    assert %GameState{} = Gameloop.get_state()
   end
 
   test "start_game/0 changes in_progress to true" do

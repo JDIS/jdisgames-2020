@@ -1,30 +1,32 @@
 defmodule GameStateTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Action, GameState, Tank}
+  alias Diep.Io.Core.{Action, GameMap, GameState, Tank}
   alias Diep.Io.Users.User
 
   @max_ticks 324
   @user_name "SomeUsername"
   @user_id 420
-  @default_tank Tank.new(@user_name)
-
-  @expected_game_state %GameState{
-    in_progress: false,
-    tanks: %{@user_id => @default_tank},
-    last_time: 0,
-    map_width: 10_000,
-    map_height: 10_000,
-    ticks: 1,
-    max_ticks: @max_ticks
-  }
 
   setup do
     [game_state: GameState.new([%User{name: @user_name, id: @user_id}], @max_ticks)]
   end
 
   test "new/1 creates a default GameState", %{game_state: game_state} do
-    assert game_state == @expected_game_state
+    assert %GameState{
+             in_progress: false,
+             tanks: %{@user_id => %Tank{}},
+             debris: debris,
+             last_time: 0,
+             map_width: map_width,
+             map_height: map_height,
+             ticks: 1,
+             max_ticks: @max_ticks
+           } = game_state
+
+    assert map_width == GameMap.width()
+    assert map_height == GameMap.height()
+    assert is_list(debris) && !Enum.empty?(debris)
   end
 
   test "start_game/1 sets in_progress to true", %{game_state: game_state} do
@@ -57,5 +59,16 @@ defmodule GameStateTest do
       |> Map.get(@user_id)
 
     assert tank.position != updated_tank.position
+  end
+
+  test "handle_debris/1 does not add debris if none is missing", %{game_state: game_state} do
+    updated_state = GameState.handle_debris(game_state)
+    assert Enum.count(game_state.debris) == Enum.count(updated_state.debris)
+  end
+
+  test "handle_debris/1 generates debris if cap is not reached", %{game_state: game_state} do
+    game_state = %{game_state | debris: Enum.take_every(game_state.debris, 2)}
+    updated_state = GameState.handle_debris(game_state)
+    assert Enum.count(updated_state.debris) > Enum.count(game_state.debris)
   end
 end

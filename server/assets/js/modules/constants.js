@@ -1,6 +1,6 @@
 export const GRID_SIZE = 250
-export const MAP_WIDTH = 5000
-export const MAP_HEIGHT = 5000
+export const MAP_WIDTH = 10000
+export const MAP_HEIGHT = 10000
 export const MINIMAP_WIDTH = 100
 export const MINIMAP_HEIGHT = MINIMAP_WIDTH * MAP_WIDTH / MAP_HEIGHT
 export const MAX_ZOOM = 4
@@ -18,5 +18,5 @@ export const FADE_DURATION = 200
 export const COLORS = ['#F60000', '#FF8C00', '#FFEE00', '#4DE94C', '#3783FF', '#4815AA', '#234E85', '#6E7C74', '#C7B763', '#D09D48', '#CA6220', '#C63501']
 export const DEBRIS_TYPE = [1, 2]
 export function linear(t, b, c, d) {
-    return b + (t/d) * c
+    return b + (t / d) * c
 }

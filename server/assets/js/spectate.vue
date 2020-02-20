@@ -35,7 +35,7 @@
 
 <script>
     import Vue from "vue"
-    import {createDebris1, createDebris2, createGrid, createMinimap, createProjectile, createTank, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.js"
+    import {createSmallDebris, createMediumDebris, createLargeDebris, createGrid, createMinimap, createProjectile, createTank, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.js"
     import {ANIMATION_DURATION, CANVAS_UPDATE_RATE, FADE_DURATION, HEALTH_OFFSET, HEALTHBAR_WIDTH, linear, MAX_ZOOM, MIN_ZOOM, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR} from "./modules/constants.js"
     import {createHealthBar} from "./modules/mock.js"
     import {getDifference} from "./modules/utils.js"
@@ -234,8 +234,8 @@
                 updatedDebris.forEach(debris => {
                     newDebrisIds.add(debris.id)
                     if (!this.elements.debris[debris.id]) {
-                        const method = Math.random() < 1/8 ? createDebris2 : createDebris1
-                        const newDebris = method(Math.random() * 5000000000000)
+                        const method = this.debrisCreationMethod(debris.size)
+                        const newDebris = method(debris.id)
                         newDebris.left = debris.position[0]
                         newDebris.top = debris.position[1]
                         this.elements.debris[debris.id] = newDebris
@@ -254,6 +254,16 @@
                         onChange: null
                     })
                 })
+            },
+            debrisCreationMethod(size) {
+                switch(size) {
+                    case "small":
+                        return createSmallDebris;
+                    case "medium":
+                        return createMediumDebris;
+                    case "large":
+                        return createLargeDebris;
+                }
             },
             /**
              * Called when a new game state arrives, updates the canvas and set intrapolation accordingly.
@@ -309,7 +319,7 @@
 
                 })
                 // this.drawAndRemoveProjectiles(updatedGameState.projectiles)
-                // this.drawAndRemoveDebris(updatedGameState.debris)
+                this.drawAndRemoveDebris(updatedGameState.debris)
                 this.lastUpdateTimestamp = Date.now()
             },
             hideIfUnzoomed() {

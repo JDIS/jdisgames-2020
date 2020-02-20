@@ -2,6 +2,7 @@ defmodule Diep.Io.Core.Position do
   @moduledoc false
 
   alias :math, as: Math
+  alias Diep.Io.Core.GameMap
   alias Jason.Encoder
 
   @type t :: {integer, integer}
@@ -9,6 +10,19 @@ defmodule Diep.Io.Core.Position do
   @spec new(t(), t(), non_neg_integer) :: t()
   def new(from, to, speed) do
     travel(from, to, speed, distance(from, to))
+  end
+
+  @spec new() :: t()
+  def new do
+    {0, 0}
+  end
+
+  @spec random() :: t()
+  def random do
+    {
+      Enum.random(0..GameMap.width()),
+      Enum.random(0..GameMap.height())
+    }
   end
 
   defimpl Encoder, for: Tuple do

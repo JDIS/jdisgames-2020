@@ -36,7 +36,7 @@ defmodule Diep.Io.Core.Tank do
       current_hp: @default_hp,
       max_hp: @default_hp,
       speed: @default_speed,
-      position: {0, 0}
+      position: Position.new()
     }
   end
 

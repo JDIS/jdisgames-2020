@@ -1,24 +1,34 @@
 defmodule Diep.Io.Core.Debris do
   @moduledoc false
 
+  alias Diep.Io.Core.Position
+
   @default_size :small
   @default_hp_map %{small: 20, medium: 50, large: 100}
   @points_map %{small: 10, medium: 20, large: 20}
   @default_speed 1
 
-  @enforce_keys [:current_hp, :size]
-  defstruct [:current_hp, :size, speed: @default_speed]
+  @derive Jason.Encoder
+  @enforce_keys [:id, :current_hp, :size, :position]
+  defstruct [:id, :current_hp, :size, :position, speed: @default_speed]
 
   @type size_t :: :small | :medium | :large
   @type t :: %__MODULE__{
+          id: integer,
           current_hp: integer,
           size: size_t,
-          speed: integer
+          speed: integer,
+          position: Position.t()
         }
 
   @spec new(size_t) :: t()
   def new(size) do
-    %__MODULE__{current_hp: default_hp(size), size: size}
+    %__MODULE__{
+      current_hp: default_hp(size),
+      size: size,
+      position: Position.random(),
+      id: System.unique_integer()
+    }
   end
 
   @spec new() :: t()
