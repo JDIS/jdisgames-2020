@@ -4,15 +4,30 @@ defmodule Diep.Io.Core.GameState do
   (handle player actions, debris generation, etc).
   """
 
-  alias Diep.Io.Core.{Action, Position, Tank}
+  alias Diep.Io.Core.{Action, Debris, GameMap, Position, Tank}
   alias Diep.Io.Users.User
+  alias :rand, as: Rand
+
+  @max_debris_count 100
+  @max_debris_generation_rate 0.5
+  @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
 
   @derive {Jason.Encoder, except: [:in_progress, :last_time]}
-  defstruct [:in_progress, :tanks, :last_time, :map_width, :map_height, :ticks, :max_ticks]
+  defstruct [
+    :in_progress,
+    :tanks,
+    :debris,
+    :last_time,
+    :map_width,
+    :map_height,
+    :ticks,
+    :max_ticks
+  ]
 
   @type t :: %__MODULE__{
           in_progress: boolean(),
           tanks: %{integer() => Tank.t()},
+          debris: [Debris.t()],
           last_time: integer(),
           map_width: integer(),
           map_height: integer(),
@@ -25,9 +40,10 @@ defmodule Diep.Io.Core.GameState do
     %__MODULE__{
       in_progress: false,
       tanks: initialize_tanks(users),
+      debris: initialize_debris(),
       last_time: 0,
-      map_width: 10_000,
-      map_height: 10_000,
+      map_width: GameMap.width(),
+      map_height: GameMap.height(),
       ticks: 1,
       max_ticks: max_ticks
     }
@@ -59,6 +75,12 @@ defmodule Diep.Io.Core.GameState do
     Enum.reduce(actions, game_state, &handle_action/2)
   end
 
+  @spec handle_debris(t()) :: t()
+  def handle_debris(game_state) do
+    game_state
+    |> generate_debris
+  end
+
   defp handle_action(action, game_state) do
     game_state
     |> handle_movement(action)
@@ -76,6 +98,25 @@ defmodule Diep.Io.Core.GameState do
     end)
   end
 
+  defp generate_debris(game_state) do
+    case @max_debris_count - Enum.count(game_state.debris) do
+      0 ->
+        game_state
+
+      missing_count ->
+        rate = Rand.uniform() * @max_debris_generation_rate
+        debris_count = max(round(missing_count * rate), 1)
+        new_debris = create_debris(debris_count)
+        %{game_state | debris: Enum.concat(game_state.debris, new_debris)}
+    end
+  end
+
+  defp create_debris(count) do
+    for _ <- 1..count, do: Debris.new(Enum.random(@debris_size_probability))
+  end
+
   defp initialize_tanks(users),
     do: users |> Map.new(fn user -> {user.id, Tank.new(user.name)} end)
+
+  defp initialize_debris, do: create_debris(@max_debris_count)
 end

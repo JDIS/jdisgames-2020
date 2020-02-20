@@ -5,18 +5,21 @@ defmodule DebrisTest do
 
   @damage 10
   @expected_size :medium
-  @expected_debris %Debris{
-    current_hp: Debris.default_hp(@expected_size),
-    size: @expected_size,
-    speed: Debris.default_speed()
-  }
 
   setup do
     [debris: Debris.new(@expected_size)]
   end
 
   test "new/1 creates a debris", %{debris: debris} do
-    assert debris == @expected_debris
+    assert %Debris{
+             current_hp: hp,
+             size: @expected_size,
+             speed: speed,
+             position: {_, _}
+           } = debris
+
+    assert speed == Debris.default_speed()
+    assert hp == Debris.default_hp(@expected_size)
   end
 
   test "new/0 creates a small debris" do

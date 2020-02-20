@@ -4,22 +4,27 @@ defmodule TankTest do
   alias Diep.Io.Core.Tank
   alias Diep.Io.Upgrades.MaxHP
 
-  @expected_tank %Tank{
-    name: "Tank",
-    current_hp: Tank.default_hp(),
-    max_hp: Tank.default_hp(),
-    speed: Tank.default_speed(),
-    upgrades: Tank.default_upgrades(),
-    experience: 0,
-    position: {0, 0}
-  }
+  @tank_name "Tank"
 
   setup do
-    [tank: Tank.new(@expected_tank.name)]
+    [tank: Tank.new(@tank_name)]
   end
 
   test "new/1 creates a tank", %{tank: tank} do
-    assert tank == @expected_tank
+    assert %Tank{
+             name: @tank_name,
+             current_hp: current_hp,
+             max_hp: max_hp,
+             speed: speed,
+             upgrades: upgrades,
+             experience: 0,
+             position: {_, _}
+           } = tank
+
+    assert current_hp == Tank.default_hp()
+    assert max_hp == Tank.default_hp()
+    assert speed == Tank.default_speed()
+    assert upgrades == Tank.default_upgrades()
   end
 
   test "hit/2 damages the given tank", %{tank: tank} do
