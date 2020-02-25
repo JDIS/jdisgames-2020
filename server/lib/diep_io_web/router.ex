@@ -18,10 +18,13 @@ defmodule Diep.IoWeb.Router do
 
     get "/", PageController, :index
     get "/spectate", PageController, :spectate
+    get "/scoreboard", PageController, :scoreboard
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", Diep.IoWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", Diep.IoWeb do
+    pipe_through :api
+
+    resources "/scoreboard", ScoreboardController, only: [:index]
+  end
 end

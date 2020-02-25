@@ -8,4 +8,8 @@ defmodule Diep.IoWeb.PageController do
   def spectate(conn, _params) do
     render(conn, "spectate.html")
   end
+
+  def scoreboard(conn, _params) do
+    render(conn, "scoreboard.html")
+  end
 end

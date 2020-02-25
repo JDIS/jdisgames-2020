@@ -16,6 +16,10 @@ h4{font-size: 1.8rem; letter-spacing: -.05rem; line-height: 1.5}
 h5{font-size: 1.6rem; letter-spacing: 0; line-height: 1.4}
 h6{font-size: 1.4rem; letter-spacing: 0; line-height: 1.2}
 
+body {
+  margin: 0;
+}
+
 .container{
   margin: 0 auto;
   position: relative;
@@ -125,9 +129,6 @@ header nav a {
 @media (min-width: 40.0rem) { /* Small devices (landscape phones, 576px and up) */
   header section {
     flex-direction: row;
-  }
-  header nav ul {
-    margin: 1rem;
   }
   .phx-logo {
     flex-basis: 527px;
