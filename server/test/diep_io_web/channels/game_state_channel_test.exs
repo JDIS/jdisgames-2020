@@ -3,7 +3,7 @@ defmodule Diep.IoWeb.GameStateChannelTest do
 
   setup do
     {:ok, _, socket} =
-      socket(Diep.IoWeb.SpectateSocket, "user_id", %{some: :assign})
+      socket(Diep.IoWeb.UserSocket, "user_id", %{some: :assign})
       |> subscribe_and_join(Diep.IoWeb.GameStateChannel, "game_state")
 
     {:ok, socket: socket}

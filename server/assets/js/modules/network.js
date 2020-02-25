@@ -3,7 +3,7 @@ import { Socket } from "phoenix"
 import app from "../spectate"
 
 export function networkInit() {
-    let socket = new Socket("/socket/spectate")
+    let socket = new Socket("/socket", { params: { token: window.userToken } })
 
     socket.connect()
 

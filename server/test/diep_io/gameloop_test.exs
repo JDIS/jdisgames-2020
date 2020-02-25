@@ -28,7 +28,8 @@ defmodule GameloopTest do
   test "A gameloop loop with a valid destination moves the desired tank" do
     ActionStorage.store_action(Action.new(@tank_id, %{destination: {500, 0}}))
 
-    state = GameState.new([%{id: @tank_id, name: "some_name"}], @game_time) |> GameState.start_game()
+    state =
+      GameState.new([%{id: @tank_id, name: "some_name"}], @game_time) |> GameState.start_game()
 
     {:noreply, result} = Gameloop.handle_info(:loop, state)
     {x, y} = result.tanks[@tank_id].position

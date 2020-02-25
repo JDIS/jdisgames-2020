@@ -1,15 +1,12 @@
 import { Socket } from "phoenix"
 
-window.userToken = "c3879428-8e7d-4713-a598-b88c7d2f05e9"
-let socket = new Socket("/socket/bot", { params: { secret: window.userToken } })
-let spectateSocket = new Socket("/socket/spectate")
+let socket = new Socket("/socket", { params: { token: window.userToken } })
 
 socket.connect()
-spectateSocket.connect()
 
 // Now that you are connected, you can join channels with a topic:
 let actionChannel = socket.channel("action", {})
-let gameStateChannel = spectateSocket.channel("game_state", {})
+let gameStateChannel = socket.channel("game_state", {})
 
 let xInput = document.querySelector("#x")
 let yInput = document.querySelector("#y")
