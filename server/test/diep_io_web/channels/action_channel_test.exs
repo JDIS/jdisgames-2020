@@ -19,7 +19,7 @@ defmodule Diep.IoWeb.ActionChannelTest do
 
   setup do
     {:ok, _, socket} =
-      socket(Diep.IoWeb.UserSocket, "user_id", %{some: :assign})
+      socket(Diep.IoWeb.BotSocket, "user_id", %{some: :assign})
       |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action")
 
     {:ok, socket: socket}
