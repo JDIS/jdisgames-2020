@@ -19,15 +19,13 @@ defmodule Diep.IoWeb.ActionChannelTest do
 
   setup do
     {:ok, _, socket} =
-      socket(Diep.IoWeb.UserSocket, "user_id", %{some: :assign})
+      socket(Diep.IoWeb.BotSocket, "user_id", %{user_id: @tank_id})
       |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action")
 
     {:ok, socket: socket}
   end
 
-  test "pushing a new action in the action channel stores stores it in ActionStorage", %{
-    socket: socket
-  } do
+  test "pushing a new action in the action channel stores stores it in ActionStorage", %{socket: socket} do
     push(socket, "new", @input)
     # Needed because async
     Process.sleep(10)

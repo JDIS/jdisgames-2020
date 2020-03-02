@@ -31,8 +31,7 @@ defmodule Diep.Io.ScoreRepositoryTest do
     end
 
     test "add_score/1 with valid data creates a score", %{user: user} do
-      assert {:ok, %Score{} = score} =
-               ScoreRepository.add_score(%{@valid_attrs | user_id: user.id})
+      assert {:ok, %Score{} = score} = ScoreRepository.add_score(%{@valid_attrs | user_id: user.id})
 
       assert score.game_id == 42
       assert score.score == 120

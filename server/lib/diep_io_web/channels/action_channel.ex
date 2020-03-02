@@ -10,12 +10,12 @@ defmodule Diep.IoWeb.ActionChannel do
   end
 
   def handle_in("new", %{"tank_id" => _} = action, socket) do
-    ActionStorage.store_action(parse_action(action))
+    ActionStorage.store_action(parse_action(action, socket.assigns[:user_id]))
 
     {:noreply, socket}
   end
 
-  defp parse_action(%{"tank_id" => tank_id, "destination" => destination}) do
-    Action.new(tank_id, destination: List.to_tuple(destination))
+  defp parse_action(%{"destination" => destination}, user_id) do
+    Action.new(user_id, destination: List.to_tuple(destination))
   end
 end

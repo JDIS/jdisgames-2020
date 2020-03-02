@@ -1,7 +1,11 @@
 defmodule Diep.IoWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :diep_io
 
-  socket "/socket", Diep.IoWeb.UserSocket,
+  socket "/socket/spectate", Diep.IoWeb.SpectateSocket,
+    websocket: [compress: true],
+    longpoll: false
+
+  socket "/socket/bot", Diep.IoWeb.BotSocket,
     websocket: [compress: true],
     longpoll: false
 
