@@ -3,6 +3,7 @@ defmodule Diep.Io.Core.Position do
 
   alias :math, as: Math
   alias Diep.Io.Core.GameMap
+  alias Diep.Io.Helpers.Angle
   alias Jason.Encoder
 
   @type t :: {integer, integer}
@@ -36,7 +37,7 @@ defmodule Diep.Io.Core.Position do
   defp travel(_from, to, speed, distance) when distance <= speed, do: to
 
   defp travel({x, y} = from, to, speed, _distance) do
-    angle = angle(from, to)
+    angle = Angle.radian(from, to)
 
     {
       (speed * Math.cos(angle) + x) |> Kernel.trunc(),
@@ -46,9 +47,5 @@ defmodule Diep.Io.Core.Position do
 
   defp distance({x1, y1}, {x2, y2}) do
     Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
-  end
-
-  defp angle({x1, y1}, {x2, y2}) do
-    Math.atan2(y2 - y1, x2 - x1)
   end
 end
