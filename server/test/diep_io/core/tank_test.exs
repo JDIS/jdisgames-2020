@@ -1,22 +1,28 @@
 defmodule TankTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.Tank
+  alias Diep.Io.Core.{Position, Tank}
+  alias Diep.Io.Helpers.Angle
   alias Diep.Io.Upgrades.MaxHP
 
   @tank_name "Tank"
+  @tank_id 1
 
   setup do
-    [tank: Tank.new(@tank_name)]
+    [tank: Tank.new(@tank_id, @tank_name)]
   end
 
   test "new/1 creates a tank", %{tank: tank} do
     assert %Tank{
+             id: @tank_id,
              name: @tank_name,
              current_hp: current_hp,
              max_hp: max_hp,
              speed: speed,
              upgrades: upgrades,
+             fire_rate: fire_rate,
+             projectile_damage: projectile_damage,
+             cooldown: 0,
              experience: 0,
              position: {_, _}
            } = tank
@@ -25,6 +31,8 @@ defmodule TankTest do
     assert max_hp == Tank.default_hp()
     assert speed == Tank.default_speed()
     assert upgrades == Tank.default_upgrades()
+    assert fire_rate == Tank.default_fire_rate()
+    assert projectile_damage == Tank.default_projectile_damage()
   end
 
   test "hit/2 damages the given tank", %{tank: tank} do
@@ -84,5 +92,37 @@ defmodule TankTest do
   test "move/2 changes the tank's position", %{tank: tank} do
     new_position = {42, 69}
     assert Tank.move(tank, new_position).position == new_position
+  end
+
+  test "set_cooldown/1 sets the tank's cooldown", %{tank: tank} do
+    on_cooldown_tank = Tank.set_cooldown(tank)
+
+    assert on_cooldown_tank.cooldown == tank.fire_rate
+  end
+
+  test "set_cannon_angle/2 sets the tank's cannon_angle", %{tank: tank} do
+    position = Position.random()
+
+    new_angle = Tank.set_cannon_angle(tank, position).cannon_angle
+    assert new_angle = Angle.degree(tank.position, position) |> Kernel.trunc()
+  end
+
+  test "shoot/2 updates the tank and creates a projectile", %{tank: tank} do
+    position = Position.random()
+
+    {updated_tank, projectile} = Tank.shoot(tank, position)
+
+    assert updated_tank.cooldown != tank.cooldown
+
+    assert projectile.to == position
+    assert projectile.damage == tank.projectile_damage
+    assert projectile.position == tank.position
+  end
+
+  test "shoot/2 does not shoot on cooldown", %{tank: tank} do
+    assert {tank, nil} =
+             tank
+             |> Tank.set_cooldown()
+             |> Tank.shoot(Position.random())
   end
 end

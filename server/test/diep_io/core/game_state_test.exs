@@ -1,7 +1,7 @@
 defmodule GameStateTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Action, GameMap, GameState, Tank}
+  alias Diep.Io.Core.{Action, GameMap, GameState, Position, Projectile, Tank}
   alias Diep.Io.Users.User
 
   @max_ticks 324
@@ -53,7 +53,7 @@ defmodule GameStateTest do
     tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
 
     updated_tank =
-      [Action.new(@user_id, destination: {1, 1})]
+      [Action.new(@user_id, destination: Position.random())]
       |> GameState.handle_players(game_state)
       |> Map.get(:tanks)
       |> Map.get(@user_id)
@@ -70,5 +70,67 @@ defmodule GameStateTest do
     game_state = %{game_state | debris: Enum.take_every(game_state.debris, 2)}
     updated_state = GameState.handle_debris(game_state)
     assert Enum.count(updated_state.debris) > Enum.count(game_state.debris)
+  end
+
+  test "handle_shoot/2 does nothing if target is nil", %{game_state: game_state} do
+    updated_state =
+      [Action.new(@user_id, target: nil)]
+      |> GameState.handle_players(game_state)
+
+    assert updated_state == game_state
+  end
+
+  test "handle_shoot/2 adds projectiles and sets cooldowns", %{game_state: game_state} do
+    updated_state =
+      [Action.new(@user_id, target: Position.random())]
+      |> GameState.handle_players(game_state)
+
+    tank = get_tank(game_state, @user_id)
+    updated_tank = get_tank(updated_state, @user_id)
+
+    assert Enum.count(updated_state.projectiles) == 1
+    assert tank.cooldown != updated_tank.cooldown
+  end
+
+  test "handle_shoot/2 does nothing if tank is on cooldown", %{game_state: game_state} do
+    game_state =
+      Map.update!(game_state, :tanks, fn tanks ->
+        Map.update!(tanks, @user_id, &Tank.set_cooldown/1)
+      end)
+
+    updated_state =
+      [Action.new(@user_id, target: Position.random())]
+      |> GameState.handle_players(game_state)
+
+    assert Enum.empty?(updated_state.projectiles)
+  end
+
+  test "handle_projectiles/1 decays projectiles", %{game_state: game_state} do
+    game_state =
+      [Action.new(@user_id, target: Position.random())]
+      |> GameState.handle_players(game_state)
+
+    [projectile] = game_state.projectiles
+
+    updated_game_state = GameState.handle_projectiles(game_state)
+
+    [updated_projectile] = updated_game_state.projectiles
+
+    assert projectile.hp > updated_projectile.hp
+  end
+
+  test "handle_projectiles/1 removes projectiles without hp", %{game_state: game_state} do
+    projectile = Projectile.new(@user_id, Position.random(), Position.random(), 0, hp: 0)
+
+    updated_game_state =
+      game_state
+      |> Map.put(:projectiles, [projectile])
+      |> GameState.handle_projectiles()
+
+    assert Enum.empty?(updated_game_state.projectiles)
+  end
+
+  defp get_tank(game_state, id) do
+    game_state |> Map.get(:tanks) |> Map.get(id)
   end
 end

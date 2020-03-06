@@ -1,42 +1,67 @@
 defmodule Diep.Io.Core.Tank do
   @moduledoc false
 
-  alias Diep.Io.Core.Position
+  alias Diep.Io.Core.{Position, Projectile}
+  alias Diep.Io.Helpers.Angle
   alias Diep.Io.Upgrades
 
   @default_hp 100
   @default_speed 10
+  @default_fire_rate 5
+  @default_projectile_damage 20
   @default_upgrades %{Diep.Io.Upgrades.MaxHP => 0}
 
-  @derive Jason.Encoder
-  @enforce_keys [:name, :current_hp, :max_hp, :speed, :position]
+  @derive {Jason.Encoder, except: [:id]}
+  @enforce_keys [
+    :id,
+    :name,
+    :current_hp,
+    :max_hp,
+    :speed,
+    :position,
+    :fire_rate,
+    :projectile_damage
+  ]
   defstruct [
+    :id,
     :name,
     :max_hp,
     :current_hp,
     :speed,
     :position,
+    :fire_rate,
+    :projectile_damage,
+    cooldown: 0,
     experience: 0,
+    cannon_angle: 0,
     upgrades: @default_upgrades
   ]
 
   @type t :: %__MODULE__{
+          id: integer,
           name: String.t(),
           max_hp: integer,
           current_hp: integer,
           speed: integer,
           experience: integer,
-          position: Position.t()
+          position: Position.t(),
+          fire_rate: integer,
+          cooldown: integer,
+          projectile_damage: integer,
+          cannon_angle: integer
         }
 
-  @spec new(String.t()) :: t()
-  def new(name) do
+  @spec new(integer, String.t()) :: t()
+  def new(id, name) do
     %__MODULE__{
+      id: id,
       name: name,
       current_hp: @default_hp,
       max_hp: @default_hp,
       speed: @default_speed,
-      position: Position.new()
+      position: Position.new(),
+      fire_rate: @default_fire_rate,
+      projectile_damage: @default_projectile_damage
     }
   end
 
@@ -81,11 +106,42 @@ defmodule Diep.Io.Core.Tank do
     set_value(tank, :position, position)
   end
 
+  @spec shoot(t(), Position.t()) :: {t(), Projectile.t() | nil}
+  def shoot(%__MODULE__{cooldown: 0} = tank, target) do
+    projectile = Projectile.new(tank.id, tank.position, target, tank.projectile_damage)
+
+    updated_tank =
+      tank
+      |> set_cooldown
+      |> set_cannon_angle(target)
+
+    {updated_tank, projectile}
+  end
+
+  def shoot(tank, _target), do: {tank, nil}
+
+  @spec set_cooldown(t()) :: t()
+  def set_cooldown(tank) do
+    set_value(tank, :cooldown, tank.fire_rate)
+  end
+
+  @spec set_cannon_angle(t(), Position.t()) :: t()
+  def set_cannon_angle(tank, target) do
+    angle = Angle.degree(tank.position, target) |> Kernel.trunc()
+    set_value(tank, :cannon_angle, angle)
+  end
+
   @spec default_hp() :: integer
   def default_hp, do: @default_hp
 
   @spec default_speed() :: integer
   def default_speed, do: @default_speed
+
+  @spec default_fire_rate() :: integer
+  def default_fire_rate, do: @default_fire_rate
+
+  @spec default_projectile_damage() :: integer
+  def default_projectile_damage, do: @default_projectile_damage
 
   @spec default_upgrades() :: map
   def default_upgrades, do: @default_upgrades

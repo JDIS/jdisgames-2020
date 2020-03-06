@@ -4,13 +4,14 @@ defmodule Diep.Io.Core.GameState do
   (handle player actions, debris generation, etc).
   """
 
-  alias Diep.Io.Core.{Action, Debris, GameMap, Position, Tank}
+  alias Diep.Io.Core.{Action, Debris, GameMap, Position, Projectile, Tank}
   alias Diep.Io.Users.User
   alias :rand, as: Rand
 
   @max_debris_count 100
   @max_debris_generation_rate 0.5
   @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
+  @projectile_decay 2
 
   @derive {Jason.Encoder, except: [:in_progress, :last_time]}
   defstruct [
@@ -21,7 +22,8 @@ defmodule Diep.Io.Core.GameState do
     :map_width,
     :map_height,
     :ticks,
-    :max_ticks
+    :max_ticks,
+    projectiles: []
   ]
 
   @type t :: %__MODULE__{
@@ -32,7 +34,8 @@ defmodule Diep.Io.Core.GameState do
           map_width: integer(),
           map_height: integer(),
           ticks: integer(),
-          max_ticks: integer()
+          max_ticks: integer(),
+          projectiles: [Projectile.t()]
         }
 
   @spec new([User.t()], integer()) :: t()
@@ -81,8 +84,19 @@ defmodule Diep.Io.Core.GameState do
     |> generate_debris
   end
 
+  @spec handle_projectiles(t()) :: t()
+  def handle_projectiles(game_state) do
+    projectiles =
+      game_state.projectiles
+      |> Enum.map(&Projectile.remove_hp(&1, @projectile_decay))
+      |> Enum.reject(&Projectile.is_dead?/1)
+
+    %{game_state | projectiles: projectiles}
+  end
+
   defp handle_action(action, game_state) do
     game_state
+    |> handle_shoot(action)
     |> handle_movement(action)
   end
 
@@ -96,6 +110,30 @@ defmodule Diep.Io.Core.GameState do
         Tank.move(tank, new_position)
       end)
     end)
+  end
+
+  defp handle_shoot(game_state, %Action{target: target}) when target == nil, do: game_state
+
+  defp handle_shoot(game_state, action) do
+    {tank, projectile} =
+      game_state
+      |> Map.get(:tanks)
+      |> Map.get(action.tank_id)
+      |> Tank.shoot(action.target)
+
+    case projectile == nil do
+      true ->
+        game_state
+
+      false ->
+        game_state
+        |> Map.update!(:projectiles, fn projectiles ->
+          [projectile | projectiles]
+        end)
+        |> Map.update!(:tanks, fn tanks ->
+          Map.put(tanks, action.tank_id, tank)
+        end)
+    end
   end
 
   defp generate_debris(game_state) do
@@ -116,7 +154,7 @@ defmodule Diep.Io.Core.GameState do
   end
 
   defp initialize_tanks(users),
-    do: users |> Map.new(fn user -> {user.id, Tank.new(user.name)} end)
+    do: users |> Map.new(fn user -> {user.id, Tank.new(user.id, user.name)} end)
 
   defp initialize_debris, do: create_debris(@max_debris_count)
 end

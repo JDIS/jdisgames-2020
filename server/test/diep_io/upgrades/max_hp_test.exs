@@ -6,7 +6,7 @@ defmodule MaxHPTest do
   alias Upgrades.MaxHP
 
   setup do
-    [tank: Tank.new("Tank")]
+    [tank: Tank.new(1, "Tank")]
   end
 
   test "apply/1 increases :max_hp", %{tank: tank} do
