@@ -1,7 +1,7 @@
 defmodule Diep.Io.Core.Tank do
   @moduledoc false
 
-  alias Diep.Io.Core.{Position, Projectile}
+  alias Diep.Io.Core.{Entity, Position, Projectile}
   alias Diep.Io.Helpers.Angle
   alias Diep.Io.Upgrades
 
@@ -10,6 +10,7 @@ defmodule Diep.Io.Core.Tank do
   @default_fire_rate 5
   @default_projectile_damage 20
   @default_upgrades %{Diep.Io.Upgrades.MaxHP => 0}
+  @default_radius 25
 
   @derive {Jason.Encoder, except: [:id]}
   @enforce_keys [
@@ -50,6 +51,16 @@ defmodule Diep.Io.Core.Tank do
           projectile_damage: integer,
           cannon_angle: integer
         }
+
+  defimpl Entity do
+    alias Diep.Io.Core.Tank
+
+    @spec get_position(Tank.t()) :: Position.t()
+    def get_position(tank), do: tank.position
+
+    @spec get_radius(Tank.t()) :: integer
+    def get_radius(_tank), do: Tank.default_radius()
+  end
 
   @spec new(integer, String.t()) :: t()
   def new(id, name) do
@@ -145,6 +156,9 @@ defmodule Diep.Io.Core.Tank do
 
   @spec default_upgrades() :: map
   def default_upgrades, do: @default_upgrades
+
+  @spec default_radius() :: integer()
+  def default_radius, do: @default_radius
 
   defp add_to_value(tank, field, amount),
     do: Map.update!(tank, field, &(&1 + amount))

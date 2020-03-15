@@ -1,6 +1,6 @@
 # https://hexdocs.pm/phoenix/releases.html#ecto-migrations-and-custom-commands
 
-FROM elixir:1.10-alpine as build
+FROM elixir:1.9.4-alpine as build
 
 # install build dependencies
 RUN apk add --update git build-base nodejs yarn python npm

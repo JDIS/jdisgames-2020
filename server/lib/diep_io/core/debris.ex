@@ -1,11 +1,12 @@
 defmodule Diep.Io.Core.Debris do
   @moduledoc false
 
-  alias Diep.Io.Core.Position
+  alias Diep.Io.Core.{Entity, Position}
 
   @default_size :small
   @default_hp_map %{small: 20, medium: 50, large: 100}
   @points_map %{small: 10, medium: 20, large: 20}
+  @radius_map %{small: 3, medium: 5, large: 7}
   @default_speed 1
 
   @derive Jason.Encoder
@@ -20,6 +21,16 @@ defmodule Diep.Io.Core.Debris do
           speed: integer,
           position: Position.t()
         }
+
+  defimpl Entity do
+    alias Diep.Io.Core.Debris
+
+    @spec get_position(Debris.t()) :: Position.t()
+    def get_position(debris), do: debris.position
+
+    @spec get_radius(Debris.t()) :: integer
+    def get_radius(debris), do: Debris.get_radius(debris.size)
+  end
 
   @spec new(size_t) :: t()
   def new(size) do
@@ -55,6 +66,9 @@ defmodule Diep.Io.Core.Debris do
 
   @spec default_speed() :: integer
   def default_speed, do: @default_speed
+
+  @spec get_radius(size_t) :: integer
+  def get_radius(size), do: Map.fetch!(@radius_map, size)
 
   defp(remove_from_value(tank, field, amount),
     do: Map.update!(tank, field, &(&1 - amount))
