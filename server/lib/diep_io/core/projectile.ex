@@ -1,7 +1,7 @@
 defmodule Diep.Io.Core.Projectile do
   @moduledoc false
 
-  alias Diep.Io.Core.Position
+  alias Diep.Io.Core.{Entity, Position}
 
   @default_radius 15
   @default_speed 20
@@ -20,6 +20,16 @@ defmodule Diep.Io.Core.Projectile do
           to: Position.t(),
           hp: integer
         }
+
+  defimpl Entity do
+    alias Diep.Io.Core.Projectile
+
+    @spec get_position(Projectile.t()) :: Position.t()
+    def get_position(projectile), do: projectile.position
+
+    @spec get_radius(Projectile.t()) :: integer
+    def get_radius(projectile), do: projectile.radius
+  end
 
   @spec new(integer, Position.t(), Position.t(), integer, Enum.t()) :: t()
   def new(owner_id, from, to, damage, opts \\ []) do

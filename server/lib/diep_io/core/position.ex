@@ -26,6 +26,11 @@ defmodule Diep.Io.Core.Position do
     }
   end
 
+  @spec distance(t(), t()) :: float
+  def distance({x1, y1}, {x2, y2}) do
+    Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
+  end
+
   defimpl Encoder, for: Tuple do
     def encode(data, options) when is_tuple(data) do
       data
@@ -43,9 +48,5 @@ defmodule Diep.Io.Core.Position do
       (speed * Math.cos(angle) + x) |> Kernel.trunc(),
       (speed * Math.sin(angle) + y) |> Kernel.trunc()
     }
-  end
-
-  defp distance({x1, y1}, {x2, y2}) do
-    Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
   end
 end

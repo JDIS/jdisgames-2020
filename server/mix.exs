@@ -5,7 +5,7 @@ defmodule Diep.MixProject do
     [
       app: :diep_io,
       version: "0.1.0",
-      elixir: "~> 1.5",
+      elixir: "~> 1.9.4",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [warnings_as_errors: true],
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -52,7 +52,7 @@ defmodule Diep.MixProject do
 
       # dev, test
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 0.5.1", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.0.0-rc3", only: [:dev, :test], runtime: false}
       # {:sobelow, "~> 0.9.3", only: [:dev, :test], runtime: false}
     ]
   end
