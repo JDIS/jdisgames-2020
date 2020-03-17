@@ -102,7 +102,6 @@ defmodule TankTest do
 
   test "set_cannon_angle/2 sets the tank's cannon_angle", %{tank: tank} do
     position = Position.random()
-
     new_angle = Tank.set_cannon_angle(tank, position).cannon_angle
     assert new_angle == Angle.degree(tank.position, position) |> Kernel.trunc()
   end
@@ -113,8 +112,6 @@ defmodule TankTest do
     {updated_tank, projectile} = Tank.shoot(tank, position)
 
     assert updated_tank.cooldown != tank.cooldown
-
-    assert projectile.to == position
     assert projectile.damage == tank.projectile_damage
     assert projectile.position == tank.position
   end

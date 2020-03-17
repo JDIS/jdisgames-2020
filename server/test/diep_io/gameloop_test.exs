@@ -31,9 +31,7 @@ defmodule GameloopTest do
     state = GameState.new([%{id: @tank_id, name: "some_name"}], @game_time) |> GameState.start_game()
 
     {:noreply, result} = Gameloop.handle_info(:loop, state)
-    {x, y} = result.tanks[@tank_id].position
-    assert x > 0
-    assert y == 0
+    assert result.tanks[@tank_id].position != state.tanks[@tank_id].position
   end
 
   test "A single iterations of handle_info does not stop the game with a game time of 2" do

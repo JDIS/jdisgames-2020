@@ -130,6 +130,30 @@ defmodule GameStateTest do
     assert Enum.empty?(updated_game_state.projectiles)
   end
 
+  test "handle_projectiles/1 moves projectiles", %{game_state: game_state} do
+    game_state =
+      [Action.new(@user_id, target: Position.random())]
+      |> GameState.handle_players(game_state)
+
+    [projectile] = game_state.projectiles
+
+    updated_game_state = GameState.handle_projectiles(game_state)
+
+    [updated_projectile] = updated_game_state.projectiles
+
+    assert projectile.position != updated_projectile.position
+  end
+
+  test "decrease_cooldowns/1 decreases tanks cooldown", %{game_state: game_state} do
+    tank =
+      [Action.new(@user_id, target: Position.random())]
+      |> GameState.handle_players(game_state)
+      |> GameState.decrease_cooldowns()
+      |> get_tank(@user_id)
+
+    assert tank.cooldown == tank.fire_rate - 1
+  end
+
   defp get_tank(game_state, id) do
     game_state |> Map.get(:tanks) |> Map.get(id)
   end

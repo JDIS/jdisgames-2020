@@ -5,6 +5,7 @@ import sys
 
 from action import Action
 from channel import Channel
+from typing import Tuple
 from websocket import Message, Socket
 
 
@@ -13,8 +14,11 @@ class MyBot:
     Random bot
     """
 
+    def random_position(self, state) -> Tuple[float]:
+        return (random.randrange(0, state['map_width']), random.randrange(0, state['map_height']))
+
     def tick(self, state) -> Action:
-        return Action(destination=(random.randrange(0, state['map_width']), random.randrange(0, state['map_height'])))
+        return Action(destination=self.random_position(state), target=self.random_position(state))
 
 
 bot = MyBot()

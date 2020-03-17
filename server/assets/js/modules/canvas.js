@@ -100,7 +100,6 @@ export function createTank(fillColor) {
 }
 
 export function createProjectile(player) {
-
     const projectile = new fabric.Circle({
         radius: 15,
         fill: player.fillColor,
@@ -112,7 +111,7 @@ export function createProjectile(player) {
         originY: 'center'
     })
 
-    projectile.belongsTo = player
+    projectile.owner_id = player.id
 
     return projectile
 

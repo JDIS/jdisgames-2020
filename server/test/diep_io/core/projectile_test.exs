@@ -17,7 +17,7 @@ defmodule ProjectileTest do
              speed: speed,
              damage: @damage,
              position: {_, _},
-             to: {_, _},
+             angle: _,
              hp: hp
            } = projectile
 

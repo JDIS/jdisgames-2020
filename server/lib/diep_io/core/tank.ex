@@ -12,7 +12,7 @@ defmodule Diep.Io.Core.Tank do
   @default_upgrades %{Diep.Io.Upgrades.MaxHP => 0}
   @default_radius 25
 
-  @derive {Jason.Encoder, except: [:id]}
+  @derive Jason.Encoder
   @enforce_keys [
     :id,
     :name,
@@ -70,7 +70,7 @@ defmodule Diep.Io.Core.Tank do
       current_hp: @default_hp,
       max_hp: @default_hp,
       speed: @default_speed,
-      position: Position.new(),
+      position: Position.random(),
       fire_rate: @default_fire_rate,
       projectile_damage: @default_projectile_damage
     }
@@ -118,8 +118,9 @@ defmodule Diep.Io.Core.Tank do
   end
 
   @spec shoot(t(), Position.t()) :: {t(), Projectile.t() | nil}
-  def shoot(%__MODULE__{cooldown: 0} = tank, target) do
-    projectile = Projectile.new(tank.id, tank.position, target, tank.projectile_damage)
+  def shoot(%__MODULE__{cooldown: cooldown} = tank, target) when cooldown <= 0 do
+    angle = Angle.radian(tank.position, target)
+    projectile = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage)
 
     updated_tank =
       tank
@@ -134,6 +135,11 @@ defmodule Diep.Io.Core.Tank do
   @spec set_cooldown(t()) :: t()
   def set_cooldown(tank) do
     set_value(tank, :cooldown, tank.fire_rate)
+  end
+
+  @spec decrease_cooldown(t()) :: t()
+  def decrease_cooldown(tank) do
+    remove_from_value(tank, :cooldown, 1)
   end
 
   @spec set_cannon_angle(t(), Position.t()) :: t()
