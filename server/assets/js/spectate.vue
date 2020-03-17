@@ -199,7 +199,7 @@
                 updatedProjectiles.forEach(projectile => {
                     newProjectileIds.add(projectile.id)
                     if (!this.elements.projectiles[projectile.id]) {
-                        const newProjectile = createProjectile(Object.values(this.elements.tanks).find(player => player.id === projectile.belongsTo))
+                        const newProjectile = createProjectile(Object.values(this.elements.tanks).find(player => player.id === projectile.owner_id))
                         this.elements.projectiles[projectile.id] = newProjectile
                         this.mainCanvas.add(newProjectile)
                         newProjectile.sendBackwards(this.elements.tanks[0])
@@ -318,7 +318,7 @@
                     })
 
                 })
-                // this.drawAndRemoveProjectiles(updatedGameState.projectiles)
+                this.drawAndRemoveProjectiles(updatedGameState.projectiles)
                 this.drawAndRemoveDebris(updatedGameState.debris)
                 this.lastUpdateTimestamp = Date.now()
             },

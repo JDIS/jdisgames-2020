@@ -73,6 +73,15 @@ defmodule Diep.Io.Core.GameState do
     end
   end
 
+  @spec decrease_cooldowns(t()) :: t()
+  def decrease_cooldowns(game_state) do
+    Map.update!(game_state, :tanks, fn tanks ->
+      Map.new(tanks, fn {id, tank} ->
+        {id, Tank.decrease_cooldown(tank)}
+      end)
+    end)
+  end
+
   @spec handle_players([Action.t()], t()) :: t()
   def handle_players(actions, game_state) do
     Enum.reduce(actions, game_state, &handle_action/2)
@@ -90,6 +99,7 @@ defmodule Diep.Io.Core.GameState do
       game_state.projectiles
       |> Enum.map(&Projectile.remove_hp(&1, @projectile_decay))
       |> Enum.reject(&Projectile.is_dead?/1)
+      |> Enum.map(&Projectile.move/1)
 
     %{game_state | projectiles: projectiles}
   end
@@ -106,7 +116,7 @@ defmodule Diep.Io.Core.GameState do
   defp handle_movement(game_state, action) do
     Map.update!(game_state, :tanks, fn tanks ->
       Map.update!(tanks, action.tank_id, fn tank ->
-        new_position = Position.new(tank.position, action.destination, tank.speed)
+        new_position = Position.next(tank.position, action.destination, tank.speed)
         Tank.move(tank, new_position)
       end)
     end)

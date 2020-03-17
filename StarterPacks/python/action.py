@@ -8,3 +8,4 @@ class Action:
     Actions that a bot makes every tick.
     """
     destination: Tuple[float]
+    target: Tuple[float]
