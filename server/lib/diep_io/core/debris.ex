@@ -8,6 +8,7 @@ defmodule Diep.Io.Core.Debris do
   @points_map %{small: 10, medium: 20, large: 20}
   @radius_map %{small: 3, medium: 5, large: 7}
   @default_speed 1
+  @default_body_damage 10
 
   @derive Jason.Encoder
   @enforce_keys [:id, :current_hp, :size, :position]
@@ -30,6 +31,9 @@ defmodule Diep.Io.Core.Debris do
 
     @spec get_radius(Debris.t()) :: integer
     def get_radius(debris), do: Debris.get_radius(debris.size)
+
+    @spec get_body_damage(Debris.t()) :: integer
+    def get_body_damage(_debris), do: Debris.default_body_damage()
   end
 
   @spec new(size_t) :: t()
@@ -66,6 +70,9 @@ defmodule Diep.Io.Core.Debris do
 
   @spec default_speed() :: integer
   def default_speed, do: @default_speed
+
+  @spec default_body_damage() :: integer
+  def default_body_damage, do: @default_body_damage
 
   @spec get_radius(size_t) :: integer
   def get_radius(size), do: Map.fetch!(@radius_map, size)

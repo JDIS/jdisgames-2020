@@ -26,7 +26,8 @@ defmodule Diep.Io.Collisions do
         colliders = EntityGrid.get_entities_for_tile(colliders_grid, coords) do
       for entity <- entities,
           collider <- colliders,
-          are_colliding?(entity, collider) do
+          are_colliding?(entity, collider),
+          entity != collider do
         {entity, collider}
       end
     end

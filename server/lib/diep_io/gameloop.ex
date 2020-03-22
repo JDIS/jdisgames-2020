@@ -75,6 +75,7 @@ defmodule Diep.Io.Gameloop do
       |> GameState.handle_players(state)
       |> GameState.handle_projectiles()
       |> GameState.handle_debris()
+      |> GameState.handle_collisions()
       |> GameState.decrease_cooldowns()
       |> GameState.increase_ticks()
 

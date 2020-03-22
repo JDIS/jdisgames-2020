@@ -1,7 +1,7 @@
 defmodule GameStateTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Action, GameMap, GameState, Position, Projectile, Tank}
+  alias Diep.Io.Core.{Action, Debris, Entity, GameMap, GameState, Position, Projectile, Tank}
   alias Diep.Io.Users.User
 
   @max_ticks 324
@@ -154,7 +154,157 @@ defmodule GameStateTest do
     assert tank.cooldown == tank.fire_rate - 1
   end
 
+  test "handle_collisions/1 decreases hp of colliding tanks" do
+    user1 = %User{name: @user_name, id: @user_id}
+    user2 = %User{name: @user_name <> "2", id: @user_id + 1}
+    game_state = GameState.new([user1, user2], @max_ticks)
+    game_state = move_tanks_to_origin(game_state)
+
+    expected_tanks =
+      game_state.tanks
+      |> Map.new(fn {id, tank} -> {id, Tank.hit(tank, Tank.default_body_damage())} end)
+
+    assert GameState.handle_collisions(game_state).tanks == expected_tanks
+  end
+
+  test "handle_collisions/1 does not remove tanks that are not colliding with other tanks" do
+    user1 = %User{name: @user_name, id: @user_id}
+    user2 = %User{name: @user_name <> "2", id: @user_id + 1}
+    game_state = GameState.new([user1, user2], @max_ticks)
+
+    game_state = move_tanks_out_of_collision(game_state)
+
+    assert GameState.handle_collisions(game_state).tanks == game_state.tanks
+  end
+
+  test "handle_collisions/1 decreases hp of all tanks hit by projectiles" do
+    {tank, game_state} = setup_tank_projectile_collision()
+
+    updated_game_state = GameState.handle_collisions(game_state)
+
+    assert Map.fetch!(updated_game_state.tanks, tank.id).current_hp ==
+             Tank.hit(tank, tank.projectile_damage).current_hp
+  end
+
+  test "handle_collisions/1 does not decrease hp of tank hit by it's own projectile", %{game_state: game_state} do
+    game_state =
+      [Action.new(@user_id, target: Position.random())]
+      |> GameState.handle_players(game_state)
+
+    tank = Map.fetch!(game_state.tanks, @user_id)
+
+    updated_game_state = GameState.handle_collisions(game_state)
+
+    assert Map.fetch!(updated_game_state.tanks, @user_id) == tank
+  end
+
+  test "handle_collisions/1 removes projectiles that hit a tank" do
+    {_, game_state} = setup_tank_projectile_collision()
+
+    assert GameState.handle_collisions(game_state).projectiles == []
+  end
+
+  test "handle_collisions/1 reduces hp of tanks that hit a debris" do
+    {tank, _debris, game_state} = setup_tank_debris_collision()
+
+    updated_game_state = GameState.handle_collisions(game_state)
+    assert Map.fetch!(updated_game_state.tanks, tank.id) == Tank.hit(tank, Debris.default_body_damage())
+  end
+
+  test "handle_collisions/1 reduces hp of debris hit by a tank" do
+    {_tank, debris, game_state} = setup_tank_debris_collision()
+
+    updated_game_state = GameState.handle_collisions(game_state)
+    assert updated_game_state.debris == [Debris.hit(debris, Tank.default_body_damage())]
+  end
+
+  test "handle_collisions/1 removes debris that die after collision with tank" do
+    {_tank, debris, game_state} = setup_tank_debris_collision()
+
+    dead_debris = Debris.hit(debris, Debris.default_hp(:large))
+    game_state = %{game_state | debris: [dead_debris]}
+
+    updated_game_state = GameState.handle_collisions(game_state)
+    assert updated_game_state.debris == []
+  end
+
+  test "handle_collisions/1 removes projectiles that hit a debris" do
+    {_, _, game_state} = setup_projectile_debris_collision()
+
+    assert GameState.handle_collisions(game_state).projectiles == []
+  end
+
+  test "handle_collisions/1 reduces hp of debris hit by a projectile" do
+    {projectile, debris, game_state} = setup_projectile_debris_collision()
+
+    updated_game_state = GameState.handle_collisions(game_state)
+    assert updated_game_state.debris == [Debris.hit(debris, Entity.get_body_damage(projectile))]
+  end
+
+  test "handle_collisions/1 removes debris that die after collision with projectile" do
+    {_projectile, debris, game_state} = setup_tank_debris_collision()
+
+    dead_debris = Debris.hit(debris, Debris.default_hp(:large))
+    game_state = %{game_state | debris: [dead_debris]}
+
+    updated_game_state = GameState.handle_collisions(game_state)
+    assert updated_game_state.debris == []
+  end
+
   defp get_tank(game_state, id) do
     game_state |> Map.get(:tanks) |> Map.get(id)
+  end
+
+  defp move_tanks_to_origin(game_state) do
+    update_all_tanks(game_state, fn {id, tank} -> {id, Tank.move(tank, {0, 0})} end)
+  end
+
+  defp move_tanks_out_of_collision(game_state) do
+    update_all_tanks(game_state, fn {id, tank} -> {id, Tank.move(tank, {0, id * Entity.get_radius(tank) * 2})} end)
+  end
+
+  defp update_all_tanks(game_state, func) do
+    %{game_state | tanks: Map.new(game_state.tanks, func)}
+  end
+
+  defp setup_tank_projectile_collision do
+    user1 = %User{name: @user_name, id: @user_id}
+    # User 2 only serves as the projectile's owner
+    user2 = %User{name: @user_name <> "2", id: @user_id + 1}
+    game_state = GameState.new([user1, user2], @max_ticks)
+
+    tank1 = Map.fetch!(game_state.tanks, user1.id)
+
+    projectile = Projectile.new(user2.id, Entity.get_position(tank1), 0, tank1.projectile_damage)
+
+    game_state = %{game_state | projectiles: [projectile]}
+
+    {tank1, game_state}
+  end
+
+  defp setup_tank_debris_collision do
+    user = %User{name: @user_name, id: @user_id}
+    game_state = GameState.new([user], @max_ticks)
+
+    tank = Map.fetch!(game_state.tanks, user.id)
+
+    debris = Debris.new(:large)
+    debris = %{debris | position: Entity.get_position(tank)}
+
+    game_state = %{game_state | debris: [debris]}
+
+    {tank, debris, game_state}
+  end
+
+  defp setup_projectile_debris_collision do
+    projectile = Projectile.new(1, {0, 0}, 0, 10)
+    game_state = GameState.new([], @max_ticks)
+
+    debris = Debris.new(:large)
+    debris = %{debris | position: Entity.get_position(projectile)}
+
+    game_state = %{game_state | debris: [debris], projectiles: [projectile]}
+
+    {projectile, debris, game_state}
   end
 end
