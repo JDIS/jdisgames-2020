@@ -11,6 +11,7 @@ defmodule Diep.Io.Core.Tank do
   @default_projectile_damage 20
   @default_upgrades %{Diep.Io.Upgrades.MaxHP => 0}
   @default_radius 25
+  @default_body_damage 20
 
   @derive Jason.Encoder
   @enforce_keys [
@@ -60,6 +61,9 @@ defmodule Diep.Io.Core.Tank do
 
     @spec get_radius(Tank.t()) :: integer
     def get_radius(_tank), do: Tank.default_radius()
+
+    @spec get_body_damage(Tank.t()) :: integer
+    def get_body_damage(_tank), do: Tank.default_body_damage()
   end
 
   @spec new(integer, String.t()) :: t()
@@ -165,6 +169,9 @@ defmodule Diep.Io.Core.Tank do
 
   @spec default_radius() :: integer()
   def default_radius, do: @default_radius
+
+  @spec default_body_damage() :: integer()
+  def default_body_damage, do: @default_body_damage
 
   defp add_to_value(tank, field, amount),
     do: Map.update!(tank, field, &(&1 + amount))

@@ -4,7 +4,8 @@ defmodule Diep.Io.Core.GameState do
   (handle player actions, debris generation, etc).
   """
 
-  alias Diep.Io.Core.{Action, Debris, GameMap, Position, Projectile, Tank}
+  alias Diep.Io.Collisions
+  alias Diep.Io.Core.{Action, Debris, Entity, GameMap, Position, Projectile, Tank}
   alias Diep.Io.Users.User
   alias :rand, as: Rand
 
@@ -104,6 +105,15 @@ defmodule Diep.Io.Core.GameState do
     %{game_state | projectiles: projectiles}
   end
 
+  @spec handle_collisions(t()) :: t()
+  def handle_collisions(game_state) do
+    game_state
+    |> handle_tank_tank_collisions()
+    |> handle_tank_projectile_collisions()
+    |> handle_tank_debris_collision()
+    |> handle_projectile_debris_collision()
+  end
+
   defp handle_action(action, game_state) do
     game_state
     |> handle_shoot(action)
@@ -143,6 +153,93 @@ defmodule Diep.Io.Core.GameState do
         |> Map.update!(:tanks, fn tanks ->
           Map.put(tanks, action.tank_id, tank)
         end)
+    end
+  end
+
+  defp handle_tank_tank_collisions(%{tanks: tanks_map} = game_state) do
+    tanks = Map.values(tanks_map)
+
+    collisions = Collisions.calculate_collisions(tanks, tanks)
+
+    tanks_map =
+      collisions
+      |> Enum.reduce(tanks_map, fn {tank, other_tank}, acc ->
+        Map.replace!(acc, tank.id, Tank.hit(tank, Entity.get_body_damage(other_tank)))
+      end)
+
+    %{game_state | tanks: tanks_map}
+  end
+
+  defp handle_tank_projectile_collisions(%{tanks: tanks_map, projectiles: projectiles} = game_state) do
+    collisions =
+      tanks_map
+      |> Map.values()
+      |> Collisions.calculate_collisions(projectiles)
+
+    tanks_map =
+      collisions
+      |> Enum.filter(fn {tank, projectile} -> tank.id != projectile.owner_id end)
+      |> Enum.reduce(tanks_map, fn {tank, projectile}, acc ->
+        projectile_damage = Map.fetch!(acc, projectile.owner_id).projectile_damage
+        Map.replace!(acc, tank.id, Tank.hit(tank, projectile_damage))
+      end)
+
+    projectiles =
+      projectiles
+      |> handle_projectiles_collision(Enum.map(collisions, fn {_, projectile} -> projectile end))
+
+    %{game_state | tanks: tanks_map, projectiles: projectiles}
+  end
+
+  defp handle_tank_debris_collision(%{tanks: tanks_map, debris: debris} = game_state) do
+    collisions =
+      tanks_map
+      |> Map.values()
+      |> Collisions.calculate_collisions(debris)
+
+    tanks_map =
+      collisions
+      |> Enum.reduce(tanks_map, fn {tank, _debris}, acc ->
+        Map.replace!(acc, tank.id, Tank.hit(tank, Debris.default_body_damage()))
+      end)
+
+    debris = handle_debris_collisions(debris, collisions)
+
+    %{game_state | tanks: tanks_map, debris: debris}
+  end
+
+  defp handle_projectile_debris_collision(%{debris: debris, projectiles: projectiles} = game_state) do
+    collisions =
+      projectiles
+      |> Collisions.calculate_collisions(debris)
+
+    debris = handle_debris_collisions(debris, collisions)
+
+    projectiles =
+      projectiles
+      |> handle_projectiles_collision(Enum.map(collisions, fn {projectile, _} -> projectile end))
+
+    %{game_state | debris: debris, projectiles: projectiles}
+  end
+
+  defp handle_debris_collisions(debris, collisions) do
+    debris
+    |> Enum.map(fn deb -> Enum.reduce(collisions, deb, &damage_debris_if_hit/2) end)
+    |> Enum.filter(&Debris.is_alive?/1)
+  end
+
+  defp handle_projectiles_collision(projectiles, collided_projectiles) do
+    projectiles
+    |> MapSet.new()
+    |> MapSet.difference(MapSet.new(collided_projectiles))
+    |> MapSet.to_list()
+  end
+
+  defp damage_debris_if_hit({other_entity, collided_debris}, debris) do
+    if debris == collided_debris do
+      Debris.hit(debris, Entity.get_body_damage(other_entity))
+    else
+      debris
     end
   end
 

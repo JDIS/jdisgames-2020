@@ -30,6 +30,9 @@ defmodule Diep.Io.Core.Projectile do
 
     @spec get_radius(Projectile.t()) :: integer
     def get_radius(projectile), do: projectile.radius
+
+    @spec get_body_damage(Projectile.t()) :: integer
+    def get_body_damage(projectile), do: projectile.damage
   end
 
   @spec new(integer, Position.t(), float, integer, Enum.t()) :: t()
@@ -64,6 +67,9 @@ defmodule Diep.Io.Core.Projectile do
 
   @spec is_dead?(t()) :: boolean
   def is_dead?(projectile), do: projectile.hp <= 0
+
+  @spec is_alive?(t()) :: boolean
+  def is_alive?(projectile), do: !is_dead?(projectile)
 
   @spec default_radius() :: integer
   def default_radius, do: @default_radius
