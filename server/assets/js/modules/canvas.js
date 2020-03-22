@@ -91,10 +91,10 @@ export function createTank(fillColor) {
 
     })
     const tankRect = new fabric.Rect({
-        width: 27,
-        height: 15,
+        width: 15,
+        height: 27,
         fill: 'black',
-        top: -27,
+        left: 30,
         centeredRotation: false,
         originX: 'center',
         originY: 'center',

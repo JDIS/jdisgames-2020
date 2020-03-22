@@ -202,7 +202,7 @@
                         const newProjectile = createProjectile(Object.values(this.elements.tanks).find(player => player.id === projectile.owner_id))
                         this.elements.projectiles[projectile.id] = newProjectile
                         this.mainCanvas.add(newProjectile)
-                        newProjectile.sendBackwards(this.elements.tanks[0])
+                        newProjectile.sendBackwards(true)
                     }
                 })
                 updatedProjectiles.forEach(projectile => {
@@ -315,6 +315,12 @@
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear
+                    })
+
+                    associatedPlayer.tank.animate('angle', updatedTank.cannon_angle, {
+                        onChange: null,
+                        duration: ANIMATION_DURATION / 2,
+                        easing: fabric.util.ease.easeOutQuad
                     })
 
                 })
