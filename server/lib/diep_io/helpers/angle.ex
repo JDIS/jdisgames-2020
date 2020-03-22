@@ -10,6 +10,6 @@ defmodule Diep.Io.Helpers.Angle do
 
   @spec degree({number, number}, {number, number}) :: float
   def degree(p1, p2) do
-    radian(p1, p2) * 180 / Math.pi()
+    radian(p1, p2) / Math.pi() * 180
   end
 end

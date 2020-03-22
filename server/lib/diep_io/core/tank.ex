@@ -49,7 +49,7 @@ defmodule Diep.Io.Core.Tank do
           fire_rate: integer,
           cooldown: integer,
           projectile_damage: integer,
-          cannon_angle: integer
+          cannon_angle: number()
         }
 
   defimpl Entity do
@@ -144,7 +144,7 @@ defmodule Diep.Io.Core.Tank do
 
   @spec set_cannon_angle(t(), Position.t()) :: t()
   def set_cannon_angle(tank, target) do
-    angle = Angle.degree(tank.position, target) |> Kernel.trunc()
+    angle = Angle.degree(tank.position, target)
     set_value(tank, :cannon_angle, angle)
   end
 
