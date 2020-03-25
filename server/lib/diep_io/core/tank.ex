@@ -1,17 +1,24 @@
 defmodule Diep.Io.Core.Tank do
   @moduledoc false
 
-  alias Diep.Io.Core.{Entity, Position, Projectile}
+  alias Diep.Io.Core.{Entity, Position, Projectile, Upgrade}
   alias Diep.Io.Helpers.Angle
-  alias Diep.Io.Upgrades
+  alias :math, as: Math
 
   @default_hp 100
   @default_speed 10
   @default_fire_rate 5
   @default_projectile_damage 20
-  @default_upgrades %{Diep.Io.Upgrades.MaxHP => 0}
-  @default_radius 25
   @default_body_damage 20
+  @default_radius 25
+
+  @upgrade_rates [
+    max_hp: &Upgrade.max_hp/1,
+    speed: &Upgrade.speed/1,
+    fire_rate: &Upgrade.fire_rate/1,
+    projectile_damage: &Upgrade.projectile_damage/1,
+    body_damage: &Upgrade.body_damage/1
+  ]
 
   @derive Jason.Encoder
   @enforce_keys [
@@ -33,10 +40,12 @@ defmodule Diep.Io.Core.Tank do
     :position,
     :fire_rate,
     :projectile_damage,
+    :body_damage,
     cooldown: 0,
     experience: 0,
     cannon_angle: 0,
-    upgrades: @default_upgrades
+    upgrade_tokens: 0,
+    upgrade_levels: [max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0]
   ]
 
   @type t :: %__MODULE__{
@@ -47,9 +56,10 @@ defmodule Diep.Io.Core.Tank do
           speed: integer,
           experience: integer,
           position: Position.t(),
-          fire_rate: integer,
-          cooldown: integer,
+          fire_rate: number,
+          cooldown: number,
           projectile_damage: integer,
+          body_damage: integer,
           cannon_angle: number()
         }
 
@@ -76,7 +86,8 @@ defmodule Diep.Io.Core.Tank do
       speed: @default_speed,
       position: Position.random(),
       fire_rate: @default_fire_rate,
-      projectile_damage: @default_projectile_damage
+      projectile_damage: @default_projectile_damage,
+      body_damage: @default_body_damage
     }
   end
 
@@ -98,23 +109,16 @@ defmodule Diep.Io.Core.Tank do
   def hit(tank, amount), do: remove_from_value(tank, :current_hp, amount)
 
   @spec add_experience(t(), integer) :: t()
-  def add_experience(tank, amount), do: add_to_value(tank, :experience, amount)
+  def add_experience(tank, amount) do
+    token_to_add = get_token_amount_from_experience(tank.experience + amount) - upgrade_tokenss_spent(tank)
 
-  @spec increment_max_hp(t(), integer) :: t()
-  def increment_max_hp(tank, amount) do
-    tank |> add_to_value(:max_hp, amount) |> heal(amount)
+    tank
+    |> add_to_value(:experience, amount)
+    |> add_upgrade_tokens(token_to_add)
   end
 
-  @spec buy_upgrade(t(), term) :: t()
-  def buy_upgrade(tank, upgrade) do
-    level = Upgrades.level(tank, upgrade)
-    price = upgrade.price(level)
-
-    case tank.experience >= price do
-      true -> tank |> remove_from_value(:experience, price) |> upgrade.apply()
-      false -> tank
-    end
-  end
+  @spec add_upgrade_tokens(t(), integer) :: t()
+  def add_upgrade_tokens(tank, amount), do: add_to_value(tank, :upgrade_tokens, amount)
 
   @spec move(t(), Position.t()) :: t()
   def move(tank, position) do
@@ -138,10 +142,12 @@ defmodule Diep.Io.Core.Tank do
 
   @spec set_cooldown(t()) :: t()
   def set_cooldown(tank) do
-    set_value(tank, :cooldown, tank.fire_rate)
+    add_to_value(tank, :cooldown, tank.fire_rate)
   end
 
   @spec decrease_cooldown(t()) :: t()
+  def decrease_cooldown(%__MODULE__{cooldown: cooldown} = tank) when cooldown <= 0, do: tank
+
   def decrease_cooldown(tank) do
     remove_from_value(tank, :cooldown, 1)
   end
@@ -152,26 +158,47 @@ defmodule Diep.Io.Core.Tank do
     set_value(tank, :cannon_angle, angle)
   end
 
+  @spec buy_max_hp_upgrade(t()) :: t()
+  def buy_max_hp_upgrade(tank), do: buy_upgrade(tank, :max_hp)
+
+  @spec buy_speed_upgrade(t()) :: t()
+  def buy_speed_upgrade(tank), do: buy_upgrade(tank, :speed)
+
+  @spec buy_projectile_damage_upgrade(t()) :: t()
+  def buy_projectile_damage_upgrade(tank), do: buy_upgrade(tank, :projectile_damage)
+
+  @spec buy_fire_rate_upgrade(t()) :: t()
+  def buy_fire_rate_upgrade(tank), do: buy_upgrade(tank, :fire_rate)
+
+  @spec buy_body_damage_upgrade(t()) :: t()
+  def buy_body_damage_upgrade(tank), do: buy_upgrade(tank, :body_damage)
+
   @spec default_hp() :: integer
   def default_hp, do: @default_hp
 
   @spec default_speed() :: integer
   def default_speed, do: @default_speed
 
-  @spec default_fire_rate() :: integer
+  @spec default_fire_rate() :: number
   def default_fire_rate, do: @default_fire_rate
 
   @spec default_projectile_damage() :: integer
   def default_projectile_damage, do: @default_projectile_damage
-
-  @spec default_upgrades() :: map
-  def default_upgrades, do: @default_upgrades
 
   @spec default_radius() :: integer()
   def default_radius, do: @default_radius
 
   @spec default_body_damage() :: integer()
   def default_body_damage, do: @default_body_damage
+
+  defp buy_upgrade(%__MODULE__{upgrade_tokens: 0} = tank, _stat), do: tank
+
+  defp buy_upgrade(tank, stat) do
+    tank
+    |> remove_from_value(:upgrade_tokens, 1)
+    |> set_value(stat, calculate_new_stat_value(tank, stat))
+    |> increase_stat_level(stat)
+  end
 
   defp add_to_value(tank, field, amount),
     do: Map.update!(tank, field, &(&1 + amount))
@@ -180,4 +207,28 @@ defmodule Diep.Io.Core.Tank do
     do: add_to_value(tank, field, -amount)
 
   defp set_value(tank, field, value), do: Map.replace!(tank, field, value)
+
+  defp increase_stat_level(tank, stat) do
+    %{tank | upgrade_levels: Keyword.update!(tank.upgrade_levels, stat, &(&1 + 1))}
+  end
+
+  defp calculate_new_stat_value(tank, stat) do
+    func = Keyword.get(@upgrade_rates, stat, & &1)
+
+    Map.get(tank, stat, 0)
+    |> func.()
+  end
+
+  defp upgrade_tokenss_spent(tank) do
+    tank.upgrade_levels
+    |> Keyword.values()
+    |> Enum.sum()
+  end
+
+  defp get_token_amount_from_experience(exp) do
+    exp
+    |> Math.log2()
+    |> Kernel.*(0.5)
+    |> Kernel.floor()
+  end
 end
