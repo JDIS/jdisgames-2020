@@ -116,12 +116,12 @@ defmodule Diep.Io.Core.GameState do
 
   defp handle_action(action, game_state) do
     game_state
+    |> handle_purchase(action)
     |> handle_shoot(action)
     |> handle_movement(action)
   end
 
-  defp handle_movement(game_state, %Action{destination: destination}) when destination == nil,
-    do: game_state
+  defp handle_movement(game_state, %Action{destination: nil}), do: game_state
 
   defp handle_movement(game_state, action) do
     Map.update!(game_state, :tanks, fn tanks ->
@@ -132,7 +132,7 @@ defmodule Diep.Io.Core.GameState do
     end)
   end
 
-  defp handle_shoot(game_state, %Action{target: target}) when target == nil, do: game_state
+  defp handle_shoot(game_state, %Action{target: nil}), do: game_state
 
   defp handle_shoot(game_state, action) do
     {tank, projectile} =
@@ -154,6 +154,27 @@ defmodule Diep.Io.Core.GameState do
           Map.put(tanks, action.tank_id, tank)
         end)
     end
+  end
+
+  defp handle_purchase(game_state, %Action{purchase: nil}), do: game_state
+
+  defp handle_purchase(game_state, action) do
+    upgrade_func =
+      case action.purchase do
+        :speed -> &Tank.buy_speed_upgrade/1
+        :fire_rate -> &Tank.buy_fire_rate_upgrade/1
+        :projectile_damage -> &Tank.buy_projectile_damage_upgrade/1
+        :max_hp -> &Tank.buy_max_hp_upgrade/1
+        :body_damage -> &Tank.buy_body_damage_upgrade/1
+      end
+
+    upgraded_tank =
+      game_state.tanks
+      |> Map.get(action.tank_id)
+      |> upgrade_func.()
+
+    updated_tanks = Map.put(game_state.tanks, action.tank_id, upgraded_tank)
+    %{game_state | tanks: updated_tanks}
   end
 
   defp handle_tank_tank_collisions(%{tanks: tanks_map} = game_state) do

@@ -154,6 +154,24 @@ defmodule GameStateTest do
     assert tank.cooldown == tank.fire_rate - 1
   end
 
+  test "handle_purchase/2 buys tank upgrades", %{game_state: game_state} do
+    game_state =
+      Map.update!(game_state, :tanks, fn tanks ->
+        Map.update!(tanks, @user_id, &Tank.add_upgrade_tokens(&1, 1))
+      end)
+
+    tank = get_tank(game_state, @user_id)
+
+    for stat <- [:speed, :fire_rate, :projectile_damage, :max_hp] do
+      upgraded_tank =
+        [Action.new(@user_id, purchase: stat)]
+        |> GameState.handle_players(game_state)
+        |> get_tank(@user_id)
+
+      assert Map.get(upgraded_tank, stat) != Map.get(tank, stat)
+    end
+  end
+
   test "handle_collisions/1 decreases hp of colliding tanks" do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
