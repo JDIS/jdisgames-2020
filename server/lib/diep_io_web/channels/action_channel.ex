@@ -12,7 +12,7 @@ defmodule Diep.IoWeb.ActionChannel do
   def handle_in("new", action, socket) do
     action
     |> parse_action(socket.assigns[:user_id])
-    |> ActionStorage.store_action()
+    |> store_action()
 
     {:noreply, socket}
   end
@@ -30,6 +30,11 @@ defmodule Diep.IoWeb.ActionChannel do
       nil -> nil
       position -> List.to_tuple(position)
     end
+  end
+
+  defp store_action(action) do
+    # TODO: handle multiple game names
+    true = ActionStorage.store_action(:main_game, action)
   end
 
   defp parse_purchase(action, key) do

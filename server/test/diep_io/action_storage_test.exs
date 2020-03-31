@@ -5,33 +5,60 @@ defmodule ActionStorageTest do
   alias Diep.Io.Core.Action
   alias :ets, as: Ets
 
-  @tank_id 1
-  @action Action.new(@tank_id)
-  @table_name :test
-  @default_table_name :action_table
-
   setup do
-    ActionStorage.init(@table_name)
-    [table_name: @table_name]
+    tank_id = 1
+    [table_name: :test, action: Action.new(tank_id), tank_id: tank_id]
   end
 
-  test "store_action/2 stores the given action for the given player", %{table_name: table_name} do
-    ActionStorage.store_action(table_name, @action)
-    assert hd(Ets.lookup(table_name, @tank_id)) == {@tank_id, @action}
+  test "init/1 initializes ActionStorage table", %{table_name: table_name} do
+    assert Ets.whereis(table_name) == :undefined
+    :ok = ActionStorage.init(table_name)
+    assert Ets.whereis(table_name) != :undefined
   end
 
-  test "store_action/1 stores the given action for the given player" do
-    ActionStorage.store_action(@action)
-    assert hd(Ets.lookup(@default_table_name, @tank_id)) == {@tank_id, @action}
+  test "reset/1 resets ActionStorage table", %{
+    table_name: table_name,
+    action: action,
+    tank_id: tank_id
+  } do
+    :ok = ActionStorage.init(table_name)
+    true = ActionStorage.store_action(table_name, action)
+
+    assert ActionStorage.get_action(table_name, tank_id) == action
+
+    :ok = ActionStorage.reset(table_name)
+
+    assert ActionStorage.get_action(table_name, tank_id) == nil
   end
 
-  test "get_action/2 returns the stored action for the given player", %{table_name: table_name} do
-    Ets.insert(table_name, {@tank_id, @action})
-    assert ActionStorage.get_action(table_name, @tank_id) == @action
+  test "store_action/2 stores the given action for the given player", %{
+    table_name: table_name,
+    action: action,
+    tank_id: tank_id
+  } do
+    :ok = ActionStorage.init(table_name)
+
+    true = ActionStorage.store_action(table_name, action)
+    assert hd(Ets.lookup(table_name, tank_id)) == {tank_id, action}
   end
 
-  test "get_action/1 table name returns the stored action for the given player" do
-    Ets.insert(@default_table_name, {@tank_id, @action})
-    assert ActionStorage.get_action(@tank_id) == @action
+  test "get_action/2 returns the stored action for the given player", %{
+    table_name: table_name,
+    action: action,
+    tank_id: tank_id
+  } do
+    :ok = ActionStorage.init(table_name)
+
+    true = Ets.insert(table_name, {tank_id, action})
+    assert ActionStorage.get_action(table_name, tank_id) == action
+  end
+
+  test "get_action/2 returns nil when no stored action", %{
+    table_name: table_name,
+    tank_id: tank_id
+  } do
+    :ok = ActionStorage.init(table_name)
+
+    assert ActionStorage.get_action(table_name, tank_id) == nil
   end
 end

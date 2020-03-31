@@ -64,15 +64,19 @@
                 })
                 this.sortedScores.forEach(score => {
                     datasets[score.user_id]["label"] = score.user_id
-                    datasets[score.user_id]["data"]
-                        .push(datasets[score.user_id]["data"]
-                        .reduce((a, b) => a + b, 0) + score.score)
+                    if(datasets[score.user_id]["data"].length < 1) {
+                        datasets[score.user_id]["data"]
+                            .push(score.score)
+                    } else {
+                        datasets[score.user_id]["data"]
+                            .push(score.score + datasets[score.user_id]["data"][datasets[score.user_id]["data"].length - 1])
+                    }
                     datasets[score.user_id]["borderColor"] = COLORS[score.user_id % COLORS.length]
                 })
                 this.chart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: this.uniqueGameId,
+                        labels: Array.from(Array(this.uniqueGameId.length).keys()),
                         datasets: Object.values(datasets)
                     },
                     options: {

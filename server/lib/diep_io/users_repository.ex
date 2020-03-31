@@ -31,7 +31,7 @@ defmodule Diep.Io.UsersRepository do
       {:ok, %User{}} On success
       {:error, %Ecto.Changeset{}} On error
   """
-  @spec create_user(%{}) :: {:ok, User.t()}
+  @spec create_user(map()) :: {:ok, User.t()}
   def create_user(attrs) do
     attrs_with_secret_key = Map.put(attrs, :secret_key, SecureRandom.uuid())
 

@@ -7,20 +7,30 @@ defmodule GameStateTest do
   @max_ticks 324
   @user_name "SomeUsername"
   @user_id 420
+  @game_name :test_game
+  @game_id 123
 
   setup do
-    [game_state: GameState.new([%User{name: @user_name, id: @user_id}], @max_ticks)]
+    [
+      game_state:
+        GameState.new(
+          @game_name,
+          [%User{name: @user_name, id: @user_id}],
+          @max_ticks,
+          @game_id,
+          false
+        )
+    ]
   end
 
   test "new/1 creates a default GameState", %{game_state: game_state} do
     assert %GameState{
-             in_progress: false,
              tanks: %{@user_id => %Tank{}},
              debris: debris,
              last_time: 0,
              map_width: map_width,
              map_height: map_height,
-             ticks: 1,
+             ticks: 0,
              max_ticks: @max_ticks
            } = game_state
 
@@ -29,12 +39,10 @@ defmodule GameStateTest do
     assert is_list(debris) && !Enum.empty?(debris)
   end
 
-  test "start_game/1 sets in_progress to true", %{game_state: game_state} do
-    assert GameState.start_game(game_state).in_progress == true
-  end
+  test "increase_ticks/1 increases ticks by 1", %{game_state: game_state} do
+    game_state = GameState.increase_ticks(game_state)
 
-  test "stop_game/1 sets in_progress to true", %{game_state: game_state} do
-    assert GameState.stop_game(game_state).in_progress == false
+    assert game_state.ticks == 1
   end
 
   test "handle_players/2 does not move player if destination is nil", %{game_state: game_state} do
@@ -175,7 +183,7 @@ defmodule GameStateTest do
   test "handle_collisions/1 decreases hp of colliding tanks" do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new([user1, user2], @max_ticks)
+    game_state = GameState.new("game_name", [user1, user2], @max_ticks, 0, false)
     game_state = move_tanks_to_origin(game_state)
 
     expected_tanks =
@@ -188,7 +196,7 @@ defmodule GameStateTest do
   test "handle_collisions/1 does not remove tanks that are not colliding with other tanks" do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new([user1, user2], @max_ticks)
+    game_state = GameState.new("game_name", [user1, user2], @max_ticks, 0, false)
 
     game_state = move_tanks_out_of_collision(game_state)
 
@@ -289,7 +297,7 @@ defmodule GameStateTest do
     user1 = %User{name: @user_name, id: @user_id}
     # User 2 only serves as the projectile's owner
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new([user1, user2], @max_ticks)
+    game_state = GameState.new("game_name", [user1, user2], @max_ticks, 0, false)
 
     tank1 = Map.fetch!(game_state.tanks, user1.id)
 
@@ -302,7 +310,7 @@ defmodule GameStateTest do
 
   defp setup_tank_debris_collision do
     user = %User{name: @user_name, id: @user_id}
-    game_state = GameState.new([user], @max_ticks)
+    game_state = GameState.new("game_name", [user], @max_ticks, 0, false)
 
     tank = Map.fetch!(game_state.tanks, user.id)
 
@@ -316,7 +324,7 @@ defmodule GameStateTest do
 
   defp setup_projectile_debris_collision do
     projectile = Projectile.new(1, {0, 0}, 0, 10)
-    game_state = GameState.new([], @max_ticks)
+    game_state = GameState.new("game_name", [], @max_ticks, 0, false)
 
     debris = Debris.new(:large)
     debris = %{debris | position: Entity.get_position(projectile)}

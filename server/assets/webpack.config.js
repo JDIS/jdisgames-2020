@@ -17,6 +17,7 @@ module.exports = (env, options) => ({
     app: glob.sync('./vendor/**/*.js').concat(['./js/app.js']),
     spectate: glob.sync('./modules/**/*.js').concat(['./js/spectate.js']),
     scoreboard: glob.sync('./modules/**/*.js').concat(['./js/scoreboard.js']),
+    admin: glob.sync('./modules/**/*.js').concat(['./js/admin.js']),
   },
   output: {
     filename: '[name].js',

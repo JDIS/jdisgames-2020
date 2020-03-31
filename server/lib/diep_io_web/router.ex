@@ -1,5 +1,6 @@
 defmodule Diep.IoWeb.Router do
   use Diep.IoWeb, :router
+  alias Diep.IoWeb.Authentication
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -11,6 +12,11 @@ defmodule Diep.IoWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :basic_auth do
+    plug BasicAuth,
+      callback: &Authentication.authenticate/3
   end
 
   scope "/", Diep.IoWeb do
@@ -26,5 +32,14 @@ defmodule Diep.IoWeb.Router do
     pipe_through :api
 
     resources "/scoreboard", ScoreboardController, only: [:index]
+  end
+
+  scope "/admin", Diep.IoWeb do
+    pipe_through [:browser, :basic_auth]
+
+    get "/", AdminController, :index
+
+    get "/start", AdminController, :start_game
+    get "/stop", AdminController, :stop_game
   end
 end

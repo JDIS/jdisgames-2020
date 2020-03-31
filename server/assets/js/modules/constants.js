@@ -1,3 +1,9 @@
+export const LARGE_DEBRIS_RADIUS = 40;
+export const MEDIUM_DEBRIS_RADIUS = 50;
+export const SMALL_DEBRIS_RADIUS = 25;
+export const PROJECTILE_RADIUS = 15;
+export const TANK_RADIUS = 25
+
 export const GRID_SIZE = 250
 export const MAP_WIDTH = 10000
 export const MAP_HEIGHT = 10000

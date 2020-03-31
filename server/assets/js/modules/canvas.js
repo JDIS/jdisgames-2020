@@ -4,6 +4,13 @@
 
 import { GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_WIDTH } from "./constants.js"
 import { regularPolygonPoints } from "./utils.js"
+import {
+    LARGE_DEBRIS_RADIUS,
+    MEDIUM_DEBRIS_RADIUS,
+    PROJECTILE_RADIUS,
+    SMALL_DEBRIS_RADIUS,
+    TANK_RADIUS
+} from "./constants";
 
 /**
  * Canvas elements to be drawn on the main canvas
@@ -81,7 +88,7 @@ export function createMinimap() {
 
 export function createTank(fillColor) {
     const tankCircle = new fabric.Circle({
-        radius: 25,
+        radius: TANK_RADIUS,
         fill: fillColor,
         stroke: 'black',
         strokeWidth: 3,
@@ -114,7 +121,7 @@ export function createTank(fillColor) {
 
 export function createProjectile(player) {
     const projectile = new fabric.Circle({
-        radius: 15,
+        radius: PROJECTILE_RADIUS,
         fill: player.fillColor,
         stroke: 'black',
         strokeWidth: 3,
@@ -131,9 +138,10 @@ export function createProjectile(player) {
 }
 
 export function createSmallDebris(id) {
+
     const debris = new fabric.Rect({
-        width: 25,
-        height: 25,
+        width: SMALL_DEBRIS_RADIUS,
+        height: SMALL_DEBRIS_RADIUS,
         angle: id % 360,
         stroke: 'black',
         strokeWidth: 3,
@@ -144,9 +152,10 @@ export function createSmallDebris(id) {
 }
 
 export function createMediumDebris(id) {
+
     const debris = new fabric.Triangle({
-        width: 50,
-        height: 45,
+        width: MEDIUM_DEBRIS_RADIUS,
+        height: 0.9 * MEDIUM_DEBRIS_RADIUS,
         angle: id % 360,
         stroke: 'green',
         strokeWidth: 3,
@@ -157,7 +166,8 @@ export function createMediumDebris(id) {
 }
 
 export function createLargeDebris(id) {
-    const debris = new fabric.Polygon(regularPolygonPoints(5, 40), {
+
+    const debris = new fabric.Polygon(regularPolygonPoints(5, LARGE_DEBRIS_RADIUS), {
         angle: id % 360,
         stroke: 'rgb(100, 0, 0)',
         strokeWidth: 3,
