@@ -103,6 +103,11 @@ defmodule TankTest do
     assert Tank.move(tank, new_position).position == new_position
   end
 
+  test "increase_score/2 increases the score by the specified amount", %{tank: tank} do
+    score = (tank |> Tank.increase_score(65) |> Tank.increase_score(4)).score
+    assert score == 69
+  end
+
   test "set_cooldown/1 sets the tank's cooldown", %{tank: tank} do
     on_cooldown_tank = Tank.set_cooldown(tank)
 

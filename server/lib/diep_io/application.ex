@@ -1,7 +1,7 @@
 defmodule Diep.Io.Application do
   @moduledoc false
 
-  alias Diep.Io.{ActionStorage, Repo}
+  alias Diep.Io.{GameSupervisor, Repo}
   alias Diep.IoWeb.Endpoint, as: Endpoint
 
   use Application
@@ -9,10 +9,10 @@ defmodule Diep.Io.Application do
   def start(_type, _args) do
     children = [
       Repo,
-      Endpoint
+      Endpoint,
+      GameSupervisor
     ]
 
-    :ok = ActionStorage.init()
     opts = [strategy: :one_for_one, name: Diep.Io.Supervisor]
     Supervisor.start_link(children, opts)
   end

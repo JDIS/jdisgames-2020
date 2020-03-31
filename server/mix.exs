@@ -49,6 +49,7 @@ defmodule Diep.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:secure_random, "~>0.5"},
+      {:basic_auth, "~> 2.2"},
 
       # dev, test
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},

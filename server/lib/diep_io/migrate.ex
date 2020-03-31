@@ -5,9 +5,20 @@ defmodule Diep.Io.Release do
   """
   @app :diep_io
 
+  alias Diep.Io.UsersRepository
+
   def migrate do
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
+    end
+  end
+
+  def seed do
+    for repo <- repos() do
+      {:ok, _, _} =
+        Ecto.Migrator.with_repo(repo, fn _ ->
+          1..30 |> Enum.each(fn i -> UsersRepository.create_user(%{name: "User#{i}"}) end)
+        end)
     end
   end
 

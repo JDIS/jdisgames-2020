@@ -29,7 +29,8 @@ defmodule Diep.Io.Core.Tank do
     :speed,
     :position,
     :fire_rate,
-    :projectile_damage
+    :projectile_damage,
+    :score
   ]
   defstruct [
     :id,
@@ -38,6 +39,7 @@ defmodule Diep.Io.Core.Tank do
     :current_hp,
     :speed,
     :position,
+    :score,
     :fire_rate,
     :projectile_damage,
     :body_damage,
@@ -56,6 +58,7 @@ defmodule Diep.Io.Core.Tank do
           speed: integer,
           experience: integer,
           position: Position.t(),
+          score: integer,
           fire_rate: number,
           cooldown: number,
           projectile_damage: integer,
@@ -85,6 +88,7 @@ defmodule Diep.Io.Core.Tank do
       max_hp: @default_hp,
       speed: @default_speed,
       position: Position.random(),
+      score: 0,
       fire_rate: @default_fire_rate,
       projectile_damage: @default_projectile_damage,
       body_damage: @default_body_damage
@@ -123,6 +127,11 @@ defmodule Diep.Io.Core.Tank do
   @spec move(t(), Position.t()) :: t()
   def move(tank, position) do
     set_value(tank, :position, position)
+  end
+
+  @spec increase_score(t(), integer()) :: t()
+  def increase_score(tank, amount) do
+    add_to_value(tank, :score, amount)
   end
 
   @spec shoot(t(), Position.t()) :: {t(), Projectile.t() | nil}

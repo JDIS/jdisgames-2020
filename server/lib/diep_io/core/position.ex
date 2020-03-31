@@ -9,8 +9,8 @@ defmodule Diep.Io.Core.Position do
   @type t :: {integer, integer}
 
   @spec new() :: t()
-  def new do
-    {0, 0}
+  def new(x \\ 0, y \\ 0) do
+    {x, y}
   end
 
   @spec next(t(), t() | float, integer) :: t()

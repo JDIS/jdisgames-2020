@@ -14,21 +14,23 @@ defmodule Diep.Io.Core.GameState do
   @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
   @projectile_decay 2
 
-  @derive {Jason.Encoder, except: [:in_progress, :last_time]}
+  @derive {Jason.Encoder, except: [:last_time]}
   defstruct [
-    :in_progress,
+    :name,
     :tanks,
-    :debris,
     :last_time,
     :map_width,
     :map_height,
     :ticks,
     :max_ticks,
-    projectiles: []
+    :game_id,
+    :debris,
+    :persistent?,
+    :projectiles
   ]
 
   @type t :: %__MODULE__{
-          in_progress: boolean(),
+          name: atom(),
           tanks: %{integer() => Tank.t()},
           debris: [Debris.t()],
           last_time: integer(),
@@ -36,43 +38,36 @@ defmodule Diep.Io.Core.GameState do
           map_height: integer(),
           ticks: integer(),
           max_ticks: integer(),
+          game_id: integer(),
+          persistent?: boolean(),
           projectiles: [Projectile.t()]
         }
 
-  @spec new([User.t()], integer()) :: t()
-  def new(users, max_ticks) do
+  @spec new(atom(), [User.t()], integer(), integer(), boolean()) :: t()
+  def new(name, users, max_ticks, game_id, persistent?) do
     %__MODULE__{
-      in_progress: false,
+      name: name,
       tanks: initialize_tanks(users),
       debris: initialize_debris(),
       last_time: 0,
       map_width: GameMap.width(),
       map_height: GameMap.height(),
-      ticks: 1,
-      max_ticks: max_ticks
+      ticks: 0,
+      max_ticks: max_ticks,
+      game_id: game_id,
+      persistent?: persistent?,
+      projectiles: []
     }
   end
 
-  @spec start_game(t()) :: t()
-  def start_game(game_state), do: %{game_state | in_progress: true}
-
-  @spec stop_game(t()) :: t()
-  def stop_game(game_state), do: %{game_state | in_progress: false}
-
   @doc """
-    Increase the tick count by one. If the new count is equal to the max number of ticks
-    in a game, also stop the game.
+    Increase the tick count by one.
   """
   @spec increase_ticks(t()) :: t()
-  def increase_ticks(game_state) do
-    updated_state = Map.put(game_state, :ticks, game_state.ticks + 1)
-    max_ticks = updated_state.max_ticks
+  def increase_ticks(game_state), do: Map.update!(game_state, :ticks, &(&1 + 1))
 
-    case updated_state.ticks do
-      x when x > max_ticks -> stop_game(updated_state)
-      _ -> updated_state
-    end
-  end
+  @spec in_progress?(t()) :: boolean()
+  def in_progress?(game_state), do: game_state.ticks <= game_state.max_ticks
 
   @spec decrease_cooldowns(t()) :: t()
   def decrease_cooldowns(game_state) do
@@ -127,7 +122,10 @@ defmodule Diep.Io.Core.GameState do
     Map.update!(game_state, :tanks, fn tanks ->
       Map.update!(tanks, action.tank_id, fn tank ->
         new_position = Position.next(tank.position, action.destination, tank.speed)
+
+        # TODO: remove me when implementing real metric for scores.
         Tank.move(tank, new_position)
+        |> Tank.increase_score(:rand.uniform(10))
       end)
     end)
   end
