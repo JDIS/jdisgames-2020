@@ -11,7 +11,8 @@ defmodule Diep.Io.Gameloop do
   alias :erlang, as: Erlang
   require Logger
 
-  @tickrate floor(1000 / 3)
+  @tickrate_ms floor(1000 / 3)
+  @tickrate_native Erlang.convert_time_unit(@tickrate_ms, :millisecond, :native)
 
   # Client
 
@@ -44,7 +45,8 @@ defmodule Diep.Io.Gameloop do
   @impl true
   def handle_info(:loop, state) do
     begin_time = Erlang.monotonic_time()
-    Logger.debug("looperoo took #{abs((state.last_time - begin_time) / 1_000_000)}ms")
+    elasped_time = calculate_elasped_time(state.last_time, begin_time)
+    Logger.debug("looperoo took #{elasped_time / 1_000_000}ms")
 
     updated_state =
       state.tanks
@@ -56,6 +58,7 @@ defmodule Diep.Io.Gameloop do
       |> GameState.handle_collisions()
       |> GameState.decrease_cooldowns()
       |> GameState.increase_ticks()
+      |> GameState.add_time_correction(elasped_time - @tickrate_native)
 
     broadcast(updated_state)
 
@@ -63,13 +66,14 @@ defmodule Diep.Io.Gameloop do
 
     case GameState.in_progress?(updated_state) do
       true ->
-        Process.send_after(self(), :loop, calculate_time_to_wait(end_time - begin_time))
+        sleep_time = calculate_time_to_wait(end_time - begin_time, GameState.calculate_correction(updated_state))
+        Process.send_after(self(), :loop, sleep_time)
 
       false ->
         send(self(), :reset_game)
     end
 
-    {:noreply, Map.put(updated_state, :last_time, end_time)}
+    {:noreply, Map.put(updated_state, :last_time, begin_time)}
   end
 
   @impl true
@@ -93,8 +97,13 @@ defmodule Diep.Io.Gameloop do
     {:ok, GameState.new(name, users, game_time, game_id, persistent?)}
   end
 
-  defp calculate_time_to_wait(elapsed_time) do
-    max(@tickrate - Erlang.convert_time_unit(elapsed_time, :native, :millisecond), 0)
+  defp calculate_elasped_time(0, _now), do: @tickrate_native
+  defp calculate_elasped_time(last_iteration, now), do: now - last_iteration
+
+  defp calculate_time_to_wait(elapsed_time, time_correction) do
+    (@tickrate_native - elapsed_time - time_correction)
+    |> max(0)
+    |> Erlang.convert_time_unit(:native, :millisecond)
   end
 
   defp broadcast(state) do

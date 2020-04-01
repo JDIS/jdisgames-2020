@@ -5,7 +5,7 @@ class Channel:
     def __init__(self, topic, socket):
 
         async def on_reply(message):
-            print("on_reply : {}".format(message))
+            pass
 
         self._callbacks = {}
         self._socket = socket

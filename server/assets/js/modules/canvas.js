@@ -142,7 +142,7 @@ export function createSmallDebris(id) {
     const debris = new fabric.Rect({
         width: SMALL_DEBRIS_RADIUS,
         height: SMALL_DEBRIS_RADIUS,
-        angle: id % 360,
+        angle: parseInt(id % BigInt(360)),
         stroke: 'black',
         strokeWidth: 3,
         fill: 'grey'
@@ -156,7 +156,7 @@ export function createMediumDebris(id) {
     const debris = new fabric.Triangle({
         width: MEDIUM_DEBRIS_RADIUS,
         height: 0.9 * MEDIUM_DEBRIS_RADIUS,
-        angle: id % 360,
+        angle: parseInt(id % BigInt(360)),
         stroke: 'green',
         strokeWidth: 3,
         fill: 'white'
@@ -168,7 +168,7 @@ export function createMediumDebris(id) {
 export function createLargeDebris(id) {
 
     const debris = new fabric.Polygon(regularPolygonPoints(5, LARGE_DEBRIS_RADIUS), {
-        angle: id % 360,
+        angle: parseInt(id % BigInt(360)),
         stroke: 'rgb(100, 0, 0)',
         strokeWidth: 3,
         fill: "rgb(255, 100, 100)"
