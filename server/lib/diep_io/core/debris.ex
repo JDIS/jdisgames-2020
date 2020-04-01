@@ -16,7 +16,7 @@ defmodule Diep.Io.Core.Debris do
 
   @type size_t :: :small | :medium | :large
   @type t :: %__MODULE__{
-          id: integer,
+          id: String.t(),
           current_hp: integer,
           size: size_t,
           speed: integer,
@@ -42,7 +42,7 @@ defmodule Diep.Io.Core.Debris do
       current_hp: default_hp(size),
       size: size,
       position: Position.random(),
-      id: System.unique_integer()
+      id: System.unique_integer() |> to_string()
     }
   end
 

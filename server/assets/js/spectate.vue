@@ -167,9 +167,9 @@
                     })
                     player.nameText = nameText
                     this.mainCanvas.add(nameText)
-                    const healthBar = createHealthBar()
+                    const healthBar = createHealthBar(tank.max_hp, tank.current_hp)
                     player.healthBar = healthBar
-                    healthBar.item(1).width = player.health * HEALTHBAR_WIDTH
+                    healthBar.item(1).width = (player.current_hp/player.max_hp) * HEALTHBAR_WIDTH
                     healthBar.left = player.tank.left
                     healthBar.top = player.tank.top + HEALTH_OFFSET
                     this.mainCanvas.add(healthBar)
@@ -301,7 +301,7 @@
                         duration: ANIMATION_DURATION,
                         easing: linear
                     })
-                    associatedPlayer.healthBar.item(1).animate('width', updatedTank.health * HEALTHBAR_WIDTH, {
+                    associatedPlayer.healthBar.item(1).animate('width', (updatedTank.current_hp/updatedTank.max_hp) * HEALTHBAR_WIDTH, {
                         onChange: null,
                         duration: ANIMATION_DURATION,
                         easing: linear

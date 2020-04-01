@@ -32,8 +32,11 @@ async def start(bot, secret_key):
 
             await spectate_connection.listen()
 
+def loop(secret):
+    asyncio.get_event_loop().run_until_complete(start(MyBot(), secret))
 
-parser = argparse.ArgumentParser(description="Starts your bot!")
-parser.add_argument("secret", help="The secret which authentifies your bot")
-args = parser.parse_args()
-asyncio.get_event_loop().run_until_complete(start(MyBot(), args.secret))
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Starts your bot!")
+    parser.add_argument("secret", help="The secret which authentifies your bot")
+    args = parser.parse_args()
+    asyncio.get_event_loop().run_until_complete(start(MyBot(), args.secret))

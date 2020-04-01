@@ -14,7 +14,7 @@ defmodule Diep.Io.Core.GameState do
   @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
   @projectile_decay 2
 
-  @derive {Jason.Encoder, except: [:last_time]}
+  @derive {Jason.Encoder, except: [:last_time, :time_corrections]}
   defstruct [
     :name,
     :tanks,
@@ -26,7 +26,8 @@ defmodule Diep.Io.Core.GameState do
     :game_id,
     :debris,
     :persistent?,
-    :projectiles
+    :projectiles,
+    time_corrections: []
   ]
 
   @type t :: %__MODULE__{
@@ -40,7 +41,8 @@ defmodule Diep.Io.Core.GameState do
           max_ticks: integer(),
           game_id: integer(),
           persistent?: boolean(),
-          projectiles: [Projectile.t()]
+          projectiles: [Projectile.t()],
+          time_corrections: [integer()]
         }
 
   @spec new(atom(), [User.t()], integer(), integer(), boolean()) :: t()
@@ -68,6 +70,24 @@ defmodule Diep.Io.Core.GameState do
 
   @spec in_progress?(t()) :: boolean()
   def in_progress?(game_state), do: game_state.ticks <= game_state.max_ticks
+
+  @spec add_time_correction(t(), integer()) :: t()
+  def add_time_correction(%__MODULE__{time_corrections: corrections} = game_state, correction)
+      when length(corrections) >= 16 do
+    add_time_correction(%{game_state | time_corrections: Enum.drop(corrections, -1)}, correction)
+  end
+
+  def add_time_correction(%__MODULE__{time_corrections: corrections} = game_state, correction) do
+    %{game_state | time_corrections: [correction | corrections]}
+  end
+
+  @spec calculate_correction(t()) :: integer()
+  def calculate_correction(game_state) do
+    case game_state.time_corrections do
+      [] -> 0
+      corrections -> Kernel.floor(Enum.sum(corrections) / Enum.count(corrections))
+    end
+  end
 
   @spec decrease_cooldowns(t()) :: t()
   def decrease_cooldowns(game_state) do

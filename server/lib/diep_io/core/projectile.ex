@@ -12,7 +12,7 @@ defmodule Diep.Io.Core.Projectile do
   defstruct [:id, :owner_id, :radius, :speed, :damage, :position, :angle, :hp]
 
   @type t :: %__MODULE__{
-          id: integer,
+          id: String.t(),
           owner_id: integer,
           radius: integer,
           speed: integer,
@@ -39,7 +39,7 @@ defmodule Diep.Io.Core.Projectile do
   def new(owner_id, from, angle, damage, opts \\ []) do
     struct(
       %__MODULE__{
-        id: System.unique_integer(),
+        id: System.unique_integer() |> to_string(),
         owner_id: owner_id,
         radius: @default_radius,
         speed: @default_speed,

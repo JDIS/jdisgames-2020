@@ -3,7 +3,17 @@ import { Socket } from "phoenix"
 import app from "../spectate"
 
 export function networkInit() {
-    let socket = new Socket("/socket/spectate")
+    let options = {decode: function(rawPayload, callback) {
+        let [join_ref, ref, topic, event, payload] = JSON.parse(rawPayload, (key, value) => {
+          if (key === "id" && typeof(value) == "string") {
+            return BigInt(value)
+          }
+          return value
+      })
+      
+          return callback({join_ref, ref, topic, event, payload})
+      }}
+    let socket = new Socket("/socket/spectate", options)
 
     socket.connect()
 

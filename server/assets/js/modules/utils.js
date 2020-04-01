@@ -9,7 +9,7 @@
  */
 export function getDifference(entities, newEntitiesIds) {
     const allEntitiesIds = new Set(Object.keys(entities))
-    return new Set([...allEntitiesIds].filter(x => !newEntitiesIds.has(parseInt(x))))
+    return new Set([...allEntitiesIds].filter(x => !newEntitiesIds.has(BigInt(x))))
 }
 
 export function regularPolygonPoints(sideCount, radius) {
