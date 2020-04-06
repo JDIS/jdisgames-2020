@@ -3,7 +3,7 @@
  */
 
 import app from "../spectate"
-import {CANVAS_UPDATE_RATE, COLORS, HEALTHBAR_WIDTH, MAP_HEIGHT, MAP_WIDTH} from "./constants.js"
+import {CANVAS_UPDATE_RATE, COLORS, MAP_HEIGHT, MAP_WIDTH} from "./constants.js"
 
 export function mockNetworkInit() {
     window.setInterval(() => {
@@ -12,28 +12,6 @@ export function mockNetworkInit() {
             app.animateCanvas(JSON.parse(newState))
         }
     }, CANVAS_UPDATE_RATE)
-}
-export function createHealthBar() {
-    const background = new fabric.Rect({
-        width: HEALTHBAR_WIDTH,
-        height: 10,
-        fill: 'rgb(200,200,200)',
-        originX: 'left',
-        originY: 'center'
-    })
-
-    const healthBar = new fabric.Rect({
-        width: HEALTHBAR_WIDTH,
-        height: 10,
-        fill: 'rgb(20,255,20)',
-        originX: 'left',
-        originY: 'center'
-    })
-
-    return new fabric.Group([background, healthBar], {
-        originX: 'center',
-        originY: 'center',
-    })
 }
 export function generatePlayers() {
     const players = []

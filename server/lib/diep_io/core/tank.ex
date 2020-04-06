@@ -6,7 +6,7 @@ defmodule Diep.Io.Core.Tank do
   alias :math, as: Math
 
   @default_hp 100
-  @default_speed 10
+  @default_speed 80
   @default_fire_rate 5
   @default_projectile_damage 20
   @default_body_damage 20
@@ -47,7 +47,7 @@ defmodule Diep.Io.Core.Tank do
     experience: 0,
     cannon_angle: 0,
     upgrade_tokens: 0,
-    upgrade_levels: [max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0]
+    upgrade_levels: %{max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0}
   ]
 
   @type t :: %__MODULE__{
@@ -218,7 +218,7 @@ defmodule Diep.Io.Core.Tank do
   defp set_value(tank, field, value), do: Map.replace!(tank, field, value)
 
   defp increase_stat_level(tank, stat) do
-    %{tank | upgrade_levels: Keyword.update!(tank.upgrade_levels, stat, &(&1 + 1))}
+    %{tank | upgrade_levels: Map.update!(tank.upgrade_levels, stat, &(&1 + 1))}
   end
 
   defp calculate_new_stat_value(tank, stat) do
@@ -230,7 +230,7 @@ defmodule Diep.Io.Core.Tank do
 
   defp upgrade_tokenss_spent(tank) do
     tank.upgrade_levels
-    |> Keyword.values()
+    |> Map.values()
     |> Enum.sum()
   end
 

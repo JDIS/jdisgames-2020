@@ -2,15 +2,7 @@
  * Module to deal with elements that are drawn into canvases.
  */
 
-import { GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_WIDTH } from "./constants.js"
-import { regularPolygonPoints } from "./utils.js"
-import {
-    LARGE_DEBRIS_RADIUS,
-    MEDIUM_DEBRIS_RADIUS,
-    PROJECTILE_RADIUS,
-    SMALL_DEBRIS_RADIUS,
-    TANK_RADIUS
-} from "./constants";
+import {GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_WIDTH} from "./constants.js"
 
 /**
  * Canvas elements to be drawn on the main canvas
@@ -80,101 +72,10 @@ export function createMinimap() {
         stroke: 'black',
         strokeWidth: 50,
         fill: null,
-        objectCaching: false
+        objectCaching: true
     })
     minimap.add(minimap.viewPort)
     return minimap
-}
-
-export function createTank(fillColor) {
-    const tankCircle = new fabric.Circle({
-        radius: TANK_RADIUS,
-        fill: fillColor,
-        stroke: 'black',
-        strokeWidth: 3,
-        originX: 'center',
-        originY: 'center',
-        objectCaching: false
-
-    })
-    const tankRect = new fabric.Rect({
-        width: 15,
-        height: 27,
-        fill: 'black',
-        left: 30,
-        centeredRotation: false,
-        originX: 'center',
-        originY: 'center',
-        objectCaching: false
-    })
-    const tank = new fabric.Group([tankCircle], {
-        originX: 'center',
-        originY: 'center',
-        objectCaching: false // Needed since the players are also rendered on the minimap.
-    })
-    tank.add(tankRect)
-
-    tankRect.sendToBack()
-    return tank
-
-}
-
-export function createProjectile(player) {
-    const projectile = new fabric.Circle({
-        radius: PROJECTILE_RADIUS,
-        fill: player.fillColor,
-        stroke: 'black',
-        strokeWidth: 3,
-        left: player.tank.left,
-        top: player.tank.top,
-        originX: 'center',
-        originY: 'center'
-    })
-
-    projectile.owner_id = player.id
-
-    return projectile
-
-}
-
-export function createSmallDebris(id) {
-
-    const debris = new fabric.Rect({
-        width: SMALL_DEBRIS_RADIUS,
-        height: SMALL_DEBRIS_RADIUS,
-        angle: parseInt(id % BigInt(360)),
-        stroke: 'black',
-        strokeWidth: 3,
-        fill: 'grey'
-    })
-    debris.id = id
-    return debris
-}
-
-export function createMediumDebris(id) {
-
-    const debris = new fabric.Triangle({
-        width: MEDIUM_DEBRIS_RADIUS,
-        height: 0.9 * MEDIUM_DEBRIS_RADIUS,
-        angle: parseInt(id % BigInt(360)),
-        stroke: 'green',
-        strokeWidth: 3,
-        fill: 'white'
-    })
-    debris.id = id
-    return debris
-}
-
-export function createLargeDebris(id) {
-
-    const debris = new fabric.Polygon(regularPolygonPoints(5, LARGE_DEBRIS_RADIUS), {
-        angle: parseInt(id % BigInt(360)),
-        stroke: 'rgb(100, 0, 0)',
-        strokeWidth: 3,
-        fill: "rgb(255, 100, 100)"
-    })
-    debris.id = id
-    return debris
 }
 
 export function createGrid() {

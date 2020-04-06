@@ -18,7 +18,7 @@ defmodule TankTest do
              current_hp: current_hp,
              max_hp: max_hp,
              speed: speed,
-             upgrade_levels: [{:max_hp, 0}, {:speed, 0}, {:fire_rate, 0}, {:projectile_damage, 0}, {:body_damage, 0}],
+             upgrade_levels: %{max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0},
              fire_rate: fire_rate,
              projectile_damage: projectile_damage,
              body_damage: body_damage,
