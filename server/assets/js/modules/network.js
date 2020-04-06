@@ -1,5 +1,5 @@
 //import {mockNetworkInit} from "./mock.js"
-import { Socket } from "phoenix"
+import {Socket} from "phoenix"
 import app from "../spectate"
 
 export function networkInit() {
@@ -28,7 +28,9 @@ export function networkInit() {
             yes = true
             app.startRendering(resp)
         } else {
-            app.animateCanvas(resp)
+            if (!document.hidden) {
+                app.animateCanvas(resp)
+            }
         }
     })
 }

@@ -14,6 +14,6 @@ class Action:
     """
     Actions that a bot makes every tick.
     """
-    destination: Tuple[float]
-    target: Tuple[float]
+    destination: Tuple[float, float]
+    target: Tuple[float, float]
     purchase: str

@@ -11,13 +11,14 @@ defmodule Diep.Io.Core.Debris do
   @default_body_damage 10
 
   @derive Jason.Encoder
-  @enforce_keys [:id, :current_hp, :size, :position]
-  defstruct [:id, :current_hp, :size, :position, speed: @default_speed]
+  @enforce_keys [:id, :current_hp, :size, :position, :max_hp]
+  defstruct [:id, :current_hp, :size, :position, :max_hp, speed: @default_speed]
 
   @type size_t :: :small | :medium | :large
   @type t :: %__MODULE__{
           id: String.t(),
           current_hp: integer,
+          max_hp: integer,
           size: size_t,
           speed: integer,
           position: Position.t()
@@ -40,6 +41,7 @@ defmodule Diep.Io.Core.Debris do
   def new(size) do
     %__MODULE__{
       current_hp: default_hp(size),
+      max_hp: default_hp(size),
       size: size,
       position: Position.random(),
       id: System.unique_integer() |> to_string()

@@ -15,18 +15,52 @@
                     </div>
                 </div>
                 <div class="three columns" v-show="!fullScreen">
-                    <div class="flex">
-                        <strong class="rank">#</strong>
-                        <div class="player-name">Team</div>
-                        <strong class="points">Points</strong>
+                    <div v-if="focusedPlayer">
+
+                        <h3 style="margin-bottom: 0;text-align: center">{{focusedPlayer.name.text}}</h3>
+                        <div style="width:100%; height: 15px" :style="{'background': `${focusedPlayer.color}`}"></div>
+                        <table>
+                            <tr>
+                                <td>❤ HP</td>
+                                <td>{{focusedPlayer.current_hp}}/{{focusedPlayer.max_hp}} (LVL {{ focusedPlayer.upgrade_levels.max_hp }})</td>
+                            </tr>
+                            <tr>
+                                <td>💣 Projectile damage</td>
+                                <td><strong>{{focusedPlayer.projectile_damage}}</strong> (LVL {{ focusedPlayer.upgrade_levels.projectile_damage }})</td>
+                            </tr>
+                            <tr>
+                                <td title="Cooldown between each projectile launch">🕒 Fire rate <span style="font-size: 70%">(?)</span></td>
+                                <td><strong>{{focusedPlayer.fire_rate}}</strong> (LVL {{ focusedPlayer.upgrade_levels.fire_rate }})</td>
+                            </tr>
+                            <tr>
+                                <td>🐇 Speed </td>
+                                <td><strong>{{focusedPlayer.speed}}</strong> (LVL {{ focusedPlayer.upgrade_levels.speed }})</td>
+                            </tr>
+                            <tr>
+                                <td title="Damage another entity takes upon colliding with it.">👊 Body damage </td>
+                                <td><strong>{{focusedPlayer.body_damage}}</strong> (LVL {{ focusedPlayer.upgrade_levels.body_damage }})</td>
+                            </tr>
+                            <tr>
+                                <td>🆙 Upgrade tokens available </td>
+                                <td><strong>{{focusedPlayer.upgrade_tokens}}</strong></td>
+                            </tr>
+
+                        </table>
                     </div>
-                    <div v-for="(tank, index) in orderedTanks" class="flex scoreboard" @click="focusPlayer(tank)">
-                        <strong class="rank">{{index + 1}}</strong>
-                        <input class="player-name" type="button" :value="`${tank.name}`"
-                               :style="{backgroundColor: tank.fillColor}" />
-                        <strong class="points">{{ Math.round(tank.points) }}</strong>
+                    <div>
+                        <div class="flex">
+                            <strong class="rank">#</strong>
+                            <div class="player-name">Team</div>
+                            <strong class="points">Points</strong>
+                        </div>
+                        <div v-for="(tank, index) in orderedTanks" class="flex scoreboard" @click="focusPlayer(tank)">
+                            <strong class="rank">{{index + 1}}</strong>
+                            <input class="player-name" type="button" :value="`${tank.name.text}`"
+                                   :style="{backgroundColor: tank.color}" />
+                            <strong class="points">{{ Math.round(tank.score) }}</strong>
+                        </div>
+                        <hr>
                     </div>
-                    <hr>
                 </div>
             </div>
         </div>
@@ -35,11 +69,13 @@
 
 <script>
     import Vue from "vue"
-    import {createSmallDebris, createMediumDebris, createLargeDebris, createGrid, createMinimap, createProjectile, createTank, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.js"
-    import {ANIMATION_DURATION, CANVAS_UPDATE_RATE, FADE_DURATION, HEALTH_OFFSET, HEALTHBAR_WIDTH, linear, MAX_ZOOM, MIN_ZOOM, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR} from "./modules/constants.js"
-    import {createHealthBar} from "./modules/mock.js"
+    import {createGrid, createMinimap, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.js"
+    import {CANVAS_UPDATE_RATE, MAX_ZOOM, MIN_ZOOM} from "./modules/constants.js"
     import {getDifference} from "./modules/utils.js"
     import {COLORS} from "./modules/constants";
+    import {Tank} from "./classes/Tank";
+    import {Debris} from "./classes/Debris";
+    import {Projectile} from "./classes/Projectile";
 
     export default Vue.extend({
         name: 'Spectate',
@@ -51,44 +87,34 @@
                 mainCanvas: null,
                 minimap: null,
                 lockCamera: false,
-                elements: new DrawnElements(null, null, [], {}, {}),
+                elements: new DrawnElements(null, null, {}, {}, {}),
                 progress: 0,
                 autoSpectate: false,
                 lastUpdateTimestamp: Date.now()
             }
         },
+        then: Date.now(),
         computed: {
             /**
              * @returns List of tanks ordered by their score in the current game.
              */
             orderedTanks() {
-                return Object.values(this.elements.tanks).sort((a, b) => a.points < b.points ? 1 : -1)
+                return Object.values(this.elements.tanks).sort((a, b) => a.score < b.score ? 1 : -1)
             }
         },
         watch: {
             focusedPlayer(newValue, previousValue) {
                 if (previousValue) {
-                    previousValue.tank.item(0).stroke = 'black'
-                    previousValue.tank.item(0).strokeWidth = 3
-                    previousValue.tank.item(1).stroke = 'black'
-                    previousValue.tank.item(1).strokeWidth = 3
-                    previousValue.tank.dirty = true // Invalidate caching
+                    previousValue.unselect()
                 }
-                newValue.tank.item(0).stroke = SELECTED_TANK_OUTLINE_COLOR
-                newValue.tank.item(0).strokeWidth = 6
-                newValue.tank.item(1).stroke = SELECTED_TANK_OUTLINE_COLOR
-                newValue.tank.item(1).strokeWidth = 6
-                // Invalidate caching.
-                // Needed for a special case where changing lock to a tank in the same viewport as precedent selection.
-                newValue.tank.dirty = true
+                if (newValue) {
+                    newValue.select()
+                }
             },
             autoSpectate(newValue) {
                 if (newValue) {
                     this.lockCamera = true
                 }
-            },
-            zoom() {
-                this.doZoom()
             },
             lockCamera(newValue) {
                 if (newValue === true) {
@@ -113,7 +139,7 @@
             this.mainCanvas.on('mouse:wheel', (opt) => {
                 const delta = opt.e.deltaY
 
-                this.zoom += delta / 400
+                this.zoom += Math.pow(delta / 400, 3)
                 this.doZoom(opt)
                 opt.e.preventDefault()
                 opt.e.stopPropagation()
@@ -143,39 +169,12 @@
         methods: {
             startRendering(gameState) {
                 Object.keys(gameState.tanks).forEach((id) => {
-                    let color = COLORS[id % COLORS.length];
-                    const tank = createTank(color)
-                    const player = gameState.tanks[id]
-                    player.fillColor = color
-                    tank.left = player.position[0]
-                    tank.top = player.position[1]
-                    tank.angle = player.angle
-                    tank.id = player.id
-                    this.mainCanvas.add(tank)
-                    tank.bringToFront()
-                    player.tank = tank
-
-                    this.minimap.add(tank)
-
-                    const nameText = new fabric.Text(player.name, {
-                        top: tank.top + NAME_OFFSET,
-                        left: tank.left,
-                        fontSize: 35,
-                        fontFamily: 'Sans-Serif',
-                        originX: 'center',
-                        originY: 'center'
-                    })
-                    player.nameText = nameText
-                    this.mainCanvas.add(nameText)
-                    const healthBar = createHealthBar(tank.max_hp, tank.current_hp)
-                    player.healthBar = healthBar
-                    healthBar.item(1).width = (player.current_hp/player.max_hp) * HEALTHBAR_WIDTH
-                    healthBar.left = player.tank.left
-                    healthBar.top = player.tank.top + HEALTH_OFFSET
-                    this.mainCanvas.add(healthBar)
+                    const tank = new Tank(gameState.tanks[id])
+                    this.mainCanvas.add(tank.toCanvas)
+                    this.minimap.add(tank.body)
+                    tank.toCanvas.bringToFront()
+                    this.$set(this.elements.tanks, id, tank)
                 })
-
-                this.elements.tanks = gameState.tanks
 
                 this.autoSpectate = true
                 this.mainCanvas.renderAll()
@@ -183,50 +182,47 @@
 
                 window.requestAnimationFrame(this.doFrame)
             },
+            /**
+             * Capped at 30 fps
+             **/
             doFrame() {
-                const now = Date.now()
-                if (this.autoSpectate && now - this.lastUpdateTimestamp > CANVAS_UPDATE_RATE) {
-                    this.focusedPlayer = this.orderedTanks[0]
-                }
-                this.centerPan()
-                this.hideIfUnzoomed()
-                this.mainCanvas.renderAll()
-                this.renderMinimap()
                 window.requestAnimationFrame(this.doFrame)
+
+                const FPS = 30
+                const now = Date.now()
+
+                const elapsed = now - this.$options.then
+
+                if (elapsed > 1000 / FPS) {
+                    this.$options.then = now
+                    if (this.autoSpectate && now - this.lastUpdateTimestamp > CANVAS_UPDATE_RATE) {
+                        this.focusedPlayer = this.orderedTanks[0]
+                    }
+                    this.centerPan()
+                    this.hideIfUnzoomed()
+                    this.mainCanvas.renderAll()
+                    this.renderMinimap()
+                }
             },
             drawAndRemoveProjectiles(updatedProjectiles) {
                 const newProjectileIds = new Set()
                 updatedProjectiles.forEach(projectile => {
                     newProjectileIds.add(projectile.id)
                     if (!this.elements.projectiles[projectile.id]) {
-                        const newProjectile = createProjectile(Object.values(this.elements.tanks).find(player => player.id === projectile.owner_id))
+                        const newProjectile = new Projectile(this.elements.tanks[projectile.owner_id], projectile)
                         this.elements.projectiles[projectile.id] = newProjectile
-                        this.mainCanvas.add(newProjectile)
-                        newProjectile.sendBackwards(true)
+                        const tank_index = this.mainCanvas.getObjects().indexOf(this.elements.tanks[projectile.owner_id].toCanvas)
+                        this.mainCanvas.insertAt(newProjectile.fabricObj, tank_index, false)
                     }
                 })
                 updatedProjectiles.forEach(projectile => {
-                    this.elements.projectiles[projectile.id].animate('left', projectile.position[0], {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    this.elements.projectiles[projectile.id].animate('top', projectile.position[1], {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
+                    this.elements.projectiles[projectile.id].update(projectile)
                 })
                 const difference = getDifference(this.elements.projectiles, newProjectileIds)
                 difference.forEach(id => {
-                    const element = this.elements.projectiles[id]
+                    const projectile = this.elements.projectiles[id]
                     delete this.elements.projectiles[id]
-                    element.animate('opacity', 0, {
-                        easing: linear,
-                        duration: FADE_DURATION,
-                        onComplete: () => {this.mainCanvas.remove(element)},
-                        onChange: null
-                    })
+                    projectile.die(() => this.mainCanvas.remove(projectile))
                 })
             },
             drawAndRemoveDebris(updatedDebris) {
@@ -234,37 +230,22 @@
                 updatedDebris.forEach(debris => {
                     newDebrisIds.add(debris.id)
                     if (!this.elements.debris[debris.id]) {
-                        const method = this.debrisCreationMethod(debris.size)
-                        const newDebris = method(debris.id)
-                        newDebris.left = debris.position[0]
-                        newDebris.top = debris.position[1]
+                        const newDebris = new Debris(debris)
                         this.elements.debris[debris.id] = newDebris
-                        this.mainCanvas.add(newDebris)
-                        newDebris.sendBackwards(this.elements.tanks[0])
+                        this.mainCanvas.add(newDebris.fabricObj)
+                        this.mainCanvas.sendBackwards(newDebris.fabricObj)
+                    } else {
+                        this.elements.debris[debris.id].update(debris)
                     }
                 })
                 const difference = getDifference(this.elements.debris, newDebrisIds)
                 difference.forEach(id => {
                     const debris = this.elements.debris[id]
                     delete this.elements.debris[id]
-                    debris.animate('opacity', 0, {
-                        easing: linear,
-                        duration: FADE_DURATION,
-                        onComplete: () => {this.mainCanvas.remove(debris)},
-                        onChange: null
-                    })
+                    debris.die(() => this.mainCanvas.remove(debris))
                 })
             },
-            debrisCreationMethod(size) {
-                switch(size) {
-                    case "small":
-                        return createSmallDebris;
-                    case "medium":
-                        return createMediumDebris;
-                    case "large":
-                        return createLargeDebris;
-                }
-            },
+
             /**
              * Called when a new game state arrives, updates the canvas and set intrapolation accordingly.
              * @param updatedGameState
@@ -274,54 +255,8 @@
                 const updatedTanks = updatedGameState.tanks
                 Object.keys(updatedTanks).forEach((id) => {
                     const updatedTank = updatedTanks[id]
-                    const associatedPlayer = this.elements.tanks[id]
-                    associatedPlayer.points = updatedTank.points
-                    associatedPlayer.tank.animate('left', updatedTank.position[0], {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    associatedPlayer.tank.animate('top', updatedTank.position[1], {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    // associatedPlayer.tank.animate('angle', updatedTank.angle, {
-                    //     onChange: null,
-                    //     duration: ANIMATION_DURATION,
-                    //     easing: linear
-                    // })
-                    associatedPlayer.nameText.animate('left', updatedTank.position[0], {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    associatedPlayer.nameText.animate('top', updatedTank.position[1] + NAME_OFFSET, {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    associatedPlayer.healthBar.item(1).animate('width', (updatedTank.current_hp/updatedTank.max_hp) * HEALTHBAR_WIDTH, {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    associatedPlayer.healthBar.animate('left', updatedTank.position[0], {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-                    associatedPlayer.healthBar.animate('top', updatedTank.position[1] + HEALTH_OFFSET, {
-                        onChange: null,
-                        duration: ANIMATION_DURATION,
-                        easing: linear
-                    })
-
-                    associatedPlayer.tank.animate('angle', updatedTank.cannon_angle, {
-                        onChange: null,
-                        duration: ANIMATION_DURATION / 2,
-                        easing: fabric.util.ease.easeOutQuad
-                    })
+                    const tank = this.elements.tanks[id]
+                    tank.update(updatedTank)
 
                 })
                 this.drawAndRemoveProjectiles(updatedGameState.projectiles)
@@ -329,16 +264,10 @@
                 this.lastUpdateTimestamp = Date.now()
             },
             hideIfUnzoomed() {
-                if (this.zoom < 0.25) {
-                    this.elements.thinGrid.visible = false
-                    Object.values(this.elements.tanks).forEach((player) => player.nameText.visible = false)
-                    Object.values(this.elements.tanks).forEach((player) => player.healthBar.visible = false)
-                }
-                if (this.zoom >= 0.25) {
-                    this.elements.thinGrid.visible = true
-                    Object.values(this.elements.tanks).forEach((player) => player.nameText.visible = true)
-                    Object.values(this.elements.tanks).forEach((player) => player.healthBar.visible = true)
-                }
+                const isVisible = this.zoom >= 0.25;
+                this.elements.thinGrid.visible = isVisible
+
+                Object.values(this.elements.tanks).forEach((tank) => tank.setHUDVisible(isVisible))
             },
             doZoom(event=null) {
                 if (this.zoom > MAX_ZOOM) this.zoom = MAX_ZOOM
@@ -352,7 +281,9 @@
             },
             centerPan() {
                 if (this.lockCamera && this.focusedPlayer) {
-                    this.mainCanvas.absolutePan(new fabric.Point(this.focusedPlayer.tank.left * this.zoom - (this.mainCanvas.getWidth() / 2), this.focusedPlayer.tank.top * this.zoom - (this.mainCanvas.getHeight() / 2)))
+                    let x = this.focusedPlayer.left() * this.zoom - (this.mainCanvas.getWidth() / 2) + this.mainCanvas.viewportTransform[4]
+                    let y =  this.focusedPlayer.top() * this.zoom - (this.mainCanvas.getHeight() / 2) + this.mainCanvas.viewportTransform[5]
+                    this.mainCanvas.relativePan(new fabric.Point(-x, -y))
                 }
             },
             initGrid() {
@@ -386,6 +317,10 @@
                 this.mainCanvas.setWidth(document.querySelector('#invisible').offsetWidth)
                 this.mainCanvas.renderAll()
             },
+
+            getColor(focusedPlayer) {
+                return COLORS[focusedPlayer.id % COLORS.length];
+            }
         }
     })
 </script>

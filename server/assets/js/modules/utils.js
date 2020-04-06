@@ -2,6 +2,8 @@
  * Module for utility functions that don't fit anywhere else
  */
 
+import {COLORS} from "./constants";
+
 /**
  * @param entities Object where its key is the same as newEntitiesIds' elements type
  * @param newEntitiesIds List of ids
@@ -10,6 +12,10 @@
 export function getDifference(entities, newEntitiesIds) {
     const allEntitiesIds = new Set(Object.keys(entities))
     return new Set([...allEntitiesIds].filter(x => !newEntitiesIds.has(BigInt(x))))
+}
+
+export function getColorFromId(id) {
+    return COLORS[id % COLORS.length]
 }
 
 export function regularPolygonPoints(sideCount, radius) {

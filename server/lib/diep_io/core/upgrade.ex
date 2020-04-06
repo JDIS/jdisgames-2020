@@ -7,6 +7,16 @@ defmodule Diep.Io.Core.Upgrade do
   @body_damage_rate 1.15
   @fire_rate_rate 0.85
 
+  def rates do
+    %{
+      speed: @speed_rate,
+      max_hp: @max_hp_rate,
+      projectile_damage: @projectile_damage_rate,
+      body_damage: @body_damage_rate,
+      fire_rate: @fire_rate_rate
+    }
+  end
+
   @spec speed(integer) :: integer
   def speed(value), do: Kernel.floor(value * @speed_rate)
 

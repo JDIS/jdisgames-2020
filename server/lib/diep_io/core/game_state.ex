@@ -5,11 +5,11 @@ defmodule Diep.Io.Core.GameState do
   """
 
   alias Diep.Io.Collisions
-  alias Diep.Io.Core.{Action, Debris, Entity, GameMap, Position, Projectile, Tank}
+  alias Diep.Io.Core.{Action, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
   alias Diep.Io.Users.User
   alias :rand, as: Rand
 
-  @max_debris_count 100
+  @max_debris_count 600
   @max_debris_generation_rate 0.5
   @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
   @projectile_decay 2
@@ -23,10 +23,11 @@ defmodule Diep.Io.Core.GameState do
     :map_height,
     :ticks,
     :max_ticks,
+    :upgrade_rates,
+    :projectiles,
     :game_id,
     :debris,
     :persistent?,
-    :projectiles,
     time_corrections: []
   ]
 
@@ -39,6 +40,13 @@ defmodule Diep.Io.Core.GameState do
           map_height: integer(),
           ticks: integer(),
           max_ticks: integer(),
+          upgrade_rates: %{
+            :body_damage => float(),
+            :fire_rate => float(),
+            :max_hp => float(),
+            :projectile_damage => float(),
+            :speed => float()
+          },
           game_id: integer(),
           persistent?: boolean(),
           projectiles: [Projectile.t()],
@@ -54,8 +62,9 @@ defmodule Diep.Io.Core.GameState do
       last_time: 0,
       map_width: GameMap.width(),
       map_height: GameMap.height(),
-      ticks: 0,
+      upgrade_rates: Upgrade.rates(),
       max_ticks: max_ticks,
+      ticks: 0,
       game_id: game_id,
       persistent?: persistent?,
       projectiles: []
