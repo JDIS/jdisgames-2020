@@ -107,5 +107,15 @@ defmodule GameloopTest do
 
       assert [] = ScoreRepository.get_scores()
     end
+
+    test ":reset_game sends {:stop, :normal, state} when should_stop? is true", %{game_name: game_name} do
+      ActionStorage.init(game_name)
+
+      game_state =
+        GameState.new(game_name, [], 0, 1, false)
+        |> GameState.stop_loop_after_max_ticks()
+
+      assert {:stop, :normal, %GameState{}} = Gameloop.handle_info(:reset_game, game_state)
+    end
   end
 end

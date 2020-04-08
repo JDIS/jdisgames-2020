@@ -41,5 +41,6 @@ defmodule Diep.IoWeb.Router do
 
     get "/start", AdminController, :start_game
     get "/stop", AdminController, :stop_game
+    get "/kill", AdminController, :kill_game
   end
 end

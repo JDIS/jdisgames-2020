@@ -17,7 +17,11 @@ defmodule Diep.Io.GameSupervisor do
   @spec start_main_game(non_neg_integer()) :: {:ok, pid()}
   def start_main_game(game_time), do: start_game(@main_game_name, true, game_time)
 
+  @spec stop_main_game :: :ok
   def stop_main_game, do: Gameloop.stop_game(@main_game_name)
+
+  @spec kill_main_game :: :ok
+  def kill_main_game, do: Gameloop.kill_game(@main_game_name)
 
   # Server (callbacks)
   def init([]), do: DynamicSupervisor.init(strategy: :one_for_one)

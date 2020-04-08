@@ -14,7 +14,7 @@ defmodule Diep.Io.Core.GameState do
   @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
   @projectile_decay 2
 
-  @derive {Jason.Encoder, except: [:last_time, :time_corrections]}
+  @derive {Jason.Encoder, except: [:last_time, :time_corrections, :should_stop?]}
   defstruct [
     :name,
     :tanks,
@@ -28,7 +28,9 @@ defmodule Diep.Io.Core.GameState do
     :game_id,
     :debris,
     :persistent?,
-    time_corrections: []
+    :projectiles,
+    time_corrections: [],
+    should_stop?: false
   ]
 
   @type t :: %__MODULE__{
@@ -50,7 +52,8 @@ defmodule Diep.Io.Core.GameState do
           game_id: integer(),
           persistent?: boolean(),
           projectiles: [Projectile.t()],
-          time_corrections: [integer()]
+          time_corrections: [integer()],
+          should_stop?: boolean()
         }
 
   @spec new(atom(), [User.t()], integer(), integer(), boolean()) :: t()
@@ -97,6 +100,9 @@ defmodule Diep.Io.Core.GameState do
       corrections -> Kernel.floor(Enum.sum(corrections) / Enum.count(corrections))
     end
   end
+
+  @spec stop_loop_after_max_ticks(t()) :: t()
+  def stop_loop_after_max_ticks(game_state), do: %{game_state | should_stop?: true}
 
   @spec decrease_cooldowns(t()) :: t()
   def decrease_cooldowns(game_state) do
