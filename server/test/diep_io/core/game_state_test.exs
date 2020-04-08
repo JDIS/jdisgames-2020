@@ -31,18 +31,26 @@ defmodule GameStateTest do
              map_width: map_width,
              map_height: map_height,
              ticks: 0,
-             max_ticks: @max_ticks
+             max_ticks: @max_ticks,
+             should_stop?: should_stop?
            } = game_state
 
     assert map_width == GameMap.width()
     assert map_height == GameMap.height()
     assert is_list(debris) && !Enum.empty?(debris)
+    assert should_stop? == false
   end
 
   test "increase_ticks/1 increases ticks by 1", %{game_state: game_state} do
     game_state = GameState.increase_ticks(game_state)
 
     assert game_state.ticks == 1
+  end
+
+  test "stop_loop_after_max_ticks/1 sets should_stop? to true", %{game_state: game_state} do
+    new_state = GameState.stop_loop_after_max_ticks(game_state)
+
+    assert new_state.should_stop? == true
   end
 
   test "handle_players/2 does not move player if destination is nil", %{game_state: game_state} do

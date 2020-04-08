@@ -8,7 +8,10 @@ defmodule Diep.IoWeb.AdminController do
   end
 
   def start_game(conn, %{"ticks" => ticks} = _params) do
-    {:ok, pid} = GameSupervisor.start_main_game(ticks)
+    {:ok, pid} =
+      ticks
+      |> String.to_integer()
+      |> GameSupervisor.start_main_game()
 
     conn
     |> put_flash(:info, "Started game, #{inspect(pid)}")
@@ -19,7 +22,15 @@ defmodule Diep.IoWeb.AdminController do
     :ok = GameSupervisor.stop_main_game()
 
     conn
-    |> put_flash(:info, "Main game stopped")
+    |> put_flash(:info, "Main game will stop after max ticks.")
+    |> redirect(to: "/admin")
+  end
+
+  def kill_game(conn, _params) do
+    :ok = GameSupervisor.kill_main_game()
+
+    conn
+    |> put_flash(:info, "Main game killed")
     |> redirect(to: "/admin")
   end
 end

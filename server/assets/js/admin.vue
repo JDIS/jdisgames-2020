@@ -4,6 +4,7 @@
         Number of ticks: <input type="number" v-model="ticks" min="1" />
         <button @click="startGame()">Start</button>
         <button @click="stopGame()">Stop</button>
+        <button @click="killGame()">Kill</button>
     </div>
 </template>
 
@@ -33,6 +34,10 @@
 
             stopGame() {
                 window.location = '/admin/stop'
+            },
+
+            killGame() {
+                window.location = '/admin/kill'
             }
         }
     })

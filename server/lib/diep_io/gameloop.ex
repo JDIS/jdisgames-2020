@@ -25,7 +25,10 @@ defmodule Diep.Io.Gameloop do
   end
 
   @spec stop_game(atom()) :: :ok
-  def stop_game(name), do: GenServer.stop(name)
+  def stop_game(name), do: GenServer.call(name, :stop_game)
+
+  @spec kill_game(atom()) :: :ok
+  def kill_game(name), do: GenServer.stop(name)
 
   # Server (callbacks)
   @impl true
@@ -35,11 +38,14 @@ defmodule Diep.Io.Gameloop do
   end
 
   @impl true
+  def handle_call(:stop_game, _from, state) do
+    {:reply, :ok, GameState.stop_loop_after_max_ticks(state)}
+  end
+
+  @impl true
   def handle_info(:reset_game, state) do
     :ok = save_scores(state)
-    :ok = ActionStorage.reset(state.name)
-    {:ok, new_state} = init_game_state(state.name, state.max_ticks, state.persistent?)
-    {:noreply, new_state}
+    handle_reset_game(state)
   end
 
   @impl true
@@ -76,15 +82,6 @@ defmodule Diep.Io.Gameloop do
     {:noreply, Map.put(updated_state, :last_time, begin_time)}
   end
 
-  @impl true
-  def terminate(reason, state) do
-    Logger.info("Gameloop #{inspect(self())} terminating because #{inspect(reason)}")
-
-    if reason == :normal do
-      :ok = save_scores(state)
-    end
-  end
-
   # Privates
   defp init_game_state(name, game_time, persistent?) do
     game_id = System.unique_integer()
@@ -95,6 +92,16 @@ defmodule Diep.Io.Gameloop do
     Logger.info("Initialized gameloop #{game_id} with #{length(users)} users")
     send(self(), :loop)
     {:ok, GameState.new(name, users, game_time, game_id, persistent?)}
+  end
+
+  defp handle_reset_game(%{should_stop?: true} = state) do
+    {:stop, :normal, state}
+  end
+
+  defp handle_reset_game(%{should_stop?: false} = state) do
+    :ok = ActionStorage.reset(state.name)
+    {:ok, new_state} = init_game_state(state.name, state.max_ticks, state.persistent?)
+    {:noreply, new_state}
   end
 
   defp calculate_elasped_time(0, _now), do: @tickrate_native

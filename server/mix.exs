@@ -78,7 +78,7 @@ defmodule Diep.MixProject do
         "format --check-formatted",
         "credo --strict",
         # "sobelow --exit",
-        "dialyzer --halt-exit-status"
+        "dialyzer"
       ],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
