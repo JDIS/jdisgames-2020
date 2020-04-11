@@ -3,7 +3,7 @@ defmodule Diep.IoWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
-    assert html_response(conn, 200) =~ "Action tests"
+    assert html_response(conn, 200) =~ "<h1>JDIS Games 2020</h1>"
   end
 
   test "GET /spectate", %{conn: conn} do

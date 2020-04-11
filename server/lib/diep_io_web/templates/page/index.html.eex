@@ -1,7 +1,1 @@
-Welcome to Phoenix!
-<h1>Action tests</h1>
-<label for="x">x: </label>
-<input type="number" name="x" id="x" value="0" />
-<label for="y">y: </label>
-<input type="number" name="y" id="y" value="0" />
-<input type="button" value="Send action" id="send-button" /> 
+<h1>JDIS Games 2020</h1>
