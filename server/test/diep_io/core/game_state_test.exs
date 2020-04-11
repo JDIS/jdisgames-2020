@@ -212,7 +212,7 @@ defmodule GameStateTest do
   end
 
   test "handle_collisions/1 decreases hp of all tanks hit by projectiles" do
-    {tank, game_state} = setup_tank_projectile_collision()
+    {tank, _, game_state} = setup_tank_projectile_collision()
 
     updated_game_state = GameState.handle_collisions(game_state)
 
@@ -233,7 +233,7 @@ defmodule GameStateTest do
   end
 
   test "handle_collisions/1 removes projectiles that hit a tank" do
-    {_, game_state} = setup_tank_projectile_collision()
+    {_, _, game_state} = setup_tank_projectile_collision()
 
     assert GameState.handle_collisions(game_state).projectiles == []
   end
@@ -285,8 +285,75 @@ defmodule GameStateTest do
     assert updated_game_state.debris == []
   end
 
+  test "handle_collisions/1 gives points to tanks that destroyed debris by colliding" do
+    {_tank, debris, game_state} = setup_tank_debris_collision(:small)
+    updated_game_state = GameState.handle_collisions(game_state)
+
+    assert get_tank(updated_game_state, @user_id).score ==
+             get_tank(game_state, @user_id).score + Debris.get_points(debris)
+  end
+
+  test "handle_collisions/1 gives points to tanks that destroyed debris by shooting" do
+    {_projectile, debris, game_state} = setup_projectile_debris_collision(:small)
+    updated_game_state = GameState.handle_collisions(game_state)
+
+    assert get_tank(updated_game_state, @user_id).score ==
+             get_tank(game_state, @user_id).score + Debris.get_points(debris)
+  end
+
+  test "handle_collisions/1 gives points to tanks that destroyed another tank by shooting" do
+    {_, tank, game_state} = setup_tank_projectile_collision()
+
+    updated_game_state =
+      game_state
+      |> update_all_projectiles(fn projectile -> Map.replace!(projectile, :damage, tank.current_hp) end)
+      |> GameState.handle_collisions()
+
+    assert get_tank(updated_game_state, tank.id).score > get_tank(game_state, tank.id).score
+  end
+
+  test "handle_collision/1 gives points to tanks that destroyed another tank by colliding" do
+    game_state =
+      setup_tank_tank_collision()
+      |> update_single_tank(@user_id, fn tank -> Map.replace!(tank, :body_damage, tank.max_hp) end)
+      |> GameState.handle_collisions()
+
+    assert game_state.tanks[@user_id].score != game_state.tanks[@user_id + 1].score
+  end
+
+  test "handle_tank_death/1 respawns dead tanks", %{game_state: game_state} do
+    tank =
+      game_state
+      |> kill_tanks()
+      |> give_experience(100)
+      |> GameState.handle_tank_death()
+      |> get_tank(@user_id)
+
+    assert tank.has_died == true
+    assert tank.experience < 100
+  end
+
+  test "handle_tank_death/1 tags a tank as dead only during one turn", %{game_state: game_state} do
+    tank =
+      game_state
+      |> kill_tanks()
+      |> GameState.handle_tank_death()
+      |> GameState.handle_tank_death()
+      |> get_tank(@user_id)
+
+    assert tank.has_died == false
+  end
+
   defp get_tank(game_state, id) do
     game_state |> Map.get(:tanks) |> Map.get(id)
+  end
+
+  defp kill_tanks(game_state) do
+    update_all_tanks(game_state, fn {id, tank} -> {id, Tank.hit(tank, tank.max_hp)} end)
+  end
+
+  defp give_experience(game_state, amount) do
+    update_all_tanks(game_state, fn {id, tank} -> {id, Tank.add_experience(tank, amount)} end)
   end
 
   defp move_tanks_to_origin(game_state) do
@@ -301,6 +368,22 @@ defmodule GameStateTest do
     %{game_state | tanks: Map.new(game_state.tanks, func)}
   end
 
+  defp update_single_tank(game_state, tank_id, func) do
+    %{game_state | tanks: Map.update!(game_state.tanks, tank_id, func)}
+  end
+
+  defp update_all_projectiles(game_state, func) do
+    %{game_state | projectiles: Enum.map(game_state.projectiles, func)}
+  end
+
+  defp setup_tank_tank_collision do
+    user1 = %User{name: @user_name, id: @user_id}
+    user2 = %User{name: @user_name <> "2", id: @user_id + 1}
+
+    GameState.new("game_name", [user1, user2], @max_ticks, 0, false)
+    |> move_tanks_to_origin()
+  end
+
   defp setup_tank_projectile_collision do
     user1 = %User{name: @user_name, id: @user_id}
     # User 2 only serves as the projectile's owner
@@ -308,21 +391,22 @@ defmodule GameStateTest do
     game_state = GameState.new("game_name", [user1, user2], @max_ticks, 0, false)
 
     tank1 = Map.fetch!(game_state.tanks, user1.id)
+    tank2 = Map.fetch!(game_state.tanks, user2.id)
 
-    projectile = Projectile.new(user2.id, Entity.get_position(tank1), 0, tank1.projectile_damage)
+    projectile = Projectile.new(user2.id, Entity.get_position(tank1), 0, tank2.projectile_damage)
 
     game_state = %{game_state | projectiles: [projectile]}
 
-    {tank1, game_state}
+    {tank1, tank2, game_state}
   end
 
-  defp setup_tank_debris_collision do
+  defp setup_tank_debris_collision(debris_size \\ :large) do
     user = %User{name: @user_name, id: @user_id}
     game_state = GameState.new("game_name", [user], @max_ticks, 0, false)
 
     tank = Map.fetch!(game_state.tanks, user.id)
 
-    debris = Debris.new(:large)
+    debris = Debris.new(debris_size)
     debris = %{debris | position: Entity.get_position(tank)}
 
     game_state = %{game_state | debris: [debris]}
@@ -330,11 +414,12 @@ defmodule GameStateTest do
     {tank, debris, game_state}
   end
 
-  defp setup_projectile_debris_collision do
-    projectile = Projectile.new(1, {0, 0}, 0, 10)
-    game_state = GameState.new("game_name", [], @max_ticks, 0, false)
+  defp setup_projectile_debris_collision(debris_size \\ :large) do
+    user = %User{name: @user_name, id: @user_id}
+    projectile = Projectile.new(user.id, {0, 0}, 0, 20)
+    game_state = GameState.new("game_name", [user], @max_ticks, 0, false)
 
-    debris = Debris.new(:large)
+    debris = Debris.new(debris_size)
     debris = %{debris | position: Entity.get_position(projectile)}
 
     game_state = %{game_state | debris: [debris], projectiles: [projectile]}

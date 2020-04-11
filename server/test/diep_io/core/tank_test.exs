@@ -190,4 +190,12 @@ defmodule TankTest do
 
     assert upgraded_tank.body_damage > tank.body_damage
   end
+
+  test "mark_as_dead/1 sets the has_died attribute to true", %{tank: tank} do
+    assert Tank.mark_as_dead(tank).has_died == true
+  end
+
+  test "mark_as_alive/1 sets the has_died attribute to false", %{tank: tank} do
+    assert Tank.mark_as_alive(tank).has_died == false
+  end
 end

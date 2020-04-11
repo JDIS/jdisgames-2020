@@ -63,6 +63,7 @@ defmodule Diep.Io.Gameloop do
       |> GameState.handle_debris()
       |> GameState.handle_collisions()
       |> GameState.decrease_cooldowns()
+      |> GameState.handle_tank_death()
       |> GameState.increase_ticks()
       |> GameState.add_time_correction(elasped_time - @tickrate_native)
 
