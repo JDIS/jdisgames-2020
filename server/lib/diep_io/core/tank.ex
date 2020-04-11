@@ -43,6 +43,7 @@ defmodule Diep.Io.Core.Tank do
     :fire_rate,
     :projectile_damage,
     :body_damage,
+    has_died: false,
     cooldown: 0,
     experience: 0,
     cannon_angle: 0,
@@ -63,7 +64,8 @@ defmodule Diep.Io.Core.Tank do
           cooldown: number,
           projectile_damage: integer,
           body_damage: integer,
-          cannon_angle: number()
+          cannon_angle: number(),
+          has_died: boolean
         }
 
   defimpl Entity do
@@ -76,7 +78,7 @@ defmodule Diep.Io.Core.Tank do
     def get_radius(_tank), do: Tank.default_radius()
 
     @spec get_body_damage(Tank.t()) :: integer
-    def get_body_damage(_tank), do: Tank.default_body_damage()
+    def get_body_damage(tank), do: tank.body_damage
   end
 
   @spec new(integer, String.t()) :: t()
@@ -167,6 +169,12 @@ defmodule Diep.Io.Core.Tank do
     set_value(tank, :cannon_angle, angle)
   end
 
+  @spec mark_as_dead(t()) :: t()
+  def mark_as_dead(tank), do: set_value(tank, :has_died, true)
+
+  @spec mark_as_alive(t()) :: t()
+  def mark_as_alive(tank), do: set_value(tank, :has_died, false)
+
   @spec buy_max_hp_upgrade(t()) :: t()
   def buy_max_hp_upgrade(tank), do: buy_upgrade(tank, :max_hp)
 
@@ -233,6 +241,8 @@ defmodule Diep.Io.Core.Tank do
     |> Map.values()
     |> Enum.sum()
   end
+
+  defp get_token_amount_from_experience(0), do: 0
 
   defp get_token_amount_from_experience(exp) do
     exp

@@ -9,10 +9,12 @@ defmodule Diep.Io.Core.GameState do
   alias Diep.Io.Users.User
   alias :rand, as: Rand
 
-  @max_debris_count 600
+  @max_debris_count 1000
   @max_debris_generation_rate 0.5
   @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
   @projectile_decay 2
+  @experience_loss_rate 0.5
+  @experience_score_ratio_on_kill 0.1
 
   @derive {Jason.Encoder, except: [:last_time, :time_corrections, :should_stop?]}
   defstruct [
@@ -24,7 +26,6 @@ defmodule Diep.Io.Core.GameState do
     :ticks,
     :max_ticks,
     :upgrade_rates,
-    :projectiles,
     :game_id,
     :debris,
     :persistent?,
@@ -144,6 +145,16 @@ defmodule Diep.Io.Core.GameState do
     |> handle_projectile_debris_collision()
   end
 
+  @spec handle_tank_death(t()) :: t()
+  def handle_tank_death(game_state) do
+    updated_tanks =
+      game_state.tanks
+      |> Map.new(fn {id, tank} -> {id, Tank.mark_as_alive(tank)} end)
+      |> Map.new(fn {id, tank} -> {id, respawn_if_dead(tank)} end)
+
+    %{game_state | tanks: updated_tanks}
+  end
+
   defp handle_action(action, game_state) do
     game_state
     |> handle_purchase(action)
@@ -217,8 +228,12 @@ defmodule Diep.Io.Core.GameState do
 
     tanks_map =
       collisions
-      |> Enum.reduce(tanks_map, fn {tank, other_tank}, acc ->
-        Map.replace!(acc, tank.id, Tank.hit(tank, Entity.get_body_damage(other_tank)))
+      |> Enum.reduce(tanks_map, fn {tank, other_tank}, tanks ->
+        damaged_tank = Tank.hit(tanks[tank.id], Entity.get_body_damage(other_tank))
+
+        tanks
+        |> award_score_and_xp_if_dead(other_tank, damaged_tank)
+        |> Map.replace!(tank.id, damaged_tank)
       end)
 
     %{game_state | tanks: tanks_map}
@@ -233,9 +248,13 @@ defmodule Diep.Io.Core.GameState do
     tanks_map =
       collisions
       |> Enum.filter(fn {tank, projectile} -> tank.id != projectile.owner_id end)
-      |> Enum.reduce(tanks_map, fn {tank, projectile}, acc ->
-        projectile_damage = Map.fetch!(acc, projectile.owner_id).projectile_damage
-        Map.replace!(acc, tank.id, Tank.hit(tank, projectile_damage))
+      |> Enum.reduce(tanks_map, fn {tank, projectile}, tanks ->
+        projectile_damage = Entity.get_body_damage(projectile)
+        damaged_tank = Tank.hit(tanks[tank.id], projectile_damage)
+
+        tanks
+        |> award_score_and_xp_if_dead(projectile, damaged_tank)
+        |> Map.replace!(tank.id, damaged_tank)
       end)
 
     projectiles =
@@ -251,15 +270,15 @@ defmodule Diep.Io.Core.GameState do
       |> Map.values()
       |> Collisions.calculate_collisions(debris)
 
+    updated_state = handle_debris_collisions(game_state, collisions)
+
     tanks_map =
       collisions
-      |> Enum.reduce(tanks_map, fn {tank, _debris}, acc ->
-        Map.replace!(acc, tank.id, Tank.hit(tank, Debris.default_body_damage()))
+      |> Enum.reduce(updated_state.tanks, fn {tank, _debris}, acc ->
+        Map.replace!(acc, tank.id, Tank.hit(Map.get(acc, tank.id), Debris.default_body_damage()))
       end)
 
-    debris = handle_debris_collisions(debris, collisions)
-
-    %{game_state | tanks: tanks_map, debris: debris}
+    %{updated_state | tanks: tanks_map}
   end
 
   defp handle_projectile_debris_collision(%{debris: debris, projectiles: projectiles} = game_state) do
@@ -267,19 +286,63 @@ defmodule Diep.Io.Core.GameState do
       projectiles
       |> Collisions.calculate_collisions(debris)
 
-    debris = handle_debris_collisions(debris, collisions)
+    updated_state = handle_debris_collisions(game_state, collisions)
 
     projectiles =
       projectiles
       |> handle_projectiles_collision(Enum.map(collisions, fn {projectile, _} -> projectile end))
 
-    %{game_state | debris: debris, projectiles: projectiles}
+    %{updated_state | projectiles: projectiles}
   end
 
-  defp handle_debris_collisions(debris, collisions) do
-    debris
-    |> Enum.map(fn deb -> Enum.reduce(collisions, deb, &damage_debris_if_hit/2) end)
-    |> Enum.filter(&Debris.is_alive?/1)
+  defp handle_debris_collisions(game_state, collisions) do
+    {debris_alive, debris_dead} =
+      game_state.debris
+      |> Enum.map(fn deb -> Enum.reduce(collisions, deb, &damage_debris_if_hit/2) end)
+      |> Enum.split_with(&Debris.is_alive?/1)
+
+    updated_tanks =
+      Enum.reduce(collisions, game_state.tanks, fn {entity, deb}, tanks ->
+        case Enum.find(debris_dead, nil, fn debris -> debris.id == deb.id end) do
+          nil -> tanks
+          single_debris -> award_score_and_xp(entity, single_debris, tanks)
+        end
+      end)
+
+    %{game_state | debris: debris_alive, tanks: updated_tanks}
+  end
+
+  defp award_score_and_xp_if_dead(tanks, attacker, %Tank{} = damaged_tank) do
+    case Tank.is_dead?(damaged_tank) do
+      false -> tanks
+      true -> award_score_and_xp(attacker, damaged_tank, tanks)
+    end
+  end
+
+  defp award_score_and_xp(%Projectile{} = projectile, dead_entity, tanks) do
+    tanks
+    |> Map.get(projectile.owner_id)
+    |> award_score_and_xp(dead_entity, tanks)
+  end
+
+  defp award_score_and_xp(%Tank{} = tank, %Debris{} = debris, tanks) do
+    amount = Debris.get_points(debris)
+    award_score_and_xp(tank, amount, tanks)
+  end
+
+  defp award_score_and_xp(%Tank{} = tank, %Tank{} = dead_tank, tanks) do
+    amount = calculate_score_and_xp_gain(dead_tank)
+    award_score_and_xp(tank, amount, tanks)
+  end
+
+  defp award_score_and_xp(%Tank{} = tank, amount, tanks) when is_integer(amount) do
+    tanks
+    |> Map.update!(tank.id, &Tank.increase_score(&1, amount))
+    |> Map.update!(tank.id, &Tank.add_experience(&1, amount))
+  end
+
+  defp calculate_score_and_xp_gain(dead_tank) do
+    Kernel.floor(dead_tank.experience * @experience_score_ratio_on_kill) + 100
   end
 
   defp handle_projectiles_collision(projectiles, collided_projectiles) do
@@ -294,6 +357,18 @@ defmodule Diep.Io.Core.GameState do
       Debris.hit(debris, Entity.get_body_damage(other_entity))
     else
       debris
+    end
+  end
+
+  defp respawn_if_dead(tank) do
+    case Tank.is_dead?(tank) do
+      false ->
+        tank
+
+      true ->
+        Tank.new(tank.id, tank.name)
+        |> Tank.add_experience(Kernel.floor(tank.experience * @experience_loss_rate))
+        |> Tank.mark_as_dead()
     end
   end
 
