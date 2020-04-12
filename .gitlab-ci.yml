@@ -10,6 +10,11 @@ variables:
   POSTGRES_PASSWORD: "postgres"
   MIX_ENV: "test"
 
+stages:
+  - test_and_build
+  - test_rt
+  - generate_badges
+
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
 .job_template: &definition_build
   image: docker:19.03.5
@@ -37,22 +42,27 @@ variables:
     - docker info
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-mix:
+.job_template: &definition_mix
   before_script:
     - cd server
     - mix local.rebar --force
     - mix local.hex --force
     - mix deps.get --only test
     - mix ecto.setup
-  script:
-    - mix quality.ci
   cache:
     paths:
       - server/deps
       - server/priv/plts
 
+mix:
+  <<: *definition_mix
+  stage: test_and_build
+  script:
+    - mix quality.ci
+
 docker:
   <<: *definition_build
+  stage: test_and_build
   script:
     - cd server
     - docker pull $CI_REGISTRY_IMAGE:build_latest || true
@@ -60,3 +70,46 @@ docker:
     - docker build --cache-from $CI_REGISTRY_IMAGE:build_latest --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:latest .
     - docker push $CI_REGISTRY_IMAGE:build_latest
     - docker push $CI_REGISTRY_IMAGE:latest
+
+test_rt:
+  stage: test_rt
+  tags:
+    - RT
+  only: 
+    - master
+  variables:
+    CUSTOM_BADGES_LOCATION: $CI_PROJECT_DIR/server/badges
+  before_script:
+    - cd server
+    - mix local.rebar --force
+    - mix local.hex --force
+    - mix deps.get --only test
+    - mix ecto.setup
+  script:
+    - mix test --only RT
+  cache:
+    paths:
+      - server/deps
+      - server/priv/plts
+  artifacts:
+    paths:
+      - server/badges
+    when: always
+
+generate_badges:
+  stage: generate_badges
+  image: python:3.8-alpine
+  when: always
+  only: 
+    - master
+  script:
+    - pip install anybadge
+    - cd server
+    - python generate_badges.py
+  artifacts:
+    paths:
+      - server/badges
+    when: always
+    expire_in: 4 weeks
+  dependencies:
+    - test_rt

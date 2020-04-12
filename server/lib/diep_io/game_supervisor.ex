@@ -15,7 +15,7 @@ defmodule Diep.Io.GameSupervisor do
   def start_link([]), do: DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
 
   @spec start_main_game(non_neg_integer()) :: {:ok, pid()}
-  def start_main_game(game_time), do: start_game(@main_game_name, true, game_time)
+  def start_main_game(game_time), do: start_game(@main_game_name, true, game_time, 3, true)
 
   @spec stop_main_game :: :ok
   def stop_main_game, do: Gameloop.stop_game(@main_game_name)
@@ -27,8 +27,15 @@ defmodule Diep.Io.GameSupervisor do
   def init([]), do: DynamicSupervisor.init(strategy: :one_for_one)
 
   # Privates
-  defp start_game(name, persistent?, game_time) do
-    spec = {Gameloop, name: name, game_time: game_time, persistent?: persistent?}
+  defp start_game(name, persistent?, game_time, tick_rate, monitor_performance?) do
+    spec =
+      {Gameloop,
+       name: name,
+       game_time: game_time,
+       persistent?: persistent?,
+       tick_rate: tick_rate,
+       monitor_performance?: monitor_performance?}
+
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
 end

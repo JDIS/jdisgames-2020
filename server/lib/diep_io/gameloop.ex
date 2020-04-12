@@ -5,23 +5,42 @@ defmodule Diep.Io.Gameloop do
   """
 
   use GenServer
-  alias Diep.Io.{ActionStorage, ScoreRepository, UsersRepository}
+  alias Diep.Io.{ActionStorage, PerformanceMonitor, ScoreRepository, UsersRepository}
   alias Diep.IoWeb.Endpoint
   alias Diep.Io.Core.{Action, GameState}
   alias :erlang, as: Erlang
   require Logger
-
-  @tickrate_ms floor(1000 / 3)
-  @tickrate_native Erlang.convert_time_unit(@tickrate_ms, :millisecond, :native)
 
   # Client
 
   @doc """
     Game_time is the number of ticks the game will last.
   """
-  @spec start_link(name: atom(), game_time: integer(), persistent?: boolean()) :: {:ok, pid()}
-  def start_link(name: name, game_time: game_time, persistent?: persistent?) do
-    GenServer.start(__MODULE__, [name: name, game_time: game_time, persistent?: persistent?], name: name)
+  @spec start_link(
+          name: atom(),
+          game_time: integer(),
+          persistent?: boolean(),
+          tick_rate: integer(),
+          monitor_performance?: boolean()
+        ) :: {:ok, pid()}
+  def start_link(
+        name: name,
+        game_time: game_time,
+        persistent?: persistent?,
+        tick_rate: tick_rate,
+        monitor_performance?: monitor_performance?
+      ) do
+    GenServer.start(
+      __MODULE__,
+      [
+        name: name,
+        game_time: game_time,
+        persistent?: persistent?,
+        tick_rate: tick_rate,
+        monitor_performance?: monitor_performance?
+      ],
+      name: name
+    )
   end
 
   @spec stop_game(atom()) :: :ok
@@ -31,10 +50,17 @@ defmodule Diep.Io.Gameloop do
   def kill_game(name), do: GenServer.stop(name)
 
   # Server (callbacks)
+
   @impl true
-  def init(name: name, game_time: game_time, persistent?: persistent?) do
+  def init(
+        name: name,
+        game_time: game_time,
+        persistent?: persistent?,
+        tick_rate: tick_rate,
+        monitor_performance?: monitor_performance?
+      ) do
     :ok = ActionStorage.init(name)
-    init_game_state(name, game_time, persistent?)
+    init_game_state(name, game_time, persistent?, tick_rate, monitor_performance?)
   end
 
   @impl true
@@ -51,8 +77,8 @@ defmodule Diep.Io.Gameloop do
   @impl true
   def handle_info(:loop, state) do
     begin_time = Erlang.monotonic_time()
-    elasped_time = calculate_elasped_time(state.last_time, begin_time)
-    Logger.debug("looperoo took #{elasped_time / 1_000_000}ms")
+    elasped_time = GameState.calculate_elasped_time(state, begin_time)
+    Logger.debug("looperoo took #{Erlang.convert_time_unit(elasped_time, :native, :millisecond)}ms")
 
     updated_state =
       state.tanks
@@ -65,7 +91,7 @@ defmodule Diep.Io.Gameloop do
       |> GameState.decrease_cooldowns()
       |> GameState.handle_tank_death()
       |> GameState.increase_ticks()
-      |> GameState.add_time_correction(elasped_time - @tickrate_native)
+      |> GameState.add_time_correction(elasped_time)
 
     broadcast(updated_state)
 
@@ -73,7 +99,9 @@ defmodule Diep.Io.Gameloop do
 
     case GameState.in_progress?(updated_state) do
       true ->
-        sleep_time = calculate_time_to_wait(end_time - begin_time, GameState.calculate_correction(updated_state))
+        iteration_duration = end_time - begin_time
+        if updated_state.monitor_performance?, do: PerformanceMonitor.store_gameloop_duration(iteration_duration)
+        sleep_time = GameState.calculate_time_to_wait(updated_state, iteration_duration)
         Process.send_after(self(), :loop, sleep_time)
 
       false ->
@@ -84,15 +112,17 @@ defmodule Diep.Io.Gameloop do
   end
 
   # Privates
-  defp init_game_state(name, game_time, persistent?) do
+  defp init_game_state(name, game_time, persistent?, tick_rate, monitor_performance?) do
     game_id = System.unique_integer()
     users = UsersRepository.list_users()
     # Initialize ActionStorage's content with empty actions for each user
     users |> Enum.each(fn user -> ActionStorage.store_action(name, Action.new(user.id)) end)
 
+    if monitor_performance?, do: PerformanceMonitor.reset()
+
     Logger.info("Initialized gameloop #{game_id} with #{length(users)} users")
     send(self(), :loop)
-    {:ok, GameState.new(name, users, game_time, game_id, persistent?)}
+    {:ok, GameState.new(name, users, game_time, game_id, persistent?, tick_rate, monitor_performance?)}
   end
 
   defp handle_reset_game(%{should_stop?: true} = state) do
@@ -101,21 +131,16 @@ defmodule Diep.Io.Gameloop do
 
   defp handle_reset_game(%{should_stop?: false} = state) do
     :ok = ActionStorage.reset(state.name)
-    {:ok, new_state} = init_game_state(state.name, state.max_ticks, state.persistent?)
+
+    {:ok, new_state} =
+      init_game_state(state.name, state.max_ticks, state.persistent?, state.tick_rate, state.monitor_performance?)
+
     {:noreply, new_state}
-  end
-
-  defp calculate_elasped_time(0, _now), do: @tickrate_native
-  defp calculate_elasped_time(last_iteration, now), do: now - last_iteration
-
-  defp calculate_time_to_wait(elapsed_time, time_correction) do
-    (@tickrate_native - elapsed_time - time_correction)
-    |> max(0)
-    |> Erlang.convert_time_unit(:native, :millisecond)
   end
 
   defp broadcast(state) do
     Endpoint.broadcast!("game_state", "new_state", state)
+    if state.monitor_performance?, do: PerformanceMonitor.store_broadcast_time(Erlang.monotonic_time())
   end
 
   defp save_scores(%{persistent?: true} = state) do

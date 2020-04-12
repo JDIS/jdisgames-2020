@@ -7,6 +7,7 @@ defmodule Diep.Io.Core.GameState do
   alias Diep.Io.Collisions
   alias Diep.Io.Core.{Action, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
   alias Diep.Io.Users.User
+  alias :erlang, as: Erlang
   alias :rand, as: Rand
 
   @max_debris_count 1000
@@ -16,7 +17,7 @@ defmodule Diep.Io.Core.GameState do
   @experience_loss_rate 0.5
   @experience_score_ratio_on_kill 0.1
 
-  @derive {Jason.Encoder, except: [:last_time, :time_corrections, :should_stop?]}
+  @derive {Jason.Encoder, except: [:last_time, :time_corrections, :should_stop?, :tick_rate, :monitor_performance]}
   defstruct [
     :name,
     :tanks,
@@ -30,6 +31,8 @@ defmodule Diep.Io.Core.GameState do
     :debris,
     :persistent?,
     :projectiles,
+    :tick_rate,
+    :monitor_performance?,
     time_corrections: [],
     should_stop?: false
   ]
@@ -54,11 +57,13 @@ defmodule Diep.Io.Core.GameState do
           persistent?: boolean(),
           projectiles: [Projectile.t()],
           time_corrections: [integer()],
+          tick_rate: integer(),
+          monitor_performance?: boolean(),
           should_stop?: boolean()
         }
 
-  @spec new(atom(), [User.t()], integer(), integer(), boolean()) :: t()
-  def new(name, users, max_ticks, game_id, persistent?) do
+  @spec new(atom(), [User.t()], integer(), integer(), boolean(), integer(), boolean()) :: t()
+  def new(name, users, max_ticks, game_id, persistent?, tick_rate, monitor_performance?) do
     %__MODULE__{
       name: name,
       tanks: initialize_tanks(users),
@@ -71,7 +76,9 @@ defmodule Diep.Io.Core.GameState do
       ticks: 0,
       game_id: game_id,
       persistent?: persistent?,
-      projectiles: []
+      tick_rate: tick_rate,
+      projectiles: [],
+      monitor_performance?: monitor_performance?
     }
   end
 
@@ -85,12 +92,13 @@ defmodule Diep.Io.Core.GameState do
   def in_progress?(game_state), do: game_state.ticks <= game_state.max_ticks
 
   @spec add_time_correction(t(), integer()) :: t()
-  def add_time_correction(%__MODULE__{time_corrections: corrections} = game_state, correction)
+  def add_time_correction(%__MODULE__{time_corrections: corrections} = game_state, elapsed_time)
       when length(corrections) >= 16 do
-    add_time_correction(%{game_state | time_corrections: Enum.drop(corrections, -1)}, correction)
+    add_time_correction(%{game_state | time_corrections: Enum.drop(corrections, -1)}, elapsed_time)
   end
 
-  def add_time_correction(%__MODULE__{time_corrections: corrections} = game_state, correction) do
+  def add_time_correction(%__MODULE__{time_corrections: corrections} = game_state, elapsed_time) do
+    correction = elapsed_time - calculate_iteration_duration_native(game_state.tick_rate)
     %{game_state | time_corrections: [correction | corrections]}
   end
 
@@ -100,6 +108,22 @@ defmodule Diep.Io.Core.GameState do
       [] -> 0
       corrections -> Kernel.floor(Enum.sum(corrections) / Enum.count(corrections))
     end
+  end
+
+  @spec calculate_elasped_time(t(), integer()) :: integer()
+  def calculate_elasped_time(%{last_time: 0, tick_rate: tick_rate}, _now) do
+    calculate_iteration_duration_native(tick_rate)
+  end
+
+  def calculate_elasped_time(%{last_time: last_time}, now), do: now - last_time
+
+  @spec calculate_time_to_wait(t(), integer()) :: integer()
+  def calculate_time_to_wait(state, elapsed_time) do
+    time_correction = calculate_correction(state)
+
+    (calculate_iteration_duration_native(state.tick_rate) - elapsed_time - time_correction)
+    |> max(0)
+    |> Erlang.convert_time_unit(:native, :millisecond)
   end
 
   @spec stop_loop_after_max_ticks(t()) :: t()
@@ -393,4 +417,8 @@ defmodule Diep.Io.Core.GameState do
     do: users |> Map.new(fn user -> {user.id, Tank.new(user.id, user.name)} end)
 
   defp initialize_debris, do: create_debris(@max_debris_count)
+
+  defp calculate_iteration_duration_native(tick_rate) do
+    Erlang.convert_time_unit(div(1000, tick_rate), :millisecond, :native)
+  end
 end
