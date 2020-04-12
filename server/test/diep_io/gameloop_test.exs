@@ -10,8 +10,15 @@ defmodule GameloopTest do
     tank_id = 1
     game_time = 10
     game_name = :test_game
+    tick_rate = 3
+    monitor_performance? = false
 
-    {:ok, tank_id: tank_id, game_time: game_time, game_name: game_name}
+    {:ok,
+     tank_id: tank_id,
+     game_time: game_time,
+     game_name: game_name,
+     tick_rate: tick_rate,
+     monitor_performance?: monitor_performance?}
   end
 
   test "A gameloop loop with a valid destination moves the desired tank", %{
@@ -19,26 +26,42 @@ defmodule GameloopTest do
     game_time: game_time,
     game_name: game_name
   } do
-    start_supervised!({Gameloop, [name: game_name, game_time: game_time, persistent?: false]})
+    start_supervised!(
+      {Gameloop,
+       [name: game_name, game_time: game_time, persistent?: false, tick_rate: 10, monitor_performance?: false]}
+    )
 
     ActionStorage.store_action(game_name, Action.new(tank_id, %{destination: {0, 0}}))
 
-    state = GameState.new(game_name, [%{id: tank_id, name: "some_name"}], game_time, 0, false)
+    state = GameState.new(game_name, [%{id: tank_id, name: "some_name"}], game_time, 0, false, 10, false)
 
     {:noreply, result} = Gameloop.handle_info(:loop, state)
     assert result.tanks[tank_id].position != state.tanks[tank_id].position
   end
 
   describe "init/1" do
-    test "initialize Gameloop properly", %{game_name: game_name, game_time: game_time} do
+    test "initialize Gameloop properly", %{
+      game_name: game_name,
+      game_time: game_time,
+      tick_rate: tick_rate,
+      monitor_performance?: monitor_performance?
+    } do
       persistent? = false
 
       assert {:ok,
               %GameState{
                 name: game_name,
                 max_ticks: game_time,
-                persistent?: persistent?
-              }} = Gameloop.init(name: game_name, game_time: game_time, persistent?: persistent?)
+                persistent?: persistent?,
+                tick_rate: tick_rate
+              }} =
+               Gameloop.init(
+                 name: game_name,
+                 game_time: game_time,
+                 persistent?: persistent?,
+                 tick_rate: tick_rate,
+                 monitor_performance?: monitor_performance?
+               )
 
       assert is_reference(Ets.whereis(game_name))
 
@@ -53,7 +76,7 @@ defmodule GameloopTest do
       assert {:noreply,
               %GameState{
                 ticks: 1
-              }} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, 1, persistent?))
+              }} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, 1, persistent?, 10, false))
 
       # Waiting for message to be sent
       :ok = Process.sleep(333)
@@ -67,7 +90,7 @@ defmodule GameloopTest do
       assert {:noreply,
               %GameState{
                 ticks: 1
-              }} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 0, 1, persistent?))
+              }} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 0, 1, persistent?, 10, false))
 
       # Waiting for message to be sent
       :ok = Process.sleep(333)
@@ -88,7 +111,7 @@ defmodule GameloopTest do
       assert {:noreply, %GameState{}} =
                Gameloop.handle_info(
                  :reset_game,
-                 GameState.new(game_name, [%{id: tank_id, name: user_name}], 0, game_id, true)
+                 GameState.new(game_name, [%{id: tank_id, name: user_name}], 0, game_id, true, 10, false)
                )
 
       assert [
@@ -103,7 +126,8 @@ defmodule GameloopTest do
     test ":reset_game doesn't save the scores when is_persistent? false", %{game_name: game_name} do
       ActionStorage.init(game_name)
 
-      assert {:noreply, %GameState{}} = Gameloop.handle_info(:reset_game, GameState.new(game_name, [], 0, 1, false))
+      assert {:noreply, %GameState{}} =
+               Gameloop.handle_info(:reset_game, GameState.new(game_name, [], 0, 1, false, 10, false))
 
       assert [] = ScoreRepository.get_scores()
     end
@@ -112,7 +136,7 @@ defmodule GameloopTest do
       ActionStorage.init(game_name)
 
       game_state =
-        GameState.new(game_name, [], 0, 1, false)
+        GameState.new(game_name, [], 0, 1, false, 10, false)
         |> GameState.stop_loop_after_max_ticks()
 
       assert {:stop, :normal, %GameState{}} = Gameloop.handle_info(:reset_game, game_state)

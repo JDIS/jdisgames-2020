@@ -46,3 +46,9 @@ npm-debug.log
 # IDE files
 .elixir_ls
 *.iml 
+
+# Custom badges files
+badges/
+
+# Python cache
+__pycache__/
