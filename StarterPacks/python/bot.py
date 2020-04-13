@@ -25,7 +25,8 @@ class MyBot:
             Upgrade.FIRE_RATE_UPGRADE,
             Upgrade.PROJECTILE_DAMAGE,
             Upgrade.MAX_HP_UPGRADE,
-            Upgrade.BODY_DAMAGE_UPGRADE
+            Upgrade.BODY_DAMAGE_UPGRADE,
+            Upgrade.HP_REGEN
         ])
 
     def destination(self, state: GameState):

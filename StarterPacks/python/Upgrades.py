@@ -11,6 +11,7 @@ class Upgrade(Enum):
     PROJECTILE_DAMAGE = "projectile_damage"
     MAX_HP_UPGRADE = "max_hp"
     BODY_DAMAGE_UPGRADE = "body_damage"
+    HP_REGEN = "hp_regen"
 
     def __str__(self):
         return self.value
@@ -28,6 +29,7 @@ class UpgradeRates:
     max_hp: float
     speed: float
     projectile_damage: float
+    hp_regen: float
 
 
 @dataclass()
@@ -41,3 +43,4 @@ class Upgrades:
     fire_rate: int
     projectile_damage: int
     body_damage: int
+    hp_regen: int

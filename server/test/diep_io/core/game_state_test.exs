@@ -344,6 +344,18 @@ defmodule GameStateTest do
     assert tank.has_died == false
   end
 
+  test "handle_hp_regen/1 heals every tanks", %{game_state: game_state} do
+    state_with_damaged_tanks =
+      game_state
+      |> update_all_tanks(fn {id, tank} -> {id, Tank.hit(tank, 3)} end)
+
+    state_with_healed_tanks = GameState.handle_hp_regen(state_with_damaged_tanks)
+
+    for id <- Map.keys(game_state.tanks) do
+      assert state_with_damaged_tanks.tanks[id].current_hp < state_with_healed_tanks.tanks[id].current_hp
+    end
+  end
+
   defp get_tank(game_state, id) do
     game_state |> Map.get(:tanks) |> Map.get(id)
   end

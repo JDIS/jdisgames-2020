@@ -12,7 +12,7 @@ class Tank:
     id: int
     name: str
     max_hp: int
-    current_hp: int
+    current_hp: float
     speed: int
     position: Tuple[int, int]
     """ x, y """
@@ -21,6 +21,7 @@ class Tank:
     fire_rate: float
     projectile_damage: int
     body_damage: int
+    hp_regen: float
     has_died: bool
     cooldown: int
     experience: int

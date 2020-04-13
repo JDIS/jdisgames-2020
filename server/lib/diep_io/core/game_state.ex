@@ -43,7 +43,8 @@ defmodule Diep.Io.Core.GameState do
             :fire_rate => float(),
             :max_hp => float(),
             :projectile_damage => float(),
-            :speed => float()
+            :speed => float(),
+            :hp_regen => float()
           },
           game_id: integer(),
           is_ranked: boolean(),
@@ -145,6 +146,15 @@ defmodule Diep.Io.Core.GameState do
     %{game_state | tanks: updated_tanks}
   end
 
+  @spec handle_hp_regen(t()) :: t()
+  def handle_hp_regen(game_state) do
+    healed_tanks =
+      game_state.tanks
+      |> Map.new(fn {id, tank} -> {id, Tank.heal(tank, tank.hp_regen)} end)
+
+    %{game_state | tanks: healed_tanks}
+  end
+
   defp handle_action(action, game_state) do
     game_state
     |> handle_purchase(action)
@@ -200,6 +210,7 @@ defmodule Diep.Io.Core.GameState do
         :projectile_damage -> &Tank.buy_projectile_damage_upgrade/1
         :max_hp -> &Tank.buy_max_hp_upgrade/1
         :body_damage -> &Tank.buy_body_damage_upgrade/1
+        :hp_regen -> &Tank.buy_hp_regen_upgrade/1
       end
 
     upgraded_tank =
