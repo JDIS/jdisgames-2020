@@ -208,7 +208,9 @@ defmodule Diep.Io.Core.Tank do
   @spec default_body_damage() :: integer()
   def default_body_damage, do: @default_body_damage
 
-  defp buy_upgrade(%__MODULE__{upgrade_tokens: 0} = tank, _stat), do: tank
+  defp buy_upgrade(%__MODULE__{upgrade_tokens: upgrade_tokens} = tank, _stat) when upgrade_tokens <= 0 do
+    tank
+  end
 
   defp buy_upgrade(tank, stat) do
     tank

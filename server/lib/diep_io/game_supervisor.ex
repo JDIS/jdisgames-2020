@@ -28,11 +28,11 @@ defmodule Diep.Io.GameSupervisor do
   def init([]), do: DynamicSupervisor.init(strategy: :one_for_one)
 
   # Privates
-  defp start_game(name, persistent?, game_time, tick_rate, monitor_performance?) do
+  defp start_game(name, is_ranked, game_time, tick_rate, monitor_performance?) do
     spec =
       {Gameloop,
        name: name,
-       persistent?: persistent?,
+       is_ranked: is_ranked,
        monitor_performance?: monitor_performance?,
        clock: Clock.new(tick_rate, game_time)}
 

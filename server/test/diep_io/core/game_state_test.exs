@@ -132,11 +132,11 @@ defmodule GameStateTest do
 
     [updated_projectile] = updated_game_state.projectiles
 
-    assert projectile.hp > updated_projectile.hp
+    assert projectile.time_to_live > updated_projectile.time_to_live
   end
 
   test "handle_projectiles/1 removes projectiles without hp", %{game_state: game_state} do
-    projectile = Projectile.new(@user_id, Position.random(), Position.random(), 0, hp: 0)
+    projectile = Projectile.new(@user_id, Position.random(), Position.random(), 0, time_to_live: 0)
 
     updated_game_state =
       game_state

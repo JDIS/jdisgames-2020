@@ -74,7 +74,7 @@ defmodule RealTimeTest do
   defp get_gameloop_spec(tick_rate) do
     [
       name: :what_a_name,
-      persistent?: false,
+      is_ranked: false,
       monitor_performance?: true,
       clock: Clock.new(tick_rate, @game_time)
     ]

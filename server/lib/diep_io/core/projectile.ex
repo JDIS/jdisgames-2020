@@ -5,11 +5,11 @@ defmodule Diep.Io.Core.Projectile do
 
   @default_radius 15
   @default_speed 40
-  @default_hp 10
+  @default_time_to_live 10
 
-  @derive {Jason.Encoder, except: [:hp]}
+  @derive Jason.Encoder
   @enforce_keys [:id, :owner_id, :radius, :speed, :damage, :position, :angle]
-  defstruct [:id, :owner_id, :radius, :speed, :damage, :position, :angle, :hp]
+  defstruct [:id, :owner_id, :radius, :speed, :damage, :position, :angle, :time_to_live]
 
   @type t :: %__MODULE__{
           id: String.t(),
@@ -19,7 +19,7 @@ defmodule Diep.Io.Core.Projectile do
           damage: integer,
           position: Position.t(),
           angle: float,
-          hp: integer
+          time_to_live: integer
         }
 
   defimpl Entity do
@@ -46,15 +46,15 @@ defmodule Diep.Io.Core.Projectile do
         damage: damage,
         position: from,
         angle: angle,
-        hp: @default_hp
+        time_to_live: @default_time_to_live
       },
       opts
     )
   end
 
-  @spec remove_hp(t(), integer) :: t()
-  def remove_hp(projectile, amount) do
-    %{projectile | hp: projectile.hp - amount}
+  @spec decrease_time_to_live(t(), integer) :: t()
+  def decrease_time_to_live(projectile, amount) do
+    %{projectile | time_to_live: projectile.time_to_live - amount}
   end
 
   @spec move(t()) :: t()
@@ -66,7 +66,7 @@ defmodule Diep.Io.Core.Projectile do
   end
 
   @spec is_dead?(t()) :: boolean
-  def is_dead?(projectile), do: projectile.hp <= 0
+  def is_dead?(projectile), do: projectile.time_to_live <= 0
 
   @spec is_alive?(t()) :: boolean
   def is_alive?(projectile), do: !is_dead?(projectile)
@@ -77,6 +77,6 @@ defmodule Diep.Io.Core.Projectile do
   @spec default_speed() :: integer
   def default_speed, do: @default_speed
 
-  @spec default_hp() :: integer
-  def default_hp, do: @default_hp
+  @spec default_time_to_live() :: integer
+  def default_time_to_live, do: @default_time_to_live
 end
