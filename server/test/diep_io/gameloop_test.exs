@@ -1,8 +1,8 @@
 defmodule GameloopTest do
   use Diep.Io.DataCase, async: false
 
-  alias Diep.Io.{ActionStorage, Gameloop, ScoreRepository, UsersRepository}
-  alias Diep.Io.Core.{Action, GameState}
+  alias Diep.Io.{ActionStorage, Gameloop, PerformanceMonitor, ScoreRepository, UsersRepository}
+  alias Diep.Io.Core.{Action, Clock, GameState}
   alias Diep.Io.Users.Score
   alias :ets, as: Ets
 
@@ -12,28 +12,34 @@ defmodule GameloopTest do
     game_name = :test_game
     tick_rate = 3
     monitor_performance? = false
+    clock = Clock.new(tick_rate, game_time)
 
     {:ok,
      tank_id: tank_id,
-     game_time: game_time,
      game_name: game_name,
      tick_rate: tick_rate,
-     monitor_performance?: monitor_performance?}
+     monitor_performance?: monitor_performance?,
+     clock: clock}
   end
 
   test "A gameloop loop with a valid destination moves the desired tank", %{
     tank_id: tank_id,
-    game_time: game_time,
-    game_name: game_name
+    game_name: game_name,
+    clock: clock
   } do
     start_supervised!(
       {Gameloop,
-       [name: game_name, game_time: game_time, persistent?: false, tick_rate: 10, monitor_performance?: false]}
+       [
+         name: game_name,
+         persistent?: false,
+         monitor_performance?: false,
+         clock: clock
+       ]}
     )
 
     ActionStorage.store_action(game_name, Action.new(tank_id, %{destination: {0, 0}}))
 
-    state = GameState.new(game_name, [%{id: tank_id, name: "some_name"}], game_time, 0, false, 10, false)
+    state = GameState.new(game_name, [%{id: tank_id, name: "some_name"}], 0, false, false, clock)
 
     {:noreply, result} = Gameloop.handle_info(:loop, state)
     assert result.tanks[tank_id].position != state.tanks[tank_id].position
@@ -42,25 +48,22 @@ defmodule GameloopTest do
   describe "init/1" do
     test "initialize Gameloop properly", %{
       game_name: game_name,
-      game_time: game_time,
-      tick_rate: tick_rate,
-      monitor_performance?: monitor_performance?
+      monitor_performance?: monitor_performance?,
+      clock: clock
     } do
       persistent? = false
 
       assert {:ok,
               %GameState{
                 name: game_name,
-                max_ticks: game_time,
                 persistent?: persistent?,
-                tick_rate: tick_rate
+                clock: clock
               }} =
                Gameloop.init(
                  name: game_name,
-                 game_time: game_time,
                  persistent?: persistent?,
-                 tick_rate: tick_rate,
-                 monitor_performance?: monitor_performance?
+                 monitor_performance?: monitor_performance?,
+                 clock: clock
                )
 
       assert is_reference(Ets.whereis(game_name))
@@ -70,13 +73,12 @@ defmodule GameloopTest do
   end
 
   describe "handle_info/2" do
-    test ":loop increments tick when not over", %{game_name: game_name} do
+    test ":loop increments tick when not over", %{game_name: game_name, clock: clock} do
       persistent? = false
 
-      assert {:noreply,
-              %GameState{
-                ticks: 1
-              }} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, 1, persistent?, 10, false))
+      {:noreply, new_state} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, persistent?, false, clock))
+
+      assert new_state.clock.current_tick == 1
 
       # Waiting for message to be sent
       :ok = Process.sleep(333)
@@ -86,11 +88,9 @@ defmodule GameloopTest do
 
     test ":loop sends :reset_game when over", %{game_name: game_name} do
       persistent? = false
+      clock = Clock.new(3, 10, current_tick: 11)
 
-      assert {:noreply,
-              %GameState{
-                ticks: 1
-              }} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 0, 1, persistent?, 10, false))
+      Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, persistent?, false, clock))
 
       # Waiting for message to be sent
       :ok = Process.sleep(333)
@@ -98,7 +98,25 @@ defmodule GameloopTest do
       assert_received :reset_game
     end
 
-    test ":reset_game saves the scores when is_persistent? true", %{game_name: game_name} do
+    test ":loop does not broadcast every time", %{game_name: game_name} do
+      {:ok, _pid} = start_supervised({PerformanceMonitor, :millisecond})
+      max_tick = 6
+      client_frequency = 3
+      clock = Clock.new(:infinity, max_tick) |> Clock.register(:client_tick, client_frequency)
+
+      :ok =
+        start_and_wait_until_completion(
+          name: game_name,
+          persistent?: false,
+          monitor_performance?: true,
+          clock: clock
+        )
+
+      client_update_count = length(PerformanceMonitor.get_broadcast_times())
+      assert(client_update_count == max_tick / client_frequency)
+    end
+
+    test ":reset_game saves the scores when is_persistent? true", %{game_name: game_name, clock: clock} do
       user_name = "some_name"
       game_id = 1
 
@@ -111,7 +129,7 @@ defmodule GameloopTest do
       assert {:noreply, %GameState{}} =
                Gameloop.handle_info(
                  :reset_game,
-                 GameState.new(game_name, [%{id: tank_id, name: user_name}], 0, game_id, true, 10, false)
+                 GameState.new(game_name, [%{id: tank_id, name: user_name}], game_id, true, false, clock)
                )
 
       assert [
@@ -123,23 +141,36 @@ defmodule GameloopTest do
              ] = ScoreRepository.get_scores()
     end
 
-    test ":reset_game doesn't save the scores when is_persistent? false", %{game_name: game_name} do
+    test ":reset_game doesn't save the scores when is_persistent? false", %{game_name: game_name, clock: clock} do
       ActionStorage.init(game_name)
 
       assert {:noreply, %GameState{}} =
-               Gameloop.handle_info(:reset_game, GameState.new(game_name, [], 0, 1, false, 10, false))
+               Gameloop.handle_info(:reset_game, GameState.new(game_name, [], 1, false, false, clock))
 
       assert [] = ScoreRepository.get_scores()
     end
 
-    test ":reset_game sends {:stop, :normal, state} when should_stop? is true", %{game_name: game_name} do
+    test ":reset_game sends {:stop, :normal, state} when should_stop? is true", %{game_name: game_name, clock: clock} do
       ActionStorage.init(game_name)
 
       game_state =
-        GameState.new(game_name, [], 0, 1, false, 10, false)
+        GameState.new(game_name, [], 1, false, false, clock)
         |> GameState.stop_loop_after_max_ticks()
 
       assert {:stop, :normal, %GameState{}} = Gameloop.handle_info(:reset_game, game_state)
+    end
+  end
+
+  # Starts the gameloop and returns :ok when it end
+  defp start_and_wait_until_completion(opts) do
+    {:ok, pid} = Gameloop.start_link(opts)
+
+    Gameloop.stop_game(Keyword.get(opts, :name))
+
+    ref = Process.monitor(pid)
+
+    receive do
+      {:DOWN, ^ref, _, _, _} -> :ok
     end
   end
 end
