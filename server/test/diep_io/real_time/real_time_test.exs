@@ -2,6 +2,7 @@ defmodule RealTimeTest do
   use Diep.Io.DataCase, async: false
 
   @moduletag :RT
+  @moduletag timeout: 335_000
 
   alias Diep.Io.Core.Action
   alias Diep.Io.{ActionStorage, Gameloop, PerformanceMonitor, Repo, UsersRepository}
@@ -24,21 +25,20 @@ defmodule RealTimeTest do
     {:ok, _pid} = start_supervised({Gameloop, get_gameloop_spec(1000)})
 
     wait_for_game_end()
-    {_average, _std_dev, max} = PerformanceMonitor.get_gameloop_stats()
+    {_average, _std_dev, max} = stats = PerformanceMonitor.get_gameloop_stats()
     assert max <= 333
 
-    write_file("max_iteration_time", max)
+    write_file("max_iteration_time", stats)
   end
 
-  @tag timeout: 335_000
   test "standard deviation of time between state updates should be under 10ms" do
     {:ok, _pid} = start_supervised({Gameloop, get_gameloop_spec(3)})
 
     wait_for_game_end()
-    {_average, std_dev, _max} = PerformanceMonitor.get_broadcast_stats()
+    {_average, std_dev, _max} = stats = PerformanceMonitor.get_broadcast_stats()
     assert std_dev <= 10
 
-    write_file("broadcast_std_dev", std_dev)
+    write_file("broadcast_std_dev", stats)
   end
 
   defp wait_for_game_end do
@@ -63,11 +63,11 @@ defmodule RealTimeTest do
     randomize_actions_infinite(users)
   end
 
-  defp write_file(filename, value) do
+  defp write_file(filename, {average, std_dev, max}) do
     badges_location = System.get_env("CUSTOM_BADGES_LOCATION", "./badges")
     File.mkdir(badges_location)
     file_path = "#{badges_location}/#{filename}.json"
-    file_content = "{\"#{filename}\":#{value}}"
+    file_content = "{\"average\":#{average},\"std_dev\":#{std_dev},\"max\":#{max}}"
     File.write!(file_path, file_content)
   end
 

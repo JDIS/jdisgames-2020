@@ -10,10 +10,10 @@ import anybadge
 import json
 
 
-def generate_badge(filename, label, thresholds, format=''):
+def generate_badge(filename, label, thresholds, stat_key, format=''):
     try:
         with open(f'badges/{filename}.json') as f:
-            val = json.load(f)[filename]
+            val = json.load(f)[stat_key]
 
         badge = anybadge.Badge(
             label, val, thresholds=thresholds, value_suffix='ms', value_format=format)
@@ -27,10 +27,11 @@ thresholds = {101: 'green',
               201: 'yellow',
               334: 'orange',
               335: 'red'}
-generate_badge('max_iteration_time', 'max iteration time', thresholds)
+generate_badge('max_iteration_time', 'max iteration time', thresholds, 'max')
 
 thresholds = {2: 'green',
               4: 'yellow',
               6: 'orange',
               8: 'red'}
-generate_badge('broadcast_std_dev', 'broadcast std dev', thresholds, '%.2f')
+generate_badge('broadcast_std_dev', 'broadcast std dev',
+               thresholds, 'std_dev', '%.2f')
