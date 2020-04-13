@@ -6,6 +6,7 @@ defmodule Diep.Io.GameSupervisor do
 
   use DynamicSupervisor
 
+  alias Diep.Io.Core.Clock
   alias Diep.Io.Gameloop
 
   @main_game_name :main_game
@@ -31,10 +32,9 @@ defmodule Diep.Io.GameSupervisor do
     spec =
       {Gameloop,
        name: name,
-       game_time: game_time,
        persistent?: persistent?,
-       tick_rate: tick_rate,
-       monitor_performance?: monitor_performance?}
+       monitor_performance?: monitor_performance?,
+       clock: Clock.new(tick_rate, game_time)}
 
     DynamicSupervisor.start_child(__MODULE__, spec)
   end

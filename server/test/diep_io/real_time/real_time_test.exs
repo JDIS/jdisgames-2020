@@ -4,7 +4,7 @@ defmodule RealTimeTest do
   @moduletag :RT
   @moduletag timeout: 335_000
 
-  alias Diep.Io.Core.Action
+  alias Diep.Io.Core.{Action, Clock}
   alias Diep.Io.{ActionStorage, Gameloop, PerformanceMonitor, Repo, UsersRepository}
   alias Diep.Io.Users.User
   alias :rand, as: Rand
@@ -74,10 +74,9 @@ defmodule RealTimeTest do
   defp get_gameloop_spec(tick_rate) do
     [
       name: :what_a_name,
-      game_time: @game_time,
       persistent?: false,
-      tick_rate: tick_rate,
-      monitor_performance?: true
+      monitor_performance?: true,
+      clock: Clock.new(tick_rate, @game_time)
     ]
   end
 end

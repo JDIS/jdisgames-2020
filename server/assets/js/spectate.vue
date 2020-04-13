@@ -251,7 +251,7 @@
              * @param updatedGameState
              */
             animateCanvas(updatedGameState) {
-                this.progress = updatedGameState.ticks / updatedGameState.max_ticks
+                this.progress = updatedGameState.clock.current_tick / updatedGameState.clock.max_tick
                 const updatedTanks = updatedGameState.tanks
                 Object.keys(updatedTanks).forEach((id) => {
                     const updatedTank = updatedTanks[id]

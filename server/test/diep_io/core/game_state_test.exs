@@ -1,9 +1,8 @@
 defmodule GameStateTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Action, Debris, Entity, GameMap, GameState, Position, Projectile, Tank}
+  alias Diep.Io.Core.{Action, Clock, Debris, Entity, GameMap, GameState, Position, Projectile, Tank}
   alias Diep.Io.Users.User
-  alias :erlang, as: Erlang
 
   @max_ticks 324
   @tick_rate 3
@@ -11,6 +10,7 @@ defmodule GameStateTest do
   @user_id 420
   @game_name :test_game
   @game_id 123
+  @clock Clock.new(@tick_rate, @max_ticks)
 
   setup do
     [
@@ -18,11 +18,10 @@ defmodule GameStateTest do
         GameState.new(
           @game_name,
           [%User{name: @user_name, id: @user_id}],
-          @max_ticks,
           @game_id,
           false,
-          @tick_rate,
-          false
+          false,
+          @clock
         )
     ]
   end
@@ -31,11 +30,8 @@ defmodule GameStateTest do
     assert %GameState{
              tanks: %{@user_id => %Tank{}},
              debris: debris,
-             last_time: 0,
              map_width: map_width,
              map_height: map_height,
-             ticks: 0,
-             max_ticks: @max_ticks,
              should_stop?: should_stop?
            } = game_state
 
@@ -48,7 +44,7 @@ defmodule GameStateTest do
   test "increase_ticks/1 increases ticks by 1", %{game_state: game_state} do
     game_state = GameState.increase_ticks(game_state)
 
-    assert game_state.ticks == 1
+    assert game_state.clock.current_tick == 1
   end
 
   test "stop_loop_after_max_ticks/1 sets should_stop? to true", %{game_state: game_state} do
@@ -195,7 +191,7 @@ defmodule GameStateTest do
   test "handle_collisions/1 decreases hp of colliding tanks" do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new("game_name", [user1, user2], @max_ticks, 0, false, @tick_rate, false)
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock)
     game_state = move_tanks_to_origin(game_state)
 
     expected_tanks =
@@ -208,7 +204,7 @@ defmodule GameStateTest do
   test "handle_collisions/1 does not remove tanks that are not colliding with other tanks" do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new("game_name", [user1, user2], @max_ticks, 0, false, @tick_rate, false)
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock)
 
     game_state = move_tanks_out_of_collision(game_state)
 
@@ -287,25 +283,6 @@ defmodule GameStateTest do
 
     updated_game_state = GameState.handle_collisions(game_state)
     assert updated_game_state.debris == []
-  end
-
-  test "calculate_time_to_wait/2 returns the correct result", %{game_state: game_state} do
-    tick_rate = 10
-    elapsed_time_ms = 10
-    elapsed_time = Erlang.convert_time_unit(elapsed_time_ms, :millisecond, :native)
-    game_state = %{game_state | tick_rate: tick_rate}
-
-    expected_time_to_wait = div(1000, tick_rate) - elapsed_time_ms
-    assert GameState.calculate_time_to_wait(game_state, elapsed_time) == expected_time_to_wait
-  end
-
-  test "calculate_time_to_wait/2 returns 0 if elapsed_time is greater than time of tick", %{game_state: game_state} do
-    tick_rate = 10
-    elapsed_time_ms = div(1000, tick_rate) + 1
-    elapsed_time = Erlang.convert_time_unit(elapsed_time_ms, :millisecond, :native)
-    game_state = %{game_state | tick_rate: tick_rate}
-
-    assert GameState.calculate_time_to_wait(game_state, elapsed_time) == 0
   end
 
   test "handle_collisions/1 gives points to tanks that destroyed debris by colliding" do
@@ -403,7 +380,7 @@ defmodule GameStateTest do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
 
-    GameState.new("game_name", [user1, user2], @max_ticks, 0, false, 10, false)
+    GameState.new("game_name", [user1, user2], 0, false, false, @clock)
     |> move_tanks_to_origin()
   end
 
@@ -411,7 +388,7 @@ defmodule GameStateTest do
     user1 = %User{name: @user_name, id: @user_id}
     # User 2 only serves as the projectile's owner
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new("game_name", [user1, user2], @max_ticks, 0, false, @tick_rate, false)
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock)
 
     tank1 = Map.fetch!(game_state.tanks, user1.id)
     tank2 = Map.fetch!(game_state.tanks, user2.id)
@@ -425,7 +402,7 @@ defmodule GameStateTest do
 
   defp setup_tank_debris_collision(debris_size \\ :large) do
     user = %User{name: @user_name, id: @user_id}
-    game_state = GameState.new("game_name", [user], @max_ticks, 0, false, @tick_rate, false)
+    game_state = GameState.new("game_name", [user], 0, false, false, @clock)
 
     tank = Map.fetch!(game_state.tanks, user.id)
 
@@ -440,7 +417,7 @@ defmodule GameStateTest do
   defp setup_projectile_debris_collision(debris_size \\ :large) do
     user = %User{name: @user_name, id: @user_id}
     projectile = Projectile.new(user.id, {0, 0}, 0, 20)
-    game_state = GameState.new("game_name", [user], @max_ticks, 0, false, 10, false)
+    game_state = GameState.new("game_name", [user], 0, false, false, @clock)
 
     debris = Debris.new(debris_size)
     debris = %{debris | position: Entity.get_position(projectile)}
