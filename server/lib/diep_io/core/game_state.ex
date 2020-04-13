@@ -25,7 +25,7 @@ defmodule Diep.Io.Core.GameState do
     :upgrade_rates,
     :game_id,
     :debris,
-    :persistent?,
+    :is_ranked,
     :projectiles,
     :monitor_performance?,
     :clock,
@@ -46,7 +46,7 @@ defmodule Diep.Io.Core.GameState do
             :speed => float()
           },
           game_id: integer(),
-          persistent?: boolean(),
+          is_ranked: boolean(),
           projectiles: [Projectile.t()],
           monitor_performance?: boolean(),
           clock: Clock.t(),
@@ -54,7 +54,7 @@ defmodule Diep.Io.Core.GameState do
         }
 
   @spec new(atom(), [User.t()], integer(), boolean(), boolean(), Clock.t()) :: t()
-  def new(name, users, game_id, persistent?, monitor_performance?, clock) do
+  def new(name, users, game_id, is_ranked, monitor_performance?, clock) do
     %__MODULE__{
       name: name,
       tanks: initialize_tanks(users),
@@ -63,7 +63,7 @@ defmodule Diep.Io.Core.GameState do
       map_height: GameMap.height(),
       upgrade_rates: Upgrade.rates(),
       game_id: game_id,
-      persistent?: persistent?,
+      is_ranked: is_ranked,
       projectiles: [],
       monitor_performance?: monitor_performance?,
       clock: clock
@@ -119,7 +119,7 @@ defmodule Diep.Io.Core.GameState do
   def handle_projectiles(game_state) do
     projectiles =
       game_state.projectiles
-      |> Enum.map(&Projectile.remove_hp(&1, @projectile_decay))
+      |> Enum.map(&Projectile.decrease_time_to_live(&1, @projectile_decay))
       |> Enum.reject(&Projectile.is_dead?/1)
       |> Enum.map(&Projectile.move/1)
 

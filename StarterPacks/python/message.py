@@ -18,7 +18,7 @@ class Message:
             "event": self.event,
             "payload": self.payload,
             "ref": None
-        })
+        }, default=str)
 
     @staticmethod
     def from_json(message):

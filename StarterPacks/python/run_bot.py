@@ -1,15 +1,14 @@
-import asyncio
 import argparse
+import asyncio
 import dataclasses
-import random
-import sys
 
-from action import Action
-from channel import Channel
-from typing import Tuple
-from websocket import Message, Socket
+import dacite as dacite
+from dacite import Config
+
 from bot import MyBot
-
+from channel import Channel
+from GameState import GameState
+from websocket import Message, Socket
 
 BASE_URL = "ws://127.0.0.1:4000/socket"
 
@@ -22,7 +21,8 @@ async def start(bot, secret_key):
         async with Socket().connect(spectate_url) as spectate_connection:
 
             async def on_state_update(state):
-                payload = dataclasses.asdict(bot.tick(state))
+                parsed_state = dacite.from_dict(GameState, state, Config(check_types=False))
+                payload = dataclasses.asdict(bot.tick(parsed_state))
                 await bot_connection.send(Message("new", "action", payload))
 
             action_channel: Channel = await bot_connection.channel("action")
@@ -32,8 +32,10 @@ async def start(bot, secret_key):
 
             await spectate_connection.listen()
 
+
 def loop(secret):
     asyncio.get_event_loop().run_until_complete(start(MyBot(), secret))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Starts your bot!")

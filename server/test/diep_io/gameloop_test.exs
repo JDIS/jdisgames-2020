@@ -31,7 +31,7 @@ defmodule GameloopTest do
       {Gameloop,
        [
          name: game_name,
-         persistent?: false,
+         is_ranked: false,
          monitor_performance?: false,
          clock: clock
        ]}
@@ -51,17 +51,17 @@ defmodule GameloopTest do
       monitor_performance?: monitor_performance?,
       clock: clock
     } do
-      persistent? = false
+      is_ranked = false
 
       assert {:ok,
               %GameState{
                 name: game_name,
-                persistent?: persistent?,
+                is_ranked: is_ranked,
                 clock: clock
               }} =
                Gameloop.init(
                  name: game_name,
-                 persistent?: persistent?,
+                 is_ranked: is_ranked,
                  monitor_performance?: monitor_performance?,
                  clock: clock
                )
@@ -74,9 +74,9 @@ defmodule GameloopTest do
 
   describe "handle_info/2" do
     test ":loop increments tick when not over", %{game_name: game_name, clock: clock} do
-      persistent? = false
+      is_ranked = false
 
-      {:noreply, new_state} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, persistent?, false, clock))
+      {:noreply, new_state} = Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, is_ranked, false, clock))
 
       assert new_state.clock.current_tick == 1
 
@@ -87,10 +87,10 @@ defmodule GameloopTest do
     end
 
     test ":loop sends :reset_game when over", %{game_name: game_name} do
-      persistent? = false
+      is_ranked = false
       clock = Clock.new(3, 10, current_tick: 11)
 
-      Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, persistent?, false, clock))
+      Gameloop.handle_info(:loop, GameState.new(game_name, [], 1, is_ranked, false, clock))
 
       # Waiting for message to be sent
       :ok = Process.sleep(333)
@@ -107,7 +107,7 @@ defmodule GameloopTest do
       :ok =
         start_and_wait_until_completion(
           name: game_name,
-          persistent?: false,
+          is_ranked: false,
           monitor_performance?: true,
           clock: clock
         )
@@ -116,7 +116,7 @@ defmodule GameloopTest do
       assert(client_update_count == max_tick / client_frequency)
     end
 
-    test ":reset_game saves the scores when is_persistent? true", %{game_name: game_name, clock: clock} do
+    test ":reset_game saves the scores when is_is_ranked true", %{game_name: game_name, clock: clock} do
       user_name = "some_name"
       game_id = 1
 
@@ -141,7 +141,7 @@ defmodule GameloopTest do
              ] = ScoreRepository.get_scores()
     end
 
-    test ":reset_game doesn't save the scores when is_persistent? false", %{game_name: game_name, clock: clock} do
+    test ":reset_game doesn't save the scores when is_is_ranked false", %{game_name: game_name, clock: clock} do
       ActionStorage.init(game_name)
 
       assert {:noreply, %GameState{}} =

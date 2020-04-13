@@ -20,13 +20,13 @@ defmodule Diep.Io.Gameloop do
   """
   @spec start_link(
           name: atom(),
-          persistent?: boolean(),
+          is_ranked: boolean(),
           monitor_performance?: boolean(),
           clock: Clock.t()
         ) :: {:ok, pid()}
   def start_link(
         name: name,
-        persistent?: persistent?,
+        is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
         clock: clock
       ) do
@@ -34,7 +34,7 @@ defmodule Diep.Io.Gameloop do
       __MODULE__,
       [
         name: name,
-        persistent?: persistent?,
+        is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
         clock: clock
       ],
@@ -53,12 +53,12 @@ defmodule Diep.Io.Gameloop do
   @impl true
   def init(
         name: name,
-        persistent?: persistent?,
+        is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
         clock: clock
       ) do
     :ok = ActionStorage.init(name)
-    init_game_state(name, persistent?, monitor_performance?, clock)
+    init_game_state(name, is_ranked, monitor_performance?, clock)
   end
 
   @impl true
@@ -110,7 +110,7 @@ defmodule Diep.Io.Gameloop do
   end
 
   # Privates
-  defp init_game_state(name, persistent?, monitor_performance?, clock) do
+  defp init_game_state(name, is_ranked, monitor_performance?, clock) do
     game_id = System.unique_integer()
     users = UsersRepository.list_users()
     # Initialize ActionStorage's content with empty actions for each user
@@ -121,7 +121,7 @@ defmodule Diep.Io.Gameloop do
 
     Logger.info("Initialized gameloop #{game_id} with #{length(users)} users")
     send(self(), :loop)
-    {:ok, GameState.new(name, users, game_id, persistent?, monitor_performance?, clock)}
+    {:ok, GameState.new(name, users, game_id, is_ranked, monitor_performance?, clock)}
   end
 
   defp handle_reset_game(%{should_stop?: true} = state) do
@@ -134,7 +134,7 @@ defmodule Diep.Io.Gameloop do
     {:ok, new_state} =
       init_game_state(
         state.name,
-        state.persistent?,
+        state.is_ranked,
         state.monitor_performance?,
         Clock.restart(state.clock)
       )
@@ -147,7 +147,7 @@ defmodule Diep.Io.Gameloop do
     if state.monitor_performance?, do: PerformanceMonitor.store_broadcast_time(Erlang.monotonic_time())
   end
 
-  defp save_scores(%{persistent?: true} = state) do
+  defp save_scores(%{is_ranked: true} = state) do
     scores =
       Enum.map(state.tanks, fn {tank_id, tank} ->
         %{user_id: tank_id, score: tank.score, game_id: state.game_id}
