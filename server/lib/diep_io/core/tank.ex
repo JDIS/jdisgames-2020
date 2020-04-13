@@ -30,7 +30,8 @@ defmodule Diep.Io.Core.Tank do
     :position,
     :fire_rate,
     :projectile_damage,
-    :score
+    :score,
+    :has_died
   ]
   defstruct [
     :id,
@@ -93,7 +94,8 @@ defmodule Diep.Io.Core.Tank do
       score: 0,
       fire_rate: @default_fire_rate,
       projectile_damage: @default_projectile_damage,
-      body_damage: @default_body_damage
+      body_damage: @default_body_damage,
+      has_died: false
     }
   end
 

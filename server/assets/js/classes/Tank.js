@@ -8,6 +8,7 @@ export class Tank {
 
     constructor(serverTank) {
         this.color = getColorFromId(serverTank.id)
+        this.has_died = false
         this.fire_rate = serverTank.fire_rate
         this.upgrade_tokens = serverTank.upgrade_tokens
         this.projectile_damage = serverTank.projectile_damage
@@ -18,7 +19,8 @@ export class Tank {
         this.upgrade_levels = serverTank.upgrade_levels
         this.position = {x: serverTank.position[0], y: serverTank.position[1]}
         this.id = serverTank.id
-        this.body = this.createFabricObj(serverTank);
+        this.cannon_angle = serverTank.cannon_angle
+        this.body = this.createFabricObj(serverTank)
         this.name = new FabricText(serverTank.name, serverTank.position[0], serverTank.position[1] + NAME_OFFSET)
         this.healthBar = new HealthBar(serverTank)
         this.score = serverTank.score
@@ -68,24 +70,39 @@ export class Tank {
         this.current_hp = newServerTank.current_hp
         this.upgrade_levels = newServerTank.upgrade_levels
 
-        this.toCanvas.animate('left', this.position.x, {
-            onChange: null,
-            duration: ANIMATION_DURATION,
-            easing: linear
-        })
-        this.toCanvas.animate('top', this.position.y, {
-            onChange: null,
-            duration: ANIMATION_DURATION,
-            easing: linear
-        })
+        if (this.has_died) {
+            this.toCanvas.left = newServerTank.position.x
+            this.toCanvas.top = newServerTank.position.y
+            this.toCanvas.opacity = 0
+            this.toCanvas.animate('opacity', 1, {
+                onChange: null,
+                duration: ANIMATION_DURATION,
+                easing: linear
+            })
+        } else {
+            this.toCanvas.animate('left', this.position.x, {
+                onChange: null,
+                duration: ANIMATION_DURATION,
+                easing: linear
+            })
+            this.toCanvas.animate('top', this.position.y, {
+                onChange: null,
+                duration: ANIMATION_DURATION,
+                easing: linear
+            })
+        }
 
         this.healthBar.update(newServerTank)
 
-        this.body.animate('angle', newServerTank.cannon_angle, {
-            onChange: null,
-            duration: ANIMATION_DURATION / 2,
-            easing: fabric.util.ease.easeOutQuad
-        })
+        if (newServerTank.cannon_angle !== this.cannon_angle) {
+            this.body.animate('angle', newServerTank.cannon_angle, {
+                onChange: null,
+                duration: ANIMATION_DURATION / 2,
+                easing: fabric.util.ease.easeOutQuad
+            })
+            this.cannon_angle = newServerTank.cannon_angle
+        }
+        this.has_died = newServerTank.has_died
     }
 
     createFabricObj(serverTank) {
