@@ -22,7 +22,7 @@
                         <table>
                             <tr>
                                 <td>❤ HP</td>
-                                <td>{{focusedPlayer.current_hp}}/{{focusedPlayer.max_hp}} (LVL {{ focusedPlayer.upgrade_levels.max_hp }})</td>
+                                <td><strong>{{focusedPlayer.current_hp}}</strong>/{{focusedPlayer.max_hp}} (LVL {{ focusedPlayer.upgrade_levels.max_hp }})</td>
                             </tr>
                             <tr>
                                 <td>💣 Projectile damage</td>
@@ -139,7 +139,7 @@
             this.mainCanvas.on('mouse:wheel', (opt) => {
                 const delta = opt.e.deltaY
 
-                this.zoom += Math.pow(delta / 400, 3)
+                this.zoom += delta / 400
                 this.doZoom(opt)
                 opt.e.preventDefault()
                 opt.e.stopPropagation()
@@ -277,13 +277,15 @@
                 } else if (event !== null) {
                     this.mainCanvas.zoomToPoint(new fabric.Point(event.e.offsetX, event.e.offsetY), this.zoom)
                 }
-                this.centerPan()
+                //this.centerPan()
             },
             centerPan() {
                 if (this.lockCamera && this.focusedPlayer) {
-                    let x = this.focusedPlayer.left() * this.zoom - (this.mainCanvas.getWidth() / 2) + this.mainCanvas.viewportTransform[4]
-                    let y =  this.focusedPlayer.top() * this.zoom - (this.mainCanvas.getHeight() / 2) + this.mainCanvas.viewportTransform[5]
-                    this.mainCanvas.relativePan(new fabric.Point(-x, -y))
+                    this.mainCanvas.absolutePan(
+                        new fabric.Point(
+                            this.focusedPlayer.left() * this.zoom - (this.mainCanvas.getWidth() / 2),
+                            this.focusedPlayer.top() * this.zoom - (this.mainCanvas.getHeight() / 2))
+                    )
                 }
             },
             initGrid() {
