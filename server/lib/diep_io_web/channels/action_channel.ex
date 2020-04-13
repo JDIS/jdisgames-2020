@@ -44,6 +44,7 @@ defmodule Diep.IoWeb.ActionChannel do
       "projectile_damage" -> :projectile_damage
       "max_hp" -> :max_hp
       "body_damage" -> :body_damage
+      "hp_regen" -> :hp_regen
       _ -> nil
     end
   end

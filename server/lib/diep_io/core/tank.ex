@@ -10,6 +10,7 @@ defmodule Diep.Io.Core.Tank do
   @default_fire_rate 5
   @default_projectile_damage 20
   @default_body_damage 20
+  @default_hp_regen 1
   @default_radius 25
 
   @upgrade_rates [
@@ -17,7 +18,8 @@ defmodule Diep.Io.Core.Tank do
     speed: &Upgrade.speed/1,
     fire_rate: &Upgrade.fire_rate/1,
     projectile_damage: &Upgrade.projectile_damage/1,
-    body_damage: &Upgrade.body_damage/1
+    body_damage: &Upgrade.body_damage/1,
+    hp_regen: &Upgrade.hp_regen/1
   ]
 
   @derive Jason.Encoder
@@ -30,6 +32,7 @@ defmodule Diep.Io.Core.Tank do
     :position,
     :fire_rate,
     :projectile_damage,
+    :hp_regen,
     :score,
     :has_died
   ]
@@ -44,24 +47,26 @@ defmodule Diep.Io.Core.Tank do
     :fire_rate,
     :projectile_damage,
     :body_damage,
+    :hp_regen,
     has_died: false,
     cooldown: 0,
     experience: 0,
     cannon_angle: 0,
     upgrade_tokens: 0,
-    upgrade_levels: %{max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0}
+    upgrade_levels: %{max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0, hp_regen: 0}
   ]
 
   @type t :: %__MODULE__{
           id: integer,
           name: String.t(),
           max_hp: integer,
-          current_hp: integer,
+          current_hp: number,
           speed: integer,
           experience: integer,
           position: Position.t(),
           score: integer,
           fire_rate: number,
+          hp_regen: number,
           cooldown: number,
           projectile_damage: integer,
           body_damage: integer,
@@ -92,10 +97,11 @@ defmodule Diep.Io.Core.Tank do
       speed: @default_speed,
       position: Position.random(),
       score: 0,
+      has_died: false,
       fire_rate: @default_fire_rate,
       projectile_damage: @default_projectile_damage,
       body_damage: @default_body_damage,
-      has_died: false
+      hp_regen: @default_hp_regen
     }
   end
 
@@ -105,7 +111,7 @@ defmodule Diep.Io.Core.Tank do
   @spec is_alive?(t()) :: boolean
   def is_alive?(tank), do: !is_dead?(tank)
 
-  @spec heal(t(), integer) :: t()
+  @spec heal(t(), number) :: t()
   def heal(tank, amount) do
     case tank.current_hp + amount <= tank.max_hp do
       true -> add_to_value(tank, :current_hp, amount)
@@ -192,6 +198,9 @@ defmodule Diep.Io.Core.Tank do
   @spec buy_body_damage_upgrade(t()) :: t()
   def buy_body_damage_upgrade(tank), do: buy_upgrade(tank, :body_damage)
 
+  @spec buy_hp_regen_upgrade(t()) :: t()
+  def buy_hp_regen_upgrade(tank), do: buy_upgrade(tank, :hp_regen)
+
   @spec default_hp() :: integer
   def default_hp, do: @default_hp
 
@@ -209,6 +218,9 @@ defmodule Diep.Io.Core.Tank do
 
   @spec default_body_damage() :: integer()
   def default_body_damage, do: @default_body_damage
+
+  @spec default_hp_regen() :: number
+  def default_hp_regen, do: @default_hp_regen
 
   defp buy_upgrade(%__MODULE__{upgrade_tokens: upgrade_tokens} = tank, _stat) when upgrade_tokens <= 0 do
     tank

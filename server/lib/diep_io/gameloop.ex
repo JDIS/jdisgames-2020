@@ -83,6 +83,7 @@ defmodule Diep.Io.Gameloop do
       |> Map.keys()
       |> Enum.map(fn id -> ActionStorage.get_action(state.name, id) end)
       |> GameState.handle_players(state)
+      |> GameState.handle_hp_regen()
       |> GameState.handle_projectiles()
       |> GameState.handle_debris()
       |> GameState.handle_collisions()

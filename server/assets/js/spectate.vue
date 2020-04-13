@@ -41,6 +41,10 @@
                                 <td><strong>{{focusedPlayer.body_damage}}</strong> (LVL {{ focusedPlayer.upgrade_levels.body_damage }})</td>
                             </tr>
                             <tr>
+                                <td title="HP regenerated every tick.">💞 HP regen </td>
+                                <td><strong>{{focusedPlayer.hp_regen}}</strong> (LVL {{ focusedPlayer.upgrade_levels.hp_regen }})</td>
+                            </tr>
+                            <tr>
                                 <td>🆙 Upgrade tokens available </td>
                                 <td><strong>{{focusedPlayer.upgrade_tokens}}</strong></td>
                             </tr>

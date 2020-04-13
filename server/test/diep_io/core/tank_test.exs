@@ -191,6 +191,15 @@ defmodule TankTest do
     assert upgraded_tank.body_damage > tank.body_damage
   end
 
+  test "buy_hp_regen_upgrade/1 increases tank's hp_regen", %{tank: tank} do
+    upgraded_tank =
+      tank
+      |> Tank.add_upgrade_tokens(1)
+      |> Tank.buy_hp_regen_upgrade()
+
+    assert upgraded_tank.hp_regen > tank.hp_regen
+  end
+
   test "mark_as_dead/1 sets the has_died attribute to true", %{tank: tank} do
     assert Tank.mark_as_dead(tank).has_died == true
   end
