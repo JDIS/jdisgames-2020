@@ -4,10 +4,11 @@ import logging
 import websockets
 from async_generator import asynccontextmanager
 
-from channel import Channel
-from message import Message
+from networking.channel import Channel
+from networking.message import Message
 
 logging.basicConfig(level=logging.INFO)
+
 
 class Socket:
     def __init__(self):
@@ -33,12 +34,15 @@ class Socket:
         logging.info("Sending: {}".format(message.to_json()))
         await self._websocket.send(message.to_json())
 
+    async def receive(self):
+        message = await self._websocket.recv()
+        logging.info("Receiving: {}".format(message))
+        message = Message.from_json(message)
+        asyncio.ensure_future(self._dispatch(message))
+
     async def listen(self):
         while True:
-            message = await self._websocket.recv()
-            logging.info("Receiving: {}".format(message))
-            message = Message.from_json(message)
-            asyncio.ensure_future(self._dispatch(message))
+            await self.receive()
 
     async def _dispatch(self, message):
         if self._channels.get(message.topic):

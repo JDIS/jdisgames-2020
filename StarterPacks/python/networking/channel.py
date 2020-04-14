@@ -1,4 +1,4 @@
-from message import JoinMessage, Message
+from networking.message import JoinMessage, Message
 
 
 class Channel:

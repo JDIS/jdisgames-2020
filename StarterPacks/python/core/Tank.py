@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 
-from Upgrades import Upgrades
+from core.Upgrades import Upgrades
 
 
 @dataclass()
