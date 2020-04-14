@@ -1,9 +1,7 @@
 import random
 from typing import Tuple
 
-from Action import Action
-from GameState import GameState
-from Upgrades import Upgrade
+from core import Action, GameState, Upgrade
 
 
 class MyBot:
@@ -11,8 +9,8 @@ class MyBot:
     Random bot
     """
 
-    def __init__(self):
-        self.id = random.randrange(0, 400)
+    def __init__(self, id):
+        self.id = id
 
     def random_position(self, state: GameState) -> Tuple[float]:
         x = random.randrange(0, state.map_width)

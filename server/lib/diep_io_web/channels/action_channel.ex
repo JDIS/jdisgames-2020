@@ -6,7 +6,13 @@ defmodule Diep.IoWeb.ActionChannel do
   alias Diep.Io.Core.Action
 
   def join("action", _payload, socket) do
+    send(self(), :after_join)
     {:ok, socket}
+  end
+
+  def handle_info(:after_join, socket) do
+    push(socket, "id", %{id: socket.assigns[:user_id]})
+    {:noreply, socket}
   end
 
   def handle_in("new", action, socket) do

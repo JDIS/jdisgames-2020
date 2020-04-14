@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 from typing import Dict, List
 
-from Debris import Debris
-from Projectile import Projectile
-from Tank import Tank
-from Upgrades import UpgradeRates
+from core.Clock import Clock
+from core.Debris import Debris
+from core.Projectile import Projectile
+from core.Tank import Tank
+from core.Upgrades import UpgradeRates
 
 
 @dataclass()
@@ -18,10 +19,7 @@ class GameState:
     projectiles: List[Projectile]
     map_width: int
     map_height: int
-    ticks: int
-    """ tick number for the current game """
-    max_ticks: int
-    """ max ticks before the game ends """
+    clock: Clock
 
     upgrade_rates: UpgradeRates
     game_id: int
@@ -30,6 +28,3 @@ class GameState:
     True if it is the ranked game (the one where points count). You can use this to introduce
     changes in the code but only test them in the unranked game.
     """
-
-
-
