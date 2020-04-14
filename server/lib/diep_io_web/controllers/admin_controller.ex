@@ -15,7 +15,7 @@ defmodule Diep.IoWeb.AdminController do
 
     conn
     |> put_flash(:info, "Started game, #{inspect(pid)}")
-    |> redirect(to: "/admin")
+    |> redirect(to: Routes.admin_path(conn, :index))
   end
 
   def stop_game(conn, _params) do
@@ -23,7 +23,7 @@ defmodule Diep.IoWeb.AdminController do
 
     conn
     |> put_flash(:info, "Main game will stop after max ticks.")
-    |> redirect(to: "/admin")
+    |> redirect(to: Routes.admin_path(conn, :index))
   end
 
   def kill_game(conn, _params) do
@@ -31,6 +31,6 @@ defmodule Diep.IoWeb.AdminController do
 
     conn
     |> put_flash(:info, "Main game killed")
-    |> redirect(to: "/admin")
+    |> redirect(to: Routes.admin_path(conn, :index))
   end
 end

@@ -43,4 +43,11 @@ defmodule Diep.IoWeb.Router do
     get "/stop", AdminController, :stop_game
     get "/kill", AdminController, :kill_game
   end
+
+  scope "/team-registration", Diep.IoWeb do
+    pipe_through :browser
+
+    get "/", TeamRegistrationController, :new
+    post "/register", TeamRegistrationController, :create
+  end
 end

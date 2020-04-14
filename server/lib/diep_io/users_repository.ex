@@ -31,9 +31,12 @@ defmodule Diep.Io.UsersRepository do
       {:ok, %User{}} On success
       {:error, %Ecto.Changeset{}} On error
   """
-  @spec create_user(map()) :: {:ok, User.t()}
+  @spec create_user(map()) :: {:ok, User.t()} | {:error, %Ecto.Changeset{}}
   def create_user(attrs) do
-    attrs_with_secret_key = Map.put(attrs, :secret_key, SecureRandom.uuid())
+    attrs_with_secret_key =
+      attrs
+      |> Map.put(:secret_key, SecureRandom.uuid())
+      |> keys_to_atom()
 
     result =
       %User{}
@@ -51,5 +54,12 @@ defmodule Diep.Io.UsersRepository do
     end
 
     result
+  end
+
+  defp keys_to_atom(map) do
+    Enum.reduce(map, %{}, fn
+      {key, value}, acc when is_atom(key) -> Map.put(acc, key, value)
+      {key, value}, acc when is_binary(key) -> Map.put(acc, String.to_existing_atom(key), value)
+    end)
   end
 end

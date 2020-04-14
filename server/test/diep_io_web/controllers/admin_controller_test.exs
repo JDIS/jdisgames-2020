@@ -5,7 +5,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     conn =
       conn
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get("/admin")
+      |> get(Routes.admin_path(conn, :index))
 
     assert html_response(conn, 200) =~ "ADMIN INDEX"
   end
@@ -16,7 +16,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     conn =
       conn
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get("/admin/start", ticks: "50")
+      |> get(Routes.admin_path(conn, :start_game, ticks: "50"))
 
     assert "/admin" = redir_path = redirected_to(conn, 302)
     conn = get(recycle(conn), redir_path)
@@ -25,7 +25,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     conn =
       build_conn()
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get("/admin/kill")
+      |> get(Routes.admin_path(conn, :kill_game))
 
     assert "/admin" = redir_path = redirected_to(conn, 302)
     conn = get(recycle(conn), redir_path)
@@ -38,7 +38,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     conn =
       conn
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get("/admin/start", ticks: "1")
+      |> get(Routes.admin_path(conn, :start_game, ticks: "1"))
 
     assert "/admin" = redir_path = redirected_to(conn, 302)
     conn = get(recycle(conn), redir_path)
@@ -47,7 +47,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     conn =
       build_conn()
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get("/admin/stop")
+      |> get(Routes.admin_path(conn, :stop_game))
 
     assert "/admin" = redir_path = redirected_to(conn, 302)
     conn = get(recycle(conn), redir_path)
@@ -60,7 +60,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     conn =
       conn
       |> put_req_header("authorization", "Basic " <> Base.encode64("inval:id"))
-      |> get("/admin")
+      |> get(Routes.admin_path(conn, :index))
 
     assert response(conn, 401)
   end
