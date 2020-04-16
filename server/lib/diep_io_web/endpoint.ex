@@ -23,7 +23,7 @@ defmodule Diep.IoWeb.Endpoint do
     at: "/",
     from: :diep_io,
     gzip: compress_assets,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: ~w(css fonts images audio js favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
