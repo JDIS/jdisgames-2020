@@ -36,7 +36,8 @@ export function initFabricAndCreateMainCanvas() {
         width: 500,
         height: 500,
         selection: false,
-        renderOnAddRemove: false
+        renderOnAddRemove: false,
+        backgroundColor: 'rgb(220,225,220)'
     });
 
     canvas.setBackgroundImage('/images/jdis.svg', null, {
