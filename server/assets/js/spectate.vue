@@ -22,7 +22,7 @@
                         <table>
                             <tr>
                                 <td>❤ HP</td>
-                                <td><strong>{{focusedPlayer.current_hp}}</strong>/{{focusedPlayer.max_hp}} (LVL {{ focusedPlayer.upgrade_levels.max_hp }})</td>
+                                <td><strong>{{Math.round(focusedPlayer.current_hp)}}</strong>/{{focusedPlayer.max_hp}} (LVL {{ focusedPlayer.upgrade_levels.max_hp }})</td>
                             </tr>
                             <tr>
                                 <td>💣 Projectile damage</td>
@@ -192,21 +192,15 @@
             doFrame() {
                 window.requestAnimationFrame(this.doFrame)
 
-                const FPS = 30
                 const now = Date.now()
-
-                const elapsed = now - this.$options.then
-
-                if (elapsed > 1000 / FPS) {
-                    this.$options.then = now
-                    if (this.autoSpectate && now - this.lastUpdateTimestamp > CANVAS_UPDATE_RATE) {
-                        this.focusedPlayer = this.orderedTanks[0]
-                    }
-                    this.centerPan()
-                    this.hideIfUnzoomed()
-                    this.mainCanvas.renderAll()
-                    this.renderMinimap()
+                this.$options.then = now
+                if (this.autoSpectate && now - this.lastUpdateTimestamp > CANVAS_UPDATE_RATE) {
+                    this.focusedPlayer = this.orderedTanks[0]
                 }
+                this.centerPan()
+                this.hideIfUnzoomed()
+                this.mainCanvas.renderAll()
+                this.renderMinimap()
             },
             drawAndRemoveProjectiles(updatedProjectiles) {
                 const newProjectileIds = new Set()

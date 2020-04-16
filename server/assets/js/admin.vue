@@ -10,13 +10,12 @@
 
 <script>
     import Vue from "vue"
-    import axios from "axios"
 
     export default Vue.extend({
         name: 'Admin',
         data() {
             return {
-                ticks: 500
+                ticks: 2000
             }
         },
         watch: {

@@ -100,8 +100,8 @@ defmodule GameloopTest do
 
     test ":loop does not broadcast every time", %{game_name: game_name} do
       {:ok, _pid} = start_supervised({PerformanceMonitor, :millisecond})
-      max_tick = 6
-      client_frequency = 3
+      max_tick = 10
+      client_frequency = 5
       clock = Clock.new(:infinity, max_tick) |> Clock.register(:client_tick, client_frequency)
 
       :ok =

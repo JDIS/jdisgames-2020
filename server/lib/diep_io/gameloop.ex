@@ -11,7 +11,7 @@ defmodule Diep.Io.Gameloop do
   alias :erlang, as: Erlang
   require Logger
 
-  @client_tick_frequency 3
+  @client_tick_frequency 5
 
   # Client
 
