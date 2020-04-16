@@ -4,7 +4,7 @@ defmodule Diep.Io.Core.Projectile do
   alias Diep.Io.Core.{Entity, Position}
 
   @default_radius 15
-  @default_speed 15
+  @default_speed 20
   @default_time_to_live 30
 
   @derive Jason.Encoder

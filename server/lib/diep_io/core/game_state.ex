@@ -9,9 +9,9 @@ defmodule Diep.Io.Core.GameState do
   alias Diep.Io.Users.User
   alias :rand, as: Rand
 
-  @max_debris_count 1000
+  @max_debris_count 400
   @max_debris_generation_rate 0.5
-  @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
+  @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]
   @projectile_decay 1
   @experience_loss_rate 0.5
   @experience_score_ratio_on_kill 0.1
