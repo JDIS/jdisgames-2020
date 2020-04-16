@@ -6,6 +6,7 @@
                     <div class="flex">
                         <label style="display: inline-block"> Auto-spectate <input style="margin: 0" type="checkbox" v-model="autoSpectate" /></label>
                         <label style="display: inline-block"> Full screen <input style="margin: 0" type="checkbox" v-model="fullScreen" /></label>
+                        <label style="display: inline-block"> Performance mode <input style="margin: 0" type="checkbox" v-model="performanceMode" /></label>
                         <progress id="progress" :value="progress * 100" max="100"></progress>
                     </div>
                     <div id="invisible"></div>
@@ -68,6 +69,7 @@
                 </div>
             </div>
         </div>
+        <audio id="tankHitAudio" src="/audio/tank_hit.wav" style="display: none" controls="none" preload="auto"></audio>
     </div>
 </template>
 
@@ -94,7 +96,10 @@
                 elements: new DrawnElements(null, null, {}, {}, {}),
                 progress: 0,
                 autoSpectate: false,
-                lastUpdateTimestamp: Date.now()
+                lastUpdateTimestamp: Date.now(),
+                tankHitSound: null,
+                performanceMode: false,
+                i: 0
             }
         },
         then: Date.now(),
@@ -138,6 +143,7 @@
             window.addEventListener('resize', this.resizeCanvas, false)
             this.resizeCanvas()
             this.minimap = createMinimap()
+            this.tankHitSound = document.querySelector('#tankHitAudio')
 
             this.initGrid()
             this.mainCanvas.on('mouse:wheel', (opt) => {
@@ -197,7 +203,12 @@
                 if (this.autoSpectate && now - this.lastUpdateTimestamp > CANVAS_UPDATE_RATE) {
                     this.focusedPlayer = this.orderedTanks[0]
                 }
-                this.centerPan()
+                this.i++
+                if (!this.performanceMode) {
+                    this.centerPan()
+                } else if(this.i % 60 === 0) {
+                    this.centerPan()
+                }
                 this.hideIfUnzoomed()
                 this.mainCanvas.renderAll()
                 this.renderMinimap()
@@ -254,7 +265,7 @@
                 Object.keys(updatedTanks).forEach((id) => {
                     const updatedTank = updatedTanks[id]
                     const tank = this.elements.tanks[id]
-                    tank.update(updatedTank)
+                    tank.update(updatedTank, this.playTankHitSound)
 
                 })
                 this.drawAndRemoveProjectiles(updatedGameState.projectiles)
@@ -320,6 +331,16 @@
 
             getColor(focusedPlayer) {
                 return COLORS[focusedPlayer.id % COLORS.length];
+            },
+
+            /**
+             * Play a hit sound if the hit tank is the focused tank.
+             */
+            playTankHitSound(tank) {
+                if (tank === this.focusedPlayer) {
+                    const clone = this.tankHitSound.cloneNode()
+                    clone.play()
+                }
             }
         }
     })

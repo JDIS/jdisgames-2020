@@ -59,7 +59,7 @@ export class Tank {
         this.healthBar.toCanvas.visible = visibilityState
     }
 
-    update(newServerTank) {
+    update(newServerTank, hitCallback) {
         this.score = newServerTank.score
         this.speed = newServerTank.speed
         this.hp_regen = newServerTank.hp_regen
@@ -68,9 +68,15 @@ export class Tank {
         this.fire_rate = newServerTank.fire_rate
         this.projectile_damage = newServerTank.projectile_damage
         this.position = {x: newServerTank.position[0], y: newServerTank.position[1]}
-        this.max_hp = newServerTank.max_hp
-        this.current_hp = newServerTank.current_hp
         this.upgrade_levels = newServerTank.upgrade_levels
+
+        if (newServerTank.current_hp / newServerTank.max_hp < this.current_hp / this.max_hp) {
+
+            hitCallback(this)
+        }
+
+        this.current_hp = newServerTank.current_hp
+        this.max_hp = newServerTank.max_hp
 
         if (this.has_died) {
             this.toCanvas.left = newServerTank.position.x
