@@ -7,30 +7,28 @@ defmodule Diep.IoWeb.AdminController do
     render(conn, "index.html")
   end
 
-  def start_game(conn, %{"ticks" => ticks} = _params) do
+  def start_game(conn, %{"ticks" => ticks, "game_name" => game_name} = _params) do
     {:ok, pid} =
       ticks
       |> String.to_integer()
-      |> GameSupervisor.start_main_game()
+      |> GameSupervisor.start_game(game_name)
 
-    conn
-    |> put_flash(:info, "Started game, #{inspect(pid)}")
-    |> redirect(to: Routes.admin_path(conn, :index))
+    finish_call(conn, "Started game \"#{game_name}\": #{inspect(pid)}")
   end
 
-  def stop_game(conn, _params) do
-    :ok = GameSupervisor.stop_main_game()
-
-    conn
-    |> put_flash(:info, "Main game will stop after max ticks.")
-    |> redirect(to: Routes.admin_path(conn, :index))
+  def stop_game(conn, %{"game_name" => game_name} = _params) do
+    :ok = GameSupervisor.stop_game(game_name)
+    finish_call(conn, "Game \"#{game_name}\" will stop after max ticks.")
   end
 
-  def kill_game(conn, _params) do
-    :ok = GameSupervisor.kill_main_game()
+  def kill_game(conn, %{"game_name" => game_name} = _params) do
+    :ok = GameSupervisor.kill_game(game_name)
+    finish_call(conn, "Game \"#{game_name}\" killed.")
+  end
 
+  defp finish_call(conn, message) do
     conn
-    |> put_flash(:info, "Main game killed")
+    |> put_flash(:info, message)
     |> redirect(to: Routes.admin_path(conn, :index))
   end
 end

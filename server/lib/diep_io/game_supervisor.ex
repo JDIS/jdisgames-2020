@@ -10,19 +10,26 @@ defmodule Diep.Io.GameSupervisor do
   alias Diep.Io.Gameloop
 
   @main_game_name :main_game
+  @secondary_game_name :secondary_game
 
   # Client
   @spec start_link([]) :: {:ok, pid()}
   def start_link([]), do: DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
 
-  @spec start_main_game(non_neg_integer()) :: {:ok, pid()}
-  def start_main_game(game_time), do: start_game(@main_game_name, true, game_time, 15, true)
+  @spec start_game(non_neg_integer(), nonempty_charlist()) :: {:ok, pid()}
+  def start_game(game_time, "main_game"), do: start_game(@main_game_name, true, game_time, 15, true)
 
-  @spec stop_main_game :: :ok
-  def stop_main_game, do: Gameloop.stop_game(@main_game_name)
+  def start_game(game_time, "secondary_game") do
+    start_game(@secondary_game_name, false, game_time, 3, false)
+  end
 
-  @spec kill_main_game :: :ok
-  def kill_main_game, do: Gameloop.kill_game(@main_game_name)
+  @spec stop_game(nonempty_charlist()) :: :ok
+  def stop_game("main_game"), do: Gameloop.stop_game(@main_game_name)
+  def stop_game("secondary_game"), do: Gameloop.stop_game(@secondary_game_name)
+
+  @spec kill_game(nonempty_charlist()) :: :ok
+  def kill_game("main_game"), do: Gameloop.kill_game(@main_game_name)
+  def kill_game("secondary_game"), do: Gameloop.kill_game(@secondary_game_name)
 
   # Server (callbacks)
   def init([]), do: DynamicSupervisor.init(strategy: :one_for_one)
