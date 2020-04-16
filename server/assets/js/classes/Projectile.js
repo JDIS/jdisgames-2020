@@ -4,7 +4,7 @@ import {ANIMATION_DURATION, FADE_DURATION, linear, PROJECTILE_RADIUS} from "../m
 export class Projectile {
 
     constructor(tankOwner, serverProjectile) {
-        this.position = {x: tankOwner.position.x, y: tankOwner.position.y}
+        this.position = {x: tankOwner.toCanvas.left, y: tankOwner.toCanvas.top}
         this.owner = tankOwner
         this.id = serverProjectile.id
         this.fabricObj = this.createFabricObj(serverProjectile.size)

@@ -1,5 +1,5 @@
-export const LARGE_DEBRIS_RADIUS = 40;
-export const MEDIUM_DEBRIS_RADIUS = 50;
+export const LARGE_DEBRIS_RADIUS = 35;
+export const MEDIUM_DEBRIS_RADIUS = 30;
 export const SMALL_DEBRIS_RADIUS = 25;
 export const PROJECTILE_RADIUS = 15;
 export const TANK_RADIUS = 25
@@ -20,7 +20,7 @@ export const SELECTED_TANK_OUTLINE_COLOR = 'rgb(0,255,0)'
 // in ms
 export const CANVAS_UPDATE_RATE = 1000 / 3
 export const ANIMATION_DURATION = 1000 / 3
-export const FADE_DURATION = 200
+export const FADE_DURATION = 150
 export const COLORS = ['#F60000', '#FF8C00', '#FFEE00', '#4DE94C', '#3783FF', '#4815AA', '#234E85', '#6E7C74', '#C7B763', '#D09D48', '#CA6220', '#C63501']
 export const DEBRIS_TYPE = [1, 2]
 export function linear(t, b, c, d) {

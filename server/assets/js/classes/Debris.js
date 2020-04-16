@@ -75,13 +75,11 @@ export class Debris {
 
     createMediumDebris() {
 
-        return new fabric.Triangle({
-            width: MEDIUM_DEBRIS_RADIUS,
-            height: 0.9 * MEDIUM_DEBRIS_RADIUS,
+        return new fabric.Polygon(regularPolygonPoints(3, MEDIUM_DEBRIS_RADIUS), {
             angle: parseInt(this.id % BigInt(360)),
             stroke: 'green',
             strokeWidth: 3,
-            fill: 'white'
+            fill: "rgb(200, 255, 100)"
         })
     }
 

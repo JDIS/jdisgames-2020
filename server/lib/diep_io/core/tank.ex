@@ -6,11 +6,11 @@ defmodule Diep.Io.Core.Tank do
   alias :math, as: Math
 
   @default_hp 100
-  @default_speed 80
-  @default_fire_rate 5
+  @default_speed 25
+  @default_fire_rate 15
   @default_projectile_damage 20
   @default_body_damage 20
-  @default_hp_regen 1
+  @default_hp_regen 0.4
   @default_radius 25
 
   @upgrade_rates [

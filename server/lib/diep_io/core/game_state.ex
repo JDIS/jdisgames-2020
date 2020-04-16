@@ -12,7 +12,7 @@ defmodule Diep.Io.Core.GameState do
   @max_debris_count 1000
   @max_debris_generation_rate 0.5
   @debris_size_probability [:small, :small, :small, :medium, :medium, :large]
-  @projectile_decay 2
+  @projectile_decay 1
   @experience_loss_rate 0.5
   @experience_score_ratio_on_kill 0.1
 
@@ -245,10 +245,10 @@ defmodule Diep.Io.Core.GameState do
       tanks_map
       |> Map.values()
       |> Collisions.calculate_collisions(projectiles)
+      |> Enum.filter(fn {tank, projectile} -> tank.id != projectile.owner_id end)
 
     tanks_map =
       collisions
-      |> Enum.filter(fn {tank, projectile} -> tank.id != projectile.owner_id end)
       |> Enum.reduce(tanks_map, fn {tank, projectile}, tanks ->
         projectile_damage = Entity.get_body_damage(projectile)
         damaged_tank = Tank.hit(tanks[tank.id], projectile_damage)

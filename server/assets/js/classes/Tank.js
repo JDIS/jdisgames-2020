@@ -10,6 +10,7 @@ export class Tank {
         this.color = getColorFromId(serverTank.id)
         this.has_died = false
         this.fire_rate = serverTank.fire_rate
+        this.hp_regen = serverTank.hp_regen
         this.upgrade_tokens = serverTank.upgrade_tokens
         this.projectile_damage = serverTank.projectile_damage
         this.speed = serverTank.speed
@@ -61,6 +62,7 @@ export class Tank {
     update(newServerTank) {
         this.score = newServerTank.score
         this.speed = newServerTank.speed
+        this.hp_regen = newServerTank.hp_regen
         this.body_damage = newServerTank.body_damage
         this.upgrade_tokens = newServerTank.upgrade_tokens
         this.fire_rate = newServerTank.fire_rate
