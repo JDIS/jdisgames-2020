@@ -1,7 +1,4 @@
-import run_bot
-
-from bot import MyBot
-from multiprocessing import Process
+import subprocess
 
 secret_keys = [
     
@@ -10,12 +7,11 @@ secret_keys = [
 if __name__ == '__main__':
     processes = []
     for key in secret_keys:
-        processes.append(Process(target=run_bot.loop, args=(key,)))
-
-    for process in processes:
-        process.start()
+        processes.append(subprocess.Popen(['python', 'run_bot.py', key], stdout=subprocess.PIPE, stdin=subprocess.PIPE))
 
     input("Press a key to terminate")
 
     for process in processes:
-        process.terminate()
+        process.kill()
+
+    exit(0)

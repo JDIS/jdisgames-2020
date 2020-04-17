@@ -46,5 +46,5 @@ class MyBot:
         return Action(
             destination=self.destination(nearest_debris),
             target=nearest_debris.position,
-            purchase=Upgrade.PROJECTILE_DAMAGE
+            purchase=self.random_upgrade()
         )
