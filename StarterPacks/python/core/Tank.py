@@ -14,8 +14,10 @@ class Tank:
     max_hp: int
     current_hp: float
     speed: int
-    position: Tuple[int, int]
     """ x, y """
+    position: Tuple[int, int]
+    direction: Tuple[int, int]
+    target: Tuple[int, int]
 
     score: int
     fire_rate: float

@@ -7,7 +7,7 @@ defmodule Diep.Io.Gameloop do
   use GenServer
   alias Diep.Io.{ActionStorage, PerformanceMonitor, ScoreRepository, UsersRepository}
   alias Diep.IoWeb.Endpoint
-  alias Diep.Io.Core.{Action, Clock, GameState}
+  alias Diep.Io.Core.{Clock, GameState}
   alias :erlang, as: Erlang
   require Logger
 
@@ -78,11 +78,14 @@ defmodule Diep.Io.Gameloop do
     elasped_time = Clock.calculate_elasped_time(state.clock, begin_time)
     Logger.debug("looperoo took #{Erlang.convert_time_unit(elasped_time, :native, :millisecond)}ms")
 
-    updated_state =
+    actions =
       state.tanks
       |> Map.keys()
-      |> Enum.map(fn id -> ActionStorage.get_action(state.name, id) end)
-      |> GameState.handle_players(state)
+      |> Enum.map(fn id -> ActionStorage.pop_action(state.name, id) end)
+
+    updated_state =
+      state
+      |> GameState.handle_tanks(actions)
       |> GameState.handle_hp_regen()
       |> GameState.handle_projectiles()
       |> GameState.handle_debris()
@@ -114,8 +117,6 @@ defmodule Diep.Io.Gameloop do
   defp init_game_state(name, is_ranked, monitor_performance?, clock) do
     game_id = System.unique_integer()
     users = UsersRepository.list_users()
-    # Initialize ActionStorage's content with empty actions for each user
-    users |> Enum.each(fn user -> ActionStorage.store_action(name, Action.new(user.id)) end)
     clock = register_clock_events(clock)
 
     if monitor_performance?, do: PerformanceMonitor.reset()

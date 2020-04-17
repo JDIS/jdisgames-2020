@@ -25,7 +25,9 @@ defmodule TankTest do
              cooldown: 0,
              experience: 0,
              upgrade_tokens: 0,
-             position: {_, _}
+             position: {_, _},
+             target: nil,
+             destination: nil
            } = tank
 
     assert current_hp == Tank.default_hp()
@@ -120,21 +122,27 @@ defmodule TankTest do
     assert new_angle == Angle.degree(tank.position, position)
   end
 
-  test "shoot/2 updates the tank and creates a projectile", %{tank: tank} do
-    position = Position.random()
+  test "shoot/1 updates the tank and creates a projectile", %{tank: tank} do
+    tank =
+      tank
+      |> Tank.set_target(Position.random())
 
-    {updated_tank, projectile} = Tank.shoot(tank, position)
+    {updated_tank, projectile} = Tank.shoot(tank)
 
     assert updated_tank.cooldown != tank.cooldown
     assert projectile.damage == tank.projectile_damage
     assert projectile.position == tank.position
   end
 
-  test "shoot/2 does not shoot on cooldown", %{tank: tank} do
+  test "shoot/1 does not shoot on cooldown", %{tank: tank} do
+    tank =
+      tank
+      |> Tank.set_target(Position.random())
+
     assert {tank, nil} =
              tank
              |> Tank.set_cooldown()
-             |> Tank.shoot(Position.random())
+             |> Tank.shoot()
   end
 
   test "buy_max_hp_upgrade/1 increases tank's max hp", %{tank: tank} do
@@ -206,5 +214,25 @@ defmodule TankTest do
 
   test "mark_as_alive/1 sets the has_died attribute to false", %{tank: tank} do
     assert Tank.mark_as_alive(tank).has_died == false
+  end
+
+  test "set_destination/2 sets the desired destination", %{tank: tank} do
+    expected_destination = Position.new(33, 33)
+
+    new_tank =
+      tank
+      |> Tank.set_destination(expected_destination)
+
+    assert new_tank.destination == expected_destination
+  end
+
+  test "set_target/2 sets the desired target", %{tank: tank} do
+    expected_target = Position.new(33, 33)
+
+    new_tank =
+      tank
+      |> Tank.set_target(expected_target)
+
+    assert new_tank.target == expected_target
   end
 end

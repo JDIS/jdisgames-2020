@@ -24,11 +24,9 @@ defmodule ActionStorageTest do
     :ok = ActionStorage.init(table_name)
     true = ActionStorage.store_action(table_name, action)
 
-    assert ActionStorage.get_action(table_name, tank_id) == action
-
     :ok = ActionStorage.reset(table_name)
 
-    assert ActionStorage.get_action(table_name, tank_id) == nil
+    assert ActionStorage.pop_action(table_name, tank_id) == nil
   end
 
   test "store_action/2 stores the given action for the given player", %{
@@ -42,7 +40,7 @@ defmodule ActionStorageTest do
     assert hd(Ets.lookup(table_name, tank_id)) == {tank_id, action}
   end
 
-  test "get_action/2 returns the stored action for the given player", %{
+  test "pop_action/2 pops the stored action for the given player", %{
     table_name: table_name,
     action: action,
     tank_id: tank_id
@@ -50,15 +48,16 @@ defmodule ActionStorageTest do
     :ok = ActionStorage.init(table_name)
 
     true = Ets.insert(table_name, {tank_id, action})
-    assert ActionStorage.get_action(table_name, tank_id) == action
+    assert ActionStorage.pop_action(table_name, tank_id) == action
+    assert ActionStorage.pop_action(table_name, tank_id) == nil
   end
 
-  test "get_action/2 returns nil when no stored action", %{
+  test "pop_action/2 returns nil when no stored action", %{
     table_name: table_name,
     tank_id: tank_id
   } do
     :ok = ActionStorage.init(table_name)
 
-    assert ActionStorage.get_action(table_name, tank_id) == nil
+    assert ActionStorage.pop_action(table_name, tank_id) == nil
   end
 end

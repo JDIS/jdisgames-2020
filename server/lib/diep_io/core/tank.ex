@@ -43,6 +43,8 @@ defmodule Diep.Io.Core.Tank do
     :current_hp,
     :speed,
     :position,
+    :destination,
+    :target,
     :score,
     :fire_rate,
     :projectile_damage,
@@ -64,6 +66,8 @@ defmodule Diep.Io.Core.Tank do
           speed: integer,
           experience: integer,
           position: Position.t(),
+          destination: Position.t() | nil,
+          target: Position.t() | nil,
           score: integer,
           fire_rate: number,
           hp_regen: number,
@@ -139,25 +143,31 @@ defmodule Diep.Io.Core.Tank do
     set_value(tank, :position, position)
   end
 
+  @spec set_target(t(), Position.t()) :: t()
+  def set_target(tank, target), do: set_value(tank, :target, target)
+
+  @spec set_destination(t(), Position.t()) :: t()
+  def set_destination(tank, destination), do: set_value(tank, :destination, destination)
+
   @spec increase_score(t(), integer()) :: t()
   def increase_score(tank, amount) do
     add_to_value(tank, :score, amount)
   end
 
-  @spec shoot(t(), Position.t()) :: {t(), Projectile.t() | nil}
-  def shoot(%__MODULE__{cooldown: cooldown} = tank, target) when cooldown <= 0 do
-    angle = Angle.radian(tank.position, target)
+  @spec shoot(t()) :: {t(), Projectile.t() | nil}
+  def shoot(%__MODULE__{cooldown: cooldown} = tank) when cooldown <= 0 do
+    angle = Angle.radian(tank.position, tank.target)
     projectile = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage)
 
     updated_tank =
       tank
       |> set_cooldown
-      |> set_cannon_angle(target)
+      |> set_cannon_angle(tank.target)
 
     {updated_tank, projectile}
   end
 
-  def shoot(tank, _target), do: {tank, nil}
+  def shoot(tank), do: {tank, nil}
 
   @spec set_cooldown(t()) :: t()
   def set_cooldown(tank) do

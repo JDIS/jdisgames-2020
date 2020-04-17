@@ -1,40 +1,29 @@
 defmodule ActionTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.Action
+  alias Diep.Io.Core.{Action, Position}
 
-  @tank_id "Tank"
-  @action_details [
-    destination: {0, 0},
-    target: {0, 0},
-    purchase: Diep.Io.Upgrades.MaxHP
-  ]
+  test "new/1 creates an empty action" do
+    tank_id = "test_tank"
 
-  setup do
-    [default_action: Action.new(@tank_id), complete_action: Action.new(@tank_id, @action_details)]
+    assert %Action{
+             tank_id: tank_id,
+             destination: nil,
+             target: nil,
+             purchase: nil
+           } == Action.new(tank_id)
   end
 
-  test "has_destination?/1 determines if the action has a destination", %{
-    default_action: default,
-    complete_action: complete
-  } do
-    assert Action.has_destination?(default) == false
-    assert Action.has_destination?(complete) == true
-  end
+  test "new/2 creates a specific action" do
+    tank_id = "test_tank"
+    expected_destination = Position.new(3, 3)
+    expected_target = Position.new(3, 3)
 
-  test "has_target?/1 determines if the action has a target", %{
-    default_action: default,
-    complete_action: complete
-  } do
-    assert Action.has_target?(default) == false
-    assert Action.has_target?(complete) == true
-  end
-
-  test "has_purchase?/1 determines if the action has a purchase", %{
-    default_action: default,
-    complete_action: complete
-  } do
-    assert Action.has_purchase?(default) == false
-    assert Action.has_purchase?(complete) == true
+    assert %Action{
+             tank_id: tank_id,
+             destination: expected_destination,
+             target: expected_target,
+             purchase: nil
+           } == Action.new(tank_id, destination: expected_destination, target: expected_target)
   end
 end
