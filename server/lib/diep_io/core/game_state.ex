@@ -10,7 +10,7 @@ defmodule Diep.Io.Core.GameState do
   alias :rand, as: Rand
 
   @max_debris_count 400
-  @max_debris_generation_rate 0.5
+  @max_debris_generation_rate 0.03
   @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]
   @projectile_decay 1
   @experience_loss_rate 0.5
@@ -375,15 +375,25 @@ defmodule Diep.Io.Core.GameState do
 
   defp generate_debris(game_state) do
     case @max_debris_count - Enum.count(game_state.debris) do
-      0 ->
+      full when full <= 0 ->
         game_state
 
       missing_count ->
-        rate = Rand.uniform() * @max_debris_generation_rate
-        debris_count = max(round(missing_count * rate), 1)
+        rand = Rand.uniform()
+
+        debris_count =
+          case rand do
+            hit when hit < @max_debris_generation_rate -> max(round(rand * missing_count), 1)
+            _ -> 0
+          end
+
         new_debris = create_debris(debris_count)
         %{game_state | debris: Enum.concat(game_state.debris, new_debris)}
     end
+  end
+
+  defp create_debris(0) do
+    []
   end
 
   defp create_debris(count) do

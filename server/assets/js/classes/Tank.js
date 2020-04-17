@@ -70,7 +70,7 @@ export class Tank {
         this.position = {x: newServerTank.position[0], y: newServerTank.position[1]}
         this.upgrade_levels = newServerTank.upgrade_levels
 
-        if (newServerTank.current_hp / newServerTank.max_hp < this.current_hp / this.max_hp) {
+        if (newServerTank.current_hp < this.current_hp && newServerTank.max_hp === this.max_hp) {
 
             hitCallback(this)
         }
