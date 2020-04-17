@@ -13,7 +13,8 @@
         <nav role="navigation">
           <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="/spectate">Spectate</a></li>
+            <li><a href="/spectate?game_name=main_game">Spectate main</a></li>
+            <li><a href="/spectate?game_name=secondary_game">Spectate secondary</a></li>
             <li><a href="/scoreboard">Scoreboard</a></li>
           </ul>
         </nav>

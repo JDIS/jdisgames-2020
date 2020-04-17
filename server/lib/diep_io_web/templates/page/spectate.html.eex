@@ -1,6 +1,5 @@
+<div id="game_name" hidden><% @game_name %></div>
 <div id="app">
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.6.3/fabric.min.js"></script>
 <script src="<%= Routes.static_path(@conn, "/js/spectate.js") %>"></script>
-
-

@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Spectate from "./spectate.vue";
-import {networkInit} from "./modules/network"
+import { networkInit } from "./modules/network"
 
 const app = new Vue({
     render: h => h(Spectate)
@@ -8,4 +8,5 @@ const app = new Vue({
 
 export default app.$children[0]
 
-networkInit()
+game_name = document.getElementById("game_name").textContent
+networkInit(game_name)

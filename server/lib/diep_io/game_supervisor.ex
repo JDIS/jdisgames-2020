@@ -16,18 +16,18 @@ defmodule Diep.Io.GameSupervisor do
   @spec start_link([]) :: {:ok, pid()}
   def start_link([]), do: DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
 
-  @spec start_game(non_neg_integer(), nonempty_charlist()) :: {:ok, pid()}
+  @spec start_game(non_neg_integer(), String.t()) :: {:ok, pid()}
   def start_game(game_time, "main_game"), do: start_game(@main_game_name, true, game_time, 15, true)
 
   def start_game(game_time, "secondary_game") do
-    start_game(@secondary_game_name, false, game_time, 3, false)
+    start_game(@secondary_game_name, false, game_time, 15, false)
   end
 
-  @spec stop_game(nonempty_charlist()) :: :ok
+  @spec stop_game(String.t()) :: :ok
   def stop_game("main_game"), do: Gameloop.stop_game(@main_game_name)
   def stop_game("secondary_game"), do: Gameloop.stop_game(@secondary_game_name)
 
-  @spec kill_game(nonempty_charlist()) :: :ok
+  @spec kill_game(String.t()) :: :ok
   def kill_game("main_game"), do: Gameloop.kill_game(@main_game_name)
   def kill_game("secondary_game"), do: Gameloop.kill_game(@secondary_game_name)
 
