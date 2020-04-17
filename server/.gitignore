@@ -52,3 +52,5 @@ badges/
 
 # Python cache
 __pycache__/
+
+postgres-data/
