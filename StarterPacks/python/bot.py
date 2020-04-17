@@ -1,7 +1,8 @@
+import math
 import random
 from typing import Tuple
 
-from core import Action, GameState, Upgrade
+from core import Action, GameState, Upgrade, Debris, Tank
 
 
 class MyBot:
@@ -11,6 +12,7 @@ class MyBot:
 
     def __init__(self, id):
         self.id = id
+        self.tank: Tank = None
 
     def random_position(self, state: GameState) -> Tuple[float]:
         x = random.randrange(0, state.map_width)
@@ -27,14 +29,22 @@ class MyBot:
             Upgrade.HP_REGEN
         ])
 
-    def destination(self, state: GameState):
-        destinationx = state.debris[self.id].position[0]
-        destinationy = state.debris[self.id].position[1] + 160
+    def destination(self, debris: Debris):
+        destinationx = debris.position[0]
+        destinationy = debris.position[1] + 160
         return destinationx, destinationy
 
+    def distance_from(self, debris: Debris):
+        return math.sqrt((self.tank.position[0] - debris.position[0]) ** 2 + (self.tank.position[1] - debris.position[1]) ** 2)
+
+    def find_nearest_debris(self, state: GameState):
+        return sorted(state.debris, key=lambda debris: self.distance_from(debris))[0]
+
     def tick(self, state: GameState) -> Action:
+        self.tank = state.tanks[f"{self.id}"]
+        nearest_debris: Debris = self.find_nearest_debris(state)
         return Action(
-            destination=self.destination(state),
-            target=state.debris[self.id].position,
-            purchase=self.random_upgrade()
+            destination=self.destination(nearest_debris),
+            target=nearest_debris.position,
+            purchase=Upgrade.PROJECTILE_DAMAGE
         )

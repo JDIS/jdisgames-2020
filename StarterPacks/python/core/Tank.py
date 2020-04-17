@@ -9,7 +9,7 @@ class Tank:
     """
     Represents a tank (you or enemy) and all its stats.
     """
-    id: int
+    id: str
     name: str
     max_hp: int
     current_hp: float

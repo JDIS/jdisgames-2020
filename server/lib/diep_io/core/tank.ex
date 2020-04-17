@@ -262,8 +262,7 @@ defmodule Diep.Io.Core.Tank do
 
   defp get_token_amount_from_experience(exp) do
     exp
-    |> Math.log2()
-    |> Kernel.*(0.5)
+    |> Math.pow(0.25)
     |> Kernel.floor()
   end
 end

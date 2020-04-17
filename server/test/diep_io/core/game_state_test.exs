@@ -82,12 +82,6 @@ defmodule GameStateTest do
     assert Enum.count(game_state.debris) == Enum.count(updated_state.debris)
   end
 
-  test "handle_debris/1 generates debris if cap is not reached", %{game_state: game_state} do
-    game_state = %{game_state | debris: Enum.take_every(game_state.debris, 2)}
-    updated_state = GameState.handle_debris(game_state)
-    assert Enum.count(updated_state.debris) > Enum.count(game_state.debris)
-  end
-
   test "handle_shoot/2 does nothing if target is nil", %{game_state: game_state} do
     updated_state =
       [Action.new(@user_id, target: nil)]
