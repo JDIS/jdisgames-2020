@@ -31,6 +31,6 @@ defmodule Diep.IoWeb.ActionChannelTest do
     push(socket, "new", @input)
     # Needed because async
     Process.sleep(10)
-    assert ActionStorage.get_action(:main_game, @tank_id) == @action
+    assert ActionStorage.pop_action(:main_game, @tank_id) == @action
   end
 end
