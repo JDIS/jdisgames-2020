@@ -20,6 +20,7 @@ jobs:
 
   build-and-test:
     runs-on: ubuntu-latest
+    container: elixir:1.9.4-alpine
 
     services:
       # Label used to access the service container
@@ -38,9 +39,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
 
     env:
       MIX_ENV: "test"
@@ -52,10 +50,6 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
-    - uses: actions/setup-elixir@v1
-      with:
-        otp-version: 22.2
-        elixir-version: 1.9.4
 
     - name: Mix local.rebar
       working-directory: ./server
