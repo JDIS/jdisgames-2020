@@ -23,9 +23,9 @@ defmodule Diep.Io.ActionStorage do
     Ets.insert(table_name, {action.tank_id, action})
   end
 
-  @spec get_action(atom(), any()) :: Action.t() | nil
-  def get_action(table_name, tank_id) do
-    case Ets.lookup(table_name, tank_id) do
+  @spec pop_action(atom(), any()) :: Action.t() | nil
+  def pop_action(table_name, tank_id) do
+    case Ets.take(table_name, tank_id) do
       [{_tank_id, action}] -> action
       [] -> nil
     end

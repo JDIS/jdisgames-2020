@@ -19,4 +19,8 @@ Located in the `config` folder. `dev.exs` is the default.
 
 ## Tests
 
-`mix test`
+Pour exécuter tous les tests sauf les tests temps réel: `mix test`
+
+Pour exécuter uniquement les tests temps réel: `mix test --only RT`
+
+Pour exécuter tous les tests: `mix test --include RT`

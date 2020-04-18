@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, Optional
 
 from core.Upgrades import Upgrades
 
@@ -9,13 +9,15 @@ class Tank:
     """
     Represents a tank (you or enemy) and all its stats.
     """
-    id: int
+    id: str
     name: str
     max_hp: int
     current_hp: float
     speed: int
-    position: Tuple[int, int]
     """ x, y """
+    position: Tuple[int, int]
+    direction: Optional[Tuple[int, int]]
+    target: Optional[Tuple[int, int]]
 
     score: int
     fire_rate: float

@@ -53,24 +53,24 @@ defmodule GameStateTest do
     assert new_state.should_stop? == true
   end
 
-  test "handle_players/2 does not move player if destination is nil", %{game_state: game_state} do
+  test "handle_tanks/2 does not move player if destination is nil", %{game_state: game_state} do
     tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
 
     updated_tank =
-      [Action.new(@user_id)]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id)])
       |> Map.get(:tanks)
       |> Map.get(@user_id)
 
     assert tank.position == updated_tank.position
   end
 
-  test "handle_players/2 moves player if given a destination", %{game_state: game_state} do
+  test "handle_tanks/2 moves player if given a destination", %{game_state: game_state} do
     tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
 
     updated_tank =
-      [Action.new(@user_id, destination: Position.random())]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, destination: Position.random())])
       |> Map.get(:tanks)
       |> Map.get(@user_id)
 
@@ -82,24 +82,18 @@ defmodule GameStateTest do
     assert Enum.count(game_state.debris) == Enum.count(updated_state.debris)
   end
 
-  test "handle_debris/1 generates debris if cap is not reached", %{game_state: game_state} do
-    game_state = %{game_state | debris: Enum.take_every(game_state.debris, 2)}
-    updated_state = GameState.handle_debris(game_state)
-    assert Enum.count(updated_state.debris) > Enum.count(game_state.debris)
-  end
-
   test "handle_shoot/2 does nothing if target is nil", %{game_state: game_state} do
     updated_state =
-      [Action.new(@user_id, target: nil)]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, target: nil)])
 
     assert updated_state == game_state
   end
 
   test "handle_shoot/2 adds projectiles and sets cooldowns", %{game_state: game_state} do
     updated_state =
-      [Action.new(@user_id, target: Position.random())]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, target: Position.random())])
 
     tank = get_tank(game_state, @user_id)
     updated_tank = get_tank(updated_state, @user_id)
@@ -115,16 +109,16 @@ defmodule GameStateTest do
       end)
 
     updated_state =
-      [Action.new(@user_id, target: Position.random())]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, target: Position.random())])
 
     assert Enum.empty?(updated_state.projectiles)
   end
 
   test "handle_projectiles/1 decays projectiles", %{game_state: game_state} do
     game_state =
-      [Action.new(@user_id, target: Position.random())]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, target: Position.random())])
 
     [projectile] = game_state.projectiles
 
@@ -148,8 +142,8 @@ defmodule GameStateTest do
 
   test "handle_projectiles/1 moves projectiles", %{game_state: game_state} do
     game_state =
-      [Action.new(@user_id, target: Position.random())]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, target: Position.random())])
 
     [projectile] = game_state.projectiles
 
@@ -162,8 +156,8 @@ defmodule GameStateTest do
 
   test "decrease_cooldowns/1 decreases tanks cooldown", %{game_state: game_state} do
     tank =
-      [Action.new(@user_id, target: Position.random())]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, target: Position.random())])
       |> GameState.decrease_cooldowns()
       |> get_tank(@user_id)
 
@@ -180,8 +174,8 @@ defmodule GameStateTest do
 
     for stat <- [:speed, :fire_rate, :projectile_damage, :max_hp] do
       upgraded_tank =
-        [Action.new(@user_id, purchase: stat)]
-        |> GameState.handle_players(game_state)
+        game_state
+        |> GameState.handle_tanks([Action.new(@user_id, purchase: stat)])
         |> get_tank(@user_id)
 
       assert Map.get(upgraded_tank, stat) != Map.get(tank, stat)
@@ -222,8 +216,8 @@ defmodule GameStateTest do
 
   test "handle_collisions/1 does not decrease hp of tank hit by it's own projectile", %{game_state: game_state} do
     game_state =
-      [Action.new(@user_id, target: Position.random())]
-      |> GameState.handle_players(game_state)
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, target: Position.random())])
 
     tank = Map.fetch!(game_state.tanks, @user_id)
 

@@ -10,7 +10,7 @@ defmodule Diep.Io.Core.GameState do
   alias :rand, as: Rand
 
   @max_debris_count 400
-  @max_debris_generation_rate 0.5
+  @max_debris_generation_rate 0.15
   @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]
   @projectile_decay 1
   @experience_loss_rate 0.5
@@ -105,11 +105,6 @@ defmodule Diep.Io.Core.GameState do
     end)
   end
 
-  @spec handle_players([Action.t()], t()) :: t()
-  def handle_players(actions, game_state) do
-    Enum.reduce(actions, game_state, &handle_action/2)
-  end
-
   @spec handle_debris(t()) :: t()
   def handle_debris(game_state) do
     game_state
@@ -155,54 +150,34 @@ defmodule Diep.Io.Core.GameState do
     %{game_state | tanks: healed_tanks}
   end
 
-  defp handle_action(action, game_state) do
+  @spec handle_tanks(t(), [Action.t()]) :: t()
+  def handle_tanks(game_state, actions) do
     game_state
-    |> handle_purchase(action)
-    |> handle_shoot(action)
-    |> handle_movement(action)
+    |> handle_actions(actions)
+    |> handle_movement()
+    |> handle_shoot()
   end
 
-  defp handle_movement(game_state, %Action{destination: nil}), do: game_state
-
-  defp handle_movement(game_state, action) do
-    Map.update!(game_state, :tanks, fn tanks ->
-      Map.update!(tanks, action.tank_id, fn tank ->
-        new_position = Position.next(tank.position, action.destination, tank.speed)
-
-        # TODO: remove me when implementing real metric for scores.
-        Tank.move(tank, new_position)
-        |> Tank.increase_score(:rand.uniform(10))
-      end)
-    end)
+  defp handle_actions(game_state, actions) do
+    Enum.reduce(actions, game_state, &handle_action/2)
   end
 
-  defp handle_shoot(game_state, %Action{target: nil}), do: game_state
+  defp handle_action(nil, game_state), do: game_state
 
-  defp handle_shoot(game_state, action) do
-    {tank, projectile} =
-      game_state
-      |> Map.get(:tanks)
+  defp handle_action(action, game_state) do
+    updated_tank =
+      game_state.tanks
       |> Map.get(action.tank_id)
-      |> Tank.shoot(action.target)
+      |> handle_purchase(action)
+      |> handle_target_update(action)
+      |> handle_destination_update(action)
 
-    case projectile == nil do
-      true ->
-        game_state
-
-      false ->
-        game_state
-        |> Map.update!(:projectiles, fn projectiles ->
-          [projectile | projectiles]
-        end)
-        |> Map.update!(:tanks, fn tanks ->
-          Map.put(tanks, action.tank_id, tank)
-        end)
-    end
+    %{game_state | tanks: Map.put(game_state.tanks, action.tank_id, updated_tank)}
   end
 
-  defp handle_purchase(game_state, %Action{purchase: nil}), do: game_state
+  defp handle_purchase(tank, %Action{purchase: nil}), do: tank
 
-  defp handle_purchase(game_state, action) do
+  defp handle_purchase(tank, action) do
     upgrade_func =
       case action.purchase do
         :speed -> &Tank.buy_speed_upgrade/1
@@ -213,13 +188,69 @@ defmodule Diep.Io.Core.GameState do
         :hp_regen -> &Tank.buy_hp_regen_upgrade/1
       end
 
-    upgraded_tank =
-      game_state.tanks
-      |> Map.get(action.tank_id)
-      |> upgrade_func.()
+    tank
+    |> upgrade_func.()
+  end
 
-    updated_tanks = Map.put(game_state.tanks, action.tank_id, upgraded_tank)
+  defp handle_target_update(tank, %Action{target: nil}), do: tank
+
+  defp handle_target_update(tank, action) do
+    tank
+    |> Tank.set_target(action.target)
+  end
+
+  defp handle_destination_update(tank, %Action{destination: nil}), do: tank
+
+  defp handle_destination_update(tank, action) do
+    tank
+    |> Tank.set_destination(action.destination)
+  end
+
+  defp handle_movement(game_state) do
+    updated_tanks =
+      game_state.tanks
+      |> Map.values()
+      |> Enum.map(fn
+        %Tank{destination: nil} = tank ->
+          {tank.id, tank}
+
+        tank ->
+          new_position = Position.next(tank.position, tank.destination, tank.speed)
+
+          updated_tank =
+            tank
+            |> Tank.move(new_position)
+
+          {updated_tank.id, updated_tank}
+      end)
+      |> Map.new()
+
     %{game_state | tanks: updated_tanks}
+  end
+
+  defp handle_shoot(game_state) do
+    game_state.tanks
+    |> Map.values()
+    |> Enum.reduce(game_state, fn
+      %Tank{target: nil}, acc_game_state -> acc_game_state
+      tank, acc_game_state -> do_handle_shoot(tank, acc_game_state)
+    end)
+  end
+
+  defp do_handle_shoot(tank, game_state) do
+    {new_tank, projectile} =
+      tank
+      |> Tank.shoot()
+
+    case projectile == nil do
+      true ->
+        game_state
+
+      false ->
+        game_state
+        |> Map.update!(:projectiles, fn projectiles -> [projectile | projectiles] end)
+        |> Map.update!(:tanks, fn tanks -> Map.put(tanks, new_tank.id, new_tank) end)
+    end
   end
 
   defp handle_tank_tank_collisions(%{tanks: tanks_map} = game_state) do
@@ -375,15 +406,25 @@ defmodule Diep.Io.Core.GameState do
 
   defp generate_debris(game_state) do
     case @max_debris_count - Enum.count(game_state.debris) do
-      0 ->
+      full when full <= 0 ->
         game_state
 
       missing_count ->
-        rate = Rand.uniform() * @max_debris_generation_rate
-        debris_count = max(round(missing_count * rate), 1)
+        rand = Rand.uniform()
+
+        debris_count =
+          case rand do
+            hit when hit < @max_debris_generation_rate -> max(round(rand * missing_count), 1)
+            _ -> 0
+          end
+
         new_debris = create_debris(debris_count)
         %{game_state | debris: Enum.concat(game_state.debris, new_debris)}
     end
+  end
+
+  defp create_debris(0) do
+    []
   end
 
   defp create_debris(count) do
