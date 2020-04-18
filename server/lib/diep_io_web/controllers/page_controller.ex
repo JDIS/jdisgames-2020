@@ -6,7 +6,7 @@ defmodule Diep.IoWeb.PageController do
   end
 
   def spectate(conn, %{"game_name" => game_name} = _params) do
-    render(conn, "spectate.html", %{game_name: game_name})
+    render(conn, "spectate.html", game_name: game_name)
   end
 
   def scoreboard(conn, _params) do
