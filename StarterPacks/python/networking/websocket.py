@@ -23,11 +23,11 @@ class Socket:
         finally:
             await self._websocket.close()
 
-    async def channel(self, topic) -> Channel:
+    async def channel(self, topic, payload) -> Channel:
         if self._channels.get(topic):
             return self._channels[topic]
 
-        self._channels[topic] = await Channel.create(topic, self)
+        self._channels[topic] = await Channel.create(topic, self, payload)
         return self._channels[topic]
 
     async def send(self, message):

@@ -15,7 +15,11 @@ from networking import Channel, Message, Socket
 BASE_URL = "ws://127.0.0.1:4000/socket"
 
 
-async def start(secret_key, loop):
+def get_game_name(is_ranked):
+    return "main_game" if is_ranked else "secondary_game"
+
+
+async def start(secret_key, loop, is_ranked):
     bot_url = f"{BASE_URL}/bot/websocket?secret={secret_key}"
     spectate_url = f"{BASE_URL}/spectate/websocket"
 
@@ -39,8 +43,8 @@ async def start(secret_key, loop):
 
                 bot = MyBot(id["id"])
 
-            action_channel: Channel = await bot_connection.channel("action")
-            game_state_channel = await spectate_connection.channel("game_state")
+            action_channel: Channel = await bot_connection.channel("action", {"game_name": get_game_name(is_ranked)})
+            game_state_channel = await spectate_connection.channel("game_state", {"game_name": get_game_name(is_ranked)})
 
             action_channel.on("id", on_receive_id)
             game_state_channel.on("new_state", on_state_update)
@@ -77,13 +81,29 @@ async def tick(queue: Queue, bot_connection):
         await bot_connection.send(Message("new", "action", payload))
 
 
-def loop(secret):
-    asyncio.get_event_loop().run_until_complete(start(secret, asyncio.get_event_loop()))
+def loop(secret, is_ranked):
+    asyncio.get_event_loop().run_until_complete(
+        start(secret, asyncio.get_event_loop(), is_ranked))
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1', 'True'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0', 'False'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Starts your bot!")
     parser.add_argument(
         "secret", help="The secret which authentifies your bot")
+    parser.add_argument(
+        "is_ranked", help="Whether the bot should connect to the ranked game or the practice one", type=str2bool, const=True, default=False, nargs='?')
     args = parser.parse_args()
-    asyncio.get_event_loop().run_until_complete(start(args.secret, asyncio.get_event_loop()))
+    print(args.is_ranked)
+    asyncio.get_event_loop().run_until_complete(
+        start(args.secret, asyncio.get_event_loop(), args.is_ranked))

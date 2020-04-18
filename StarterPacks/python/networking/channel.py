@@ -12,9 +12,9 @@ class Channel:
         self.on(Message.PHX_REPLY, on_reply)
 
     @classmethod
-    async def create(self, topic, socket) -> 'Channel':
+    async def create(self, topic, socket, payload) -> 'Channel':
         channel = Channel(topic, socket)
-        await socket.send(JoinMessage(topic))
+        await socket.send(JoinMessage(topic, payload))
         return channel
 
     def on(self, event, callback):
