@@ -55,14 +55,19 @@ jobs:
         elixir-version: 1.9.4
 
     - name: Mix local.rebar
-      run: cd server && mix local.rebar --force
+      working-directory: ./server
+      run: mix local.rebar --force
     - name: Mix local.hex
+      working-directory: ./server
       run: mix local.hex --force
     - name: Mix deps.get
+      working-directory: ./server
       run: mix deps.get --only test
     - name: ecto.setup
+      working-directory: ./server
       run: mix ecto.setup
     - name: Mix quality.ci
+      working-directory: ./server
       run: mix quality.ci
 
 
