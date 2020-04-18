@@ -1,4 +1,4 @@
-![pipeline status](https://github.com/JDIS/jdisgames-2020/workflows/Continuous%20Integration/badge.svg)
+![pipeline status](https://github.com/JDIS/jdisgames-2020/workflows/Continuous%20Integration/badge.svg?branch=master)
 
 [![coverage report](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/badges/master/coverage.svg)](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/commits/master)
 [![max iteration time](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/-/jobs/artifacts/master/raw/server/badges/max_iteration_time.svg?job=generate_badges)](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/commits/master)
