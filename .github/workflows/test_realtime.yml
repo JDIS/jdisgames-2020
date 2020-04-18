@@ -1,0 +1,57 @@
+name: Test real-time constraints
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  test-realtime:
+    runs-on: ubuntu-latest
+    container: elixir:1.9.4-alpine
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:12.1-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_DB: diep_io_test
+          POSTGRES_HOST: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: "postgres"
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      MIX_ENV: "test"
+      POSTGRES_DB: diep_io_test
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
+
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Mix local.rebar
+      working-directory: ./server
+      run: mix local.rebar --force
+    - name: Mix local.hex
+      working-directory: ./server
+      run: mix local.hex --force
+    - name: Mix deps.get
+      working-directory: ./server
+      run: mix deps.get --only test
+    - name: ecto.setup
+      working-directory: ./server
+      run: mix ecto.setup
+    - name: Test RealTime
+      working-directory: ./server
+      run: mix test --only RT
