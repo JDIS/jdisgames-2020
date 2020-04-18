@@ -1,0 +1,101 @@
+name: Continuous Integration
+
+on:
+  pull_request:
+    branches:
+      - '**'
+  push:
+    branches:
+      - master
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Docker image
+      working-directory: ./server
+      run: docker build .
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:12.1-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_DB: diep_io_test
+          POSTGRES_HOST: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: "postgres"
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - env:
+      MIX_ENV: "test"
+      POSTGRES_DB: diep_io_test
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
+
+    - uses: actions/checkout@v2
+    - uses: actions/setup-elixir@v1
+        with:
+          otp-version: 22.2
+          elixir-version: 1.9.4
+
+    - name: Mix local.rebar
+      run: cd server && mix local.rebar --force
+    - name: Mix local.hex
+      run: mix local.hex --force
+    - name: Mix deps.get
+      run: mix deps.get --only test
+    - name: ecto.setup
+      run: mix ecto.setup
+    - name: Mix quality.ci
+      run: mix quality.ci
+
+
+
+#----------
+#
+#.job_template: &definition_mix
+#  cache:
+#    paths:
+#      - server/deps
+#      - server/priv/plts
+
+#test_rt:
+#  stage: test_rt
+#  tags:
+#    - RT
+#  only:
+#    - master
+#  variables:
+#    CUSTOM_BADGES_LOCATION: $CI_PROJECT_DIR/server/badges
+#  before_script:
+#    - cd server
+#    - mix local.rebar --force
+#    - mix local.hex --force
+#    - mix deps.get --only test
+#    - mix ecto.setup
+#  script:
+#    - mix test --only RT
+#  cache:
+#    paths:
+#      - server/deps
+#      - server/priv/plts
+#  artifacts:
+#    paths:
+#      - server/badges
+#    when: always
+#
