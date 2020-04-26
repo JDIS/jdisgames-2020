@@ -266,8 +266,10 @@
                     const updatedTank = updatedTanks[id]
                     const tank = this.elements.tanks[id]
                     tank.update(updatedTank, this.playTankHitSound)
-
                 })
+                if(this.focusedPlayer) {
+                    this.focusedPlayer.updateLines(this.mainCanvas)
+                }
                 this.drawAndRemoveProjectiles(updatedGameState.projectiles)
                 this.drawAndRemoveDebris(updatedGameState.debris)
                 this.lastUpdateTimestamp = Date.now()
