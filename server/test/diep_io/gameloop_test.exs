@@ -99,7 +99,6 @@ defmodule GameloopTest do
     end
 
     test ":loop does not broadcast every time", %{game_name: game_name} do
-      {:ok, _pid} = start_supervised({PerformanceMonitor, :millisecond})
       max_tick = 10
       client_frequency = 5
       clock = Clock.new(:infinity, max_tick) |> Clock.register(:client_tick, client_frequency)
@@ -113,7 +112,7 @@ defmodule GameloopTest do
         )
 
       client_update_count = length(PerformanceMonitor.get_broadcast_times())
-      assert(client_update_count == max_tick / client_frequency)
+      assert client_update_count == max_tick / client_frequency
     end
 
     test ":reset_game saves the scores when is_is_ranked true", %{game_name: game_name, clock: clock} do

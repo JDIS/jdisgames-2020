@@ -7,7 +7,7 @@ defmodule Diep.IoWeb.PageControllerTest do
   end
 
   test "GET /spectate", %{conn: conn} do
-    conn = get(conn, Routes.page_path(conn, :spectate))
+    conn = get(conn, Routes.page_path(conn, :spectate), %{game_name: "main_game"})
     assert html_response(conn, 200) =~ "<div id=\"app\">"
   end
 

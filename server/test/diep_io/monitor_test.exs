@@ -61,21 +61,25 @@ defmodule PerformanceMonitorStatefulTest do
   use ExUnit.Case, async: false
 
   alias Diep.Io.PerformanceMonitor
+  alias :erlang, as: Erlang
 
   setup do
-    start_supervised({PerformanceMonitor, :native})
+    PerformanceMonitor.reset()
 
     [
-      gameloop_durations: [10, 20],
+      gameloop_durations: [10, 20] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
       gameloop_stats: {15, 5, 20},
-      broadcast_times: [5, 15, 35],
+      broadcast_times: [5, 15, 35] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
       broadcast_stats: {15, 5, 20}
     ]
   end
 
   test "store_gameloop_duration/1 store the given duration" do
     duration = 10
-    PerformanceMonitor.store_gameloop_duration(duration)
+
+    duration
+    |> Erlang.convert_time_unit(:millisecond, :native)
+    |> PerformanceMonitor.store_gameloop_duration()
 
     durations = PerformanceMonitor.get_gameloop_durations()
     assert Enum.any?(durations, &Kernel.==(&1, duration))
@@ -107,13 +111,17 @@ defmodule PerformanceMonitorStatefulTest do
 
   test "get_gameloop_durations/0 returns the whole list of stored times", %{gameloop_durations: durations} do
     Enum.each(durations, &PerformanceMonitor.store_gameloop_duration/1)
+    durations = Enum.map(durations, &Erlang.convert_time_unit(&1, :native, :millisecond))
 
     assert Enum.sort(durations) == Enum.sort(PerformanceMonitor.get_gameloop_durations())
   end
 
-  test "store_broadcast_time/1 store the given time" do
+  test "store_broadcast_time/1 stores the given time" do
     time = 10
-    PerformanceMonitor.store_broadcast_time(time)
+
+    time
+    |> Erlang.convert_time_unit(:millisecond, :native)
+    |> PerformanceMonitor.store_broadcast_time()
 
     times = PerformanceMonitor.get_broadcast_times()
     assert Enum.any?(times, &Kernel.==(&1, time))
@@ -145,6 +153,7 @@ defmodule PerformanceMonitorStatefulTest do
 
   test "get_broadcast_times/0 returns the whole list of stored times", %{broadcast_times: times} do
     Enum.each(times, &PerformanceMonitor.store_broadcast_time/1)
+    times = Enum.map(times, &Erlang.convert_time_unit(&1, :native, :millisecond))
 
     assert Enum.sort(times) == Enum.sort(PerformanceMonitor.get_broadcast_times())
   end

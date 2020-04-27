@@ -17,7 +17,9 @@ defmodule Diep.Io.GameSupervisor do
   def start_link([]), do: DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
 
   @spec start_game(non_neg_integer(), String.t()) :: {:ok, pid()}
-  def start_game(game_time, "main_game"), do: start_game(@main_game_name, true, game_time, 15, true)
+  def start_game(game_time, "main_game") do
+    start_game(@main_game_name, true, game_time, 15, true)
+  end
 
   def start_game(game_time, "secondary_game") do
     start_game(@secondary_game_name, false, game_time, 15, false)

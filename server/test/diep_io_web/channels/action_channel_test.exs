@@ -21,8 +21,9 @@ defmodule Diep.IoWeb.ActionChannelTest do
     :ok = ActionStorage.init(:main_game)
 
     {:ok, _, socket} =
-      socket(Diep.IoWeb.BotSocket, "user_id", %{user_id: @tank_id})
-      |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action")
+      Diep.IoWeb.BotSocket
+      |> socket("user_id", %{user_id: @tank_id})
+      |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action", %{"game_name" => "main_game"})
 
     {:ok, socket: socket}
   end
