@@ -18,20 +18,28 @@ defmodule Diep.IoWeb.ActionChannelTest do
   }
 
   setup do
-    :ok = ActionStorage.init(:main_game)
+    game_name = :main_game
+    :ok = ActionStorage.init(game_name)
 
     {:ok, _, socket} =
       Diep.IoWeb.BotSocket
       |> socket("user_id", %{user_id: @tank_id})
-      |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action", %{"game_name" => "main_game"})
+      |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action", %{"game_name" => Atom.to_string(game_name)})
 
-    {:ok, socket: socket}
+    {:ok, socket: socket, game_name: game_name}
   end
 
-  test "pushing a new action in the action channel stores stores it in ActionStorage", %{socket: socket} do
+  test "pushing a new action in the action channel stores stores it in ActionStorage", %{
+    socket: socket,
+    game_name: game_name
+  } do
     push(socket, "new", @input)
     # Needed because async
     Process.sleep(10)
-    assert ActionStorage.pop_action(:main_game, @tank_id) == @action
+    assert ActionStorage.pop_action(game_name, @tank_id) == @action
+  end
+
+  test "join/3 assigns game name as string to the socket", %{socket: socket, game_name: game_name} do
+    assert socket.assigns[:game_name] == Atom.to_string(game_name)
   end
 end

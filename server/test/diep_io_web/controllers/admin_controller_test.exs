@@ -14,7 +14,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     assert html_response(conn, 200) =~ "<div id=\"admin\">"
   end
 
-  test "GET /admin/start starts the main game and /admin/kill kills it", %{
+  test "GET /admin/start starts the required game and /admin/kill kills it", %{
     conn: conn,
     game_name: game_name
   } do
@@ -37,7 +37,7 @@ defmodule Diep.IoWeb.AdminControllerTest do
     assert html_response(conn, 200) =~ "Game &quot;#{game_name}&quot; killed"
   end
 
-  test "GET /admin/start starts the main game and /admin/stop stops it after game", %{
+  test "GET /admin/start starts the required game and /admin/stop stops it after game", %{
     conn: conn,
     game_name: game_name
   } do
