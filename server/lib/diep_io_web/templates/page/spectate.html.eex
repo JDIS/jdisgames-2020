@@ -1,4 +1,3 @@
-<p id="game_name" hidden><%= @game_name %></p>
 <div id="app">
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.6.3/fabric.min.js"></script>

@@ -8,5 +8,5 @@ const app = new Vue({
 
 export default app.$children[0]
 
-game_name = document.getElementById("game_name").textContent
+const game_name = new URLSearchParams(window.location.search).get("game_name");
 networkInit(game_name)
