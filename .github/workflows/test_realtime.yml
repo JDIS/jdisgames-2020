@@ -79,6 +79,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Download test data
         uses: actions/download-artifact@v1
+        working-directory: ./server
         with:
           name: badges
       - name: pip install anybadge
