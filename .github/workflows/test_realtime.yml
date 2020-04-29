@@ -4,6 +4,10 @@ name: Test real-time constraints
 #   push:
 #     branches:
 #       - master
+on:
+  push:
+    branches:
+      - fix/real-time-badges
 
 jobs:
 
