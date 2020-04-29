@@ -104,6 +104,6 @@ if __name__ == '__main__':
     parser.add_argument(
         "is_ranked", help="Whether the bot should connect to the ranked game or the practice one", type=str2bool, const=True, default=False, nargs='?')
     args = parser.parse_args()
-    print(args.is_ranked)
+
     asyncio.get_event_loop().run_until_complete(
         start(args.secret, asyncio.get_event_loop(), args.is_ranked))
