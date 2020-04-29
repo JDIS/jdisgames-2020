@@ -1,7 +1,7 @@
 defmodule Diep.Io.Application do
   @moduledoc false
 
-  alias Diep.Io.{GameSupervisor, Repo}
+  alias Diep.Io.{GameSupervisor, PerformanceMonitor, Repo}
   alias Diep.IoWeb.Endpoint, as: Endpoint
 
   use Application
@@ -10,7 +10,8 @@ defmodule Diep.Io.Application do
     children = [
       Repo,
       Endpoint,
-      GameSupervisor
+      GameSupervisor,
+      {PerformanceMonitor, :millisecond}
     ]
 
     opts = [strategy: :one_for_one, name: Diep.Io.Supervisor]

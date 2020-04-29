@@ -16,7 +16,6 @@ defmodule RealTimeTest do
     users = Repo.all(User)
 
     {:ok, _pid} = start_supervised({Task, fn -> randomize_actions_infinite(users) end})
-    {:ok, _pid} = start_supervised({PerformanceMonitor, :millisecond})
 
     :ok
   end

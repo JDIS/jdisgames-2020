@@ -1,44 +1,29 @@
 <template>
-    <div>
-        <h1>Admin</h1>
-        Number of ticks: <input type="number" v-model="ticks" min="1" />
-        <button @click="startGame()">Start</button>
-        <button @click="stopGame()">Stop</button>
-        <button @click="killGame()">Kill</button>
+  <div>
+    <h1>Admin</h1>
+    <div id="game-settings-container">
+      <GameSettings game_title="Main game" game_name="main_game" />
+      <GameSettings game_title="Secondary game" game_name="secondary_game" />
     </div>
+  </div>
 </template>
 
 <script>
-    import Vue from "vue"
+import Vue from "vue";
+import GameSettings from "./game_settings.vue";
 
-    export default Vue.extend({
-        name: 'Admin',
-        data() {
-            return {
-                ticks: 2000
-            }
-        },
-        watch: {
-        },
-        computed: {
-
-        },
-        mounted() {
-
-        },
-        methods: {
-            startGame() {
-                window.location = `/admin/start?ticks=${this.ticks}`
-            },
-
-            stopGame() {
-                window.location = '/admin/stop'
-            },
-
-            killGame() {
-                window.location = '/admin/kill'
-            }
-        }
-    })
+export default Vue.extend({
+  name: "Admin",
+  data() {
+    return {};
+  },
+  watch: {},
+  computed: {},
+  mounted() {},
+  methods: {},
+  components: {
+    GameSettings
+  }
+});
 </script>
 

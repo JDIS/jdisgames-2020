@@ -1,0 +1,43 @@
+.game-settings-wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+#game-settings-container {
+    display: flex;
+    justify-content: center;
+}
+
+#game-settings-container > .game-settings-wrapper:not(:first-child) {
+    margin-left: 20px;
+}
+
+.game-settings {
+    display: inline-block;
+    margin: auto;
+    border: 3px solid lightgrey;
+    border-radius: 5%;
+    padding: 10px;
+}
+
+.game-time-input {
+    max-width: 100px;
+    margin-bottom: 0;
+    margin-left: 5px;
+}
+
+.game-time-label {
+    margin-bottom: 0;
+}
+
+.label-input-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.game-settings-title {
+    font-weight: bold;
+    font-size: large;
+}

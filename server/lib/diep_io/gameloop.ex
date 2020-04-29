@@ -76,7 +76,7 @@ defmodule Diep.Io.Gameloop do
   def handle_info(:loop, state) do
     begin_time = Erlang.monotonic_time()
     elasped_time = Clock.calculate_elasped_time(state.clock, begin_time)
-    Logger.debug("looperoo took #{Erlang.convert_time_unit(elasped_time, :native, :millisecond)}ms")
+    Logger.debug("#{state.name}: looperoo took #{Erlang.convert_time_unit(elasped_time, :native, :millisecond)}ms")
 
     actions =
       state.tanks

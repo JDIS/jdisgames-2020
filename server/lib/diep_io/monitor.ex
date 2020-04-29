@@ -91,9 +91,7 @@ defmodule Diep.Io.PerformanceMonitor do
   end
 
   @impl true
-  def handle_cast({:add_broadcast, broadcast_time}, state) do
-    target_unit = Map.get(state, :time_unit)
-
+  def handle_cast({:add_broadcast, broadcast_time}, %{time_unit: target_unit} = state) do
     broadcast_time = Erlang.convert_time_unit(broadcast_time, :native, target_unit)
 
     updated_state = Map.update!(state, :broadcast_times, fn times -> [broadcast_time | times] end)

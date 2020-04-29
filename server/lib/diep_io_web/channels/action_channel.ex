@@ -5,9 +5,9 @@ defmodule Diep.IoWeb.ActionChannel do
   alias Diep.Io.ActionStorage
   alias Diep.Io.Core.Action
 
-  def join("action", _payload, socket) do
+  def join("action", %{"game_name" => game_name} = _payload, socket) do
     send(self(), :after_join)
-    {:ok, socket}
+    {:ok, assign(socket, :game_name, game_name)}
   end
 
   def handle_info(:after_join, socket) do
@@ -18,7 +18,7 @@ defmodule Diep.IoWeb.ActionChannel do
   def handle_in("new", action, socket) do
     action
     |> parse_action(socket.assigns[:user_id])
-    |> store_action()
+    |> store_action(socket.assigns[:game_name])
 
     {:noreply, socket}
   end
@@ -38,9 +38,8 @@ defmodule Diep.IoWeb.ActionChannel do
     end
   end
 
-  defp store_action(action) do
-    # TODO: handle multiple game names
-    true = ActionStorage.store_action(:main_game, action)
+  defp store_action(action, game_name) do
+    true = ActionStorage.store_action(String.to_existing_atom(game_name), action)
   end
 
   defp parse_purchase(action, key) do
