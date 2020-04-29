@@ -87,7 +87,7 @@ jobs:
         run: pip install anybadge
       - name: Generate badges
         working-directory: ./server
-        run: python generate-badges.py
+        run: python generate_badges.py
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
