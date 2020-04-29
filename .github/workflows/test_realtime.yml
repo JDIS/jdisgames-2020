@@ -68,15 +68,20 @@ jobs:
   generate-badges:
     needs: test-realtime
     runs-on: ubuntu-latest
-    container: python:3.8-alpine
+    strategy:
+      matrix:
+        python-version: [3.8]
     if: always()
     steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
       - name: Download test data
         uses: actions/download-artifact@v1
         with:
           name: badges
       - name: pip install anybadge
-        working-directory: ./server
         run: pip install anybadge
       - name: Generate badges
         working-directory: ./server
