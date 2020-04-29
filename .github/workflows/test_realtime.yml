@@ -1,9 +1,9 @@
 name: Test real-time constraints
 
-on:
-  push:
-    branches:
-      - master
+# on:
+#   push:
+#     branches:
+#       - master
 
 jobs:
 
@@ -55,3 +55,30 @@ jobs:
     - name: Test RealTime
       working-directory: ./server
       run: mix test --only RT
+    - name: Upload results
+      uses: actions/upload-artifact@v1
+      with:
+        name: badges
+        path: server/badges
+
+  generate-badges:
+    needs: test-realtime
+    runs-on: ubuntu-latest
+    container: python:3.8-alpine
+    if: always()
+    steps:
+      - name: Download test data
+        uses: actions/download-artifact@v1
+        with:
+          name: badges
+      - name: pip install anybadge
+        working-directory: ./server
+        run: pip install anybadge
+      - name: Generate badges
+        working-directory: ./server
+        run: python generate-badges.py
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: badges
+          path: server/badges

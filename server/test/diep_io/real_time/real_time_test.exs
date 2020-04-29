@@ -9,7 +9,7 @@ defmodule RealTimeTest do
   alias Diep.Io.Users.User
   alias :rand, as: Rand
 
-  @game_time 1000
+  @game_time 10
 
   setup do
     :ok = 1..40 |> Enum.each(fn i -> UsersRepository.create_user(%{name: "User#{i}"}) end)
