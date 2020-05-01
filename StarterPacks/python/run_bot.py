@@ -43,14 +43,20 @@ async def start(secret_key, loop, is_ranked):
 
                 bot = MyBot(id["id"])
 
-            action_channel: Channel = await bot_connection.channel("action", {"game_name": get_game_name(is_ranked)})
-            game_state_channel = await spectate_connection.channel("game_state", {"game_name": get_game_name(is_ranked)})
+            game_name = get_game_name(is_ranked)
+
+            action_channel: Channel = await bot_connection.channel("action", {"game_name": game_name})
+            game_state_channel = await spectate_connection.channel("game_state", {"game_name": game_name})
 
             action_channel.on("id", on_receive_id)
             game_state_channel.on("new_state", on_state_update)
 
             # Receive channel join confirmation
-            await bot_connection.receive()
+            response = await bot_connection.receive()
+            if response.payload['status'] != 'ok':
+                print(f"Couldn't connect to game \"{game_name}\": {response.payload['response']['error']}")
+                quit()
+
             # Receive id
             await bot_connection.receive()
 
@@ -102,7 +108,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "secret", help="The secret which authentifies your bot")
     parser.add_argument(
-        "is_ranked", help="Whether the bot should connect to the ranked game or the practice one", type=str2bool, const=True, default=False, nargs='?')
+        "is_ranked", help="Whether the bot should connect to the ranked game or the practice one", type=str2bool, const=True, default=True, nargs='?')
     args = parser.parse_args()
 
     asyncio.get_event_loop().run_until_complete(
