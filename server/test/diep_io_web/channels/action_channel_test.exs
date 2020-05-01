@@ -3,7 +3,7 @@ defmodule Diep.IoWeb.ActionChannelTest do
 
   alias Diep.Io.ActionStorage
   alias Diep.Io.Core.Action
-  alias Diep.IoWeb.{BotSocket, ActionChannel}
+  alias Diep.IoWeb.{ActionChannel, BotSocket}
 
   @tank_id 444
   @input %{
