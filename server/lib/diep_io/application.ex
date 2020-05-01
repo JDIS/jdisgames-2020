@@ -9,6 +9,7 @@ defmodule Diep.Io.Application do
   def start(_type, _args) do
     children = [
       Repo,
+      {Phoenix.PubSub, name: Diep.Io.PubSub},
       Endpoint,
       GameSupervisor,
       {PerformanceMonitor, :millisecond}
