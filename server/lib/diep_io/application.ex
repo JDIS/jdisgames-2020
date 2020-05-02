@@ -2,13 +2,15 @@ defmodule Diep.Io.Application do
   @moduledoc false
 
   alias Diep.Io.{GameSupervisor, PerformanceMonitor, Repo}
-  alias Diep.IoWeb.Endpoint, as: Endpoint
+  alias Diep.IoWeb.{Endpoint, Presence}
 
   use Application
 
   def start(_type, _args) do
     children = [
       Repo,
+      {Phoenix.PubSub, name: Diep.Io.PubSub},
+      Presence,
       Endpoint,
       GameSupervisor,
       {PerformanceMonitor, :millisecond}

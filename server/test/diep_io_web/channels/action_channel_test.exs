@@ -3,6 +3,7 @@ defmodule Diep.IoWeb.ActionChannelTest do
 
   alias Diep.Io.ActionStorage
   alias Diep.Io.Core.Action
+  alias Diep.IoWeb.{ActionChannel, BotSocket}
 
   @tank_id 444
   @input %{
@@ -22,9 +23,9 @@ defmodule Diep.IoWeb.ActionChannelTest do
     :ok = ActionStorage.init(game_name)
 
     {:ok, _, socket} =
-      Diep.IoWeb.BotSocket
+      BotSocket
       |> socket("user_id", %{user_id: @tank_id})
-      |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action", %{"game_name" => Atom.to_string(game_name)})
+      |> subscribe_and_join(ActionChannel, "action", %{"game_name" => Atom.to_string(game_name)})
 
     {:ok, socket: socket, game_name: game_name}
   end
@@ -41,5 +42,17 @@ defmodule Diep.IoWeb.ActionChannelTest do
 
   test "join/3 assigns game name as string to the socket", %{socket: socket, game_name: game_name} do
     assert socket.assigns[:game_name] == Atom.to_string(game_name)
+  end
+
+  test "join/3 returns an error when connecting to the same game twice", %{socket: socket, game_name: game_name} do
+    response =
+      socket
+      |> subscribe_and_join(ActionChannel, "action", %{"game_name" => Atom.to_string(game_name)})
+
+    assert response == {:error, %{error: "Already connected"}}
+  end
+
+  test "join/3 allows connecting to multiple games simultaneously", %{socket: socket, game_name: game_name} do
+    assert subscribe_and_join!(socket, ActionChannel, "action", %{"game_name" => Atom.to_string(game_name) <> "2"})
   end
 end

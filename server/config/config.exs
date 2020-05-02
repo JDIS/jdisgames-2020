@@ -9,7 +9,7 @@ config :diep_io, Diep.IoWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "g8VX25ZVsHysCHLvoZBcypPuUNZF3aw99FPB83G5cgLVVE6V+fiRuSFei9Tdk1rp",
   render_errors: [view: Diep.IoWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Diep.Io.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub_server: Diep.Io.PubSub
 
 # Configures Elixir's Logger
 config :logger, :console,
