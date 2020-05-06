@@ -1,6 +1,7 @@
 defmodule Diep.IoWeb.Router do
   use Diep.IoWeb, :router
   alias Diep.IoWeb.Authentication
+  import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -49,5 +50,10 @@ defmodule Diep.IoWeb.Router do
 
     get "/", TeamRegistrationController, :new
     post "/register", TeamRegistrationController, :create
+  end
+
+  scope "/dashboard" do
+    pipe_through [:browser, :basic_auth]
+    live_dashboard "/"
   end
 end

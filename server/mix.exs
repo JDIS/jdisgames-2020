@@ -50,6 +50,7 @@ defmodule Diep.MixProject do
       {:plug_cowboy, "~> 2.1"},
       {:secure_random, "~>0.5"},
       {:basic_auth, "~> 2.2"},
+      {:phoenix_live_dashboard, "~> 0.1"},
 
       # dev, test
       {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
