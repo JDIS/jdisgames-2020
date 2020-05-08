@@ -54,6 +54,6 @@ defmodule Diep.IoWeb.Router do
 
   scope "/dashboard" do
     pipe_through [:browser, :basic_auth]
-    live_dashboard "/"
+    live_dashboard "/", metrics: Diep.IoWeb.Telemetry
   end
 end

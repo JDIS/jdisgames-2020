@@ -13,7 +13,8 @@ defmodule Diep.Io.Application do
       Presence,
       Endpoint,
       GameSupervisor,
-      {PerformanceMonitor, :millisecond}
+      {PerformanceMonitor, :millisecond},
+      Diep.IoWeb.Telemetry
     ]
 
     opts = [strategy: :one_for_one, name: Diep.Io.Supervisor]
