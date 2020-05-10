@@ -1,4 +1,8 @@
 defmodule Diep.IoWeb.Telemetry do
+  @moduledoc """
+    Provides telemtry for the application. Periodically fetches various data points and
+    makes them available to any provider.
+  """
   use Supervisor
   import Telemetry.Metrics
 
