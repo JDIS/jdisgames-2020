@@ -32,10 +32,16 @@ defmodule PerformanceMonitorStatelessTest do
     assert new_state == init_state
   end
 
-  test "add_broadcast cast should store the given time in state", %{init_state: init_state} do
-    time = 10
-    {:noreply, new_state} = PerformanceMonitor.handle_cast({:add_broadcast, time}, init_state)
-    assert new_state.broadcast_times == [time]
+  test "add_broadcast cast should store the differences between the given times in state", %{init_state: init_state} do
+    times = [10, 20]
+    expected_diffs = [0, 10]
+
+    {:noreply, new_state} =
+      Enum.reduce(times, {:noreply, init_state}, fn time, {:noreply, state} ->
+        PerformanceMonitor.handle_cast({:add_broadcast, time}, state)
+      end)
+
+    assert new_state.broadcast_times == Enum.reverse(expected_diffs)
   end
 
   test "get_broadcast call should return the list of broadcast times", %{init_state: init_state} do
@@ -69,8 +75,8 @@ defmodule PerformanceMonitorStatefulTest do
     [
       gameloop_durations: [10, 20] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
       gameloop_stats: {15, 5, 20},
-      broadcast_times: [5, 15, 35] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
-      broadcast_stats: {15, 5, 20}
+      broadcast_times: [10, 30] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
+      broadcast_stats: {10, 10, 20}
     ]
   end
 
@@ -109,6 +115,10 @@ defmodule PerformanceMonitorStatefulTest do
     assert calculated_max == max
   end
 
+  test "get_gameloop_stats/0 returns an error when there is no data" do
+    assert {:error, _} = PerformanceMonitor.get_gameloop_stats()
+  end
+
   test "get_gameloop_durations/0 returns the whole list of stored times", %{gameloop_durations: durations} do
     Enum.each(durations, &PerformanceMonitor.store_gameloop_duration/1)
     durations = Enum.map(durations, &Erlang.convert_time_unit(&1, :native, :millisecond))
@@ -116,15 +126,16 @@ defmodule PerformanceMonitorStatefulTest do
     assert Enum.sort(durations) == Enum.sort(PerformanceMonitor.get_gameloop_durations())
   end
 
-  test "store_broadcast_time/1 stores the given time" do
-    time = 10
+  test "store_broadcast_time/1 stores the diffs between the given times" do
+    times = [10, 20]
+    diff = 10
 
-    time
-    |> Erlang.convert_time_unit(:millisecond, :native)
-    |> PerformanceMonitor.store_broadcast_time()
+    times
+    |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native))
+    |> Enum.each(&PerformanceMonitor.store_broadcast_time(&1))
 
     times = PerformanceMonitor.get_broadcast_times()
-    assert Enum.any?(times, &Kernel.==(&1, time))
+    assert Enum.any?(times, &Kernel.==(&1, diff))
   end
 
   test "get_broadcast_stats/0 returns the correct average",
@@ -151,11 +162,21 @@ defmodule PerformanceMonitorStatefulTest do
     assert calculated_max == max
   end
 
+  test "get_broadcast_stats/0 returns an error given no data" do
+    assert {:error, _} = PerformanceMonitor.get_broadcast_stats()
+  end
+
   test "get_broadcast_times/0 returns the whole list of stored times", %{broadcast_times: times} do
     Enum.each(times, &PerformanceMonitor.store_broadcast_time/1)
     times = Enum.map(times, &Erlang.convert_time_unit(&1, :native, :millisecond))
 
-    assert Enum.sort(times) == Enum.sort(PerformanceMonitor.get_broadcast_times())
+    expected_diffs =
+      times
+      |> List.insert_at(0, hd(times))
+      |> Enum.chunk_every(2, 1, :discard)
+      |> Enum.map(fn [prev, current] -> current - prev end)
+
+    assert Enum.sort(expected_diffs) == Enum.sort(PerformanceMonitor.get_broadcast_times())
   end
 
   test "reset/0 resets the monitor's state", %{gameloop_durations: [duration | _rest]} do

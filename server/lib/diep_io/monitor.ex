@@ -16,13 +16,16 @@ defmodule Diep.Io.PerformanceMonitor do
   use GenServer
   alias :erlang, as: Erlang
   alias :math, as: Math
+  alias :telemetry, as: Telemetry
+
+  @telemetry_prefix [:game, :performance]
 
   def start_link(time_unit), do: GenServer.start(__MODULE__, [time_unit], name: __MODULE__)
 
   @spec store_gameloop_duration(integer()) :: :ok
   def store_gameloop_duration(iteration_time), do: GenServer.cast(__MODULE__, {:add_gameloop, iteration_time})
 
-  @spec get_gameloop_stats :: {float(), float(), float()}
+  @spec get_gameloop_stats :: {float(), float(), float()} | {:error, String.t()}
   def get_gameloop_stats, do: GenServer.call(__MODULE__, {:get_gameloop}) |> calculate_stats()
 
   @spec get_gameloop_durations :: [integer()]
@@ -34,15 +37,16 @@ defmodule Diep.Io.PerformanceMonitor do
   @spec store_broadcast_time(integer()) :: :ok
   def store_broadcast_time(time), do: GenServer.cast(__MODULE__, {:add_broadcast, time})
 
-  @spec get_broadcast_stats :: {float(), float(), float()}
+  @spec get_broadcast_stats :: {float(), float(), float()} | {:error, String.t()}
   def get_broadcast_stats do
-    times =
-      GenServer.call(__MODULE__, {:get_broadcast})
-      |> Enum.reverse()
-      |> Enum.chunk_every(2, 1, :discard)
-      |> Enum.map(fn [prev, curr] -> curr - prev end)
+    case GenServer.call(__MODULE__, {:get_broadcast}) |> calculate_stats() do
+      {_, std_dev, _} = stats ->
+        Telemetry.execute(@telemetry_prefix, %{broadcast_time_std_dev: std_dev}, %{})
+        stats
 
-    calculate_stats(times)
+      {:error, err} ->
+        {:error, err}
+    end
   end
 
   @spec get_broadcast_times :: [integer()]
@@ -50,6 +54,8 @@ defmodule Diep.Io.PerformanceMonitor do
 
   @spec reset :: :ok
   def reset, do: GenServer.cast(__MODULE__, {:reset})
+
+  defp calculate_stats([]), do: {:error, "No data recorded"}
 
   defp calculate_stats(times) do
     times_length = length(times)
@@ -78,6 +84,8 @@ defmodule Diep.Io.PerformanceMonitor do
 
   @impl true
   def handle_cast({:add_gameloop, iteration_time}, state) do
+    Telemetry.execute(@telemetry_prefix, %{iteration_duration: iteration_time}, %{})
+
     target_unit = Map.get(state, :time_unit)
 
     iteration_time = Erlang.convert_time_unit(iteration_time, :native, target_unit)
@@ -90,11 +98,24 @@ defmodule Diep.Io.PerformanceMonitor do
     {:noreply, updated_state}
   end
 
+  @doc """
+    Stores the difference between the latest broadcast time and the previous broadcast time
+    in state. The first broadcast time is compared against itself, meaning that the first stored
+    diff will always be 0.
+  """
   @impl true
   def handle_cast({:add_broadcast, broadcast_time}, %{time_unit: target_unit} = state) do
-    broadcast_time = Erlang.convert_time_unit(broadcast_time, :native, target_unit)
+    last_time = Map.get(state, :last_broadcast_time, broadcast_time)
 
-    updated_state = Map.update!(state, :broadcast_times, fn times -> [broadcast_time | times] end)
+    state = Map.put(state, :last_broadcast_time, broadcast_time)
+
+    time_diff = broadcast_time - last_time
+
+    Telemetry.execute(@telemetry_prefix, %{broadcast_time: time_diff}, %{})
+
+    time_diff = Erlang.convert_time_unit(time_diff, :native, target_unit)
+
+    updated_state = Map.update!(state, :broadcast_times, fn times -> [time_diff | times] end)
 
     {:noreply, updated_state}
   end
