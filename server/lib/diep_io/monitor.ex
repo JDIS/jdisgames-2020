@@ -16,6 +16,7 @@ defmodule Diep.Io.PerformanceMonitor do
   use GenServer
   alias :erlang, as: Erlang
   alias :math, as: Math
+  alias :telemetry, as: Telemetry
 
   @telemetry_prefix [:game, :performance]
 
@@ -40,7 +41,7 @@ defmodule Diep.Io.PerformanceMonitor do
   def get_broadcast_stats do
     case GenServer.call(__MODULE__, {:get_broadcast}) |> calculate_stats() do
       {_, std_dev, _} = stats ->
-        :telemetry.execute(@telemetry_prefix, %{broadcast_time_std_dev: std_dev}, %{})
+        Telemetry.execute(@telemetry_prefix, %{broadcast_time_std_dev: std_dev}, %{})
         stats
 
       {:error, err} ->
@@ -83,7 +84,7 @@ defmodule Diep.Io.PerformanceMonitor do
 
   @impl true
   def handle_cast({:add_gameloop, iteration_time}, state) do
-    :telemetry.execute(@telemetry_prefix, %{iteration_duration: iteration_time}, %{})
+    Telemetry.execute(@telemetry_prefix, %{iteration_duration: iteration_time}, %{})
 
     target_unit = Map.get(state, :time_unit)
 
@@ -110,7 +111,7 @@ defmodule Diep.Io.PerformanceMonitor do
 
     time_diff = broadcast_time - last_time
 
-    :telemetry.execute(@telemetry_prefix, %{broadcast_time: time_diff}, %{})
+    Telemetry.execute(@telemetry_prefix, %{broadcast_time: time_diff}, %{})
 
     time_diff = Erlang.convert_time_unit(time_diff, :native, target_unit)
 
