@@ -4,7 +4,7 @@ defmodule PerformanceMonitorStatelessTest do
   alias Diep.Io.PerformanceMonitor
 
   setup do
-    init_state = %{gameloop_times: [], gameloop_count: 0, time_unit: :native, broadcast_times: []}
+    init_state = %{gameloop_times: [], time_unit: :native, broadcast_times: []}
     [init_state: init_state]
   end
 
@@ -60,7 +60,7 @@ defmodule PerformanceMonitorStatelessTest do
   end
 
   test "reset cast should return an empty state", %{init_state: init_state} do
-    state = %{init_state | gameloop_count: 0}
+    state = %{init_state | gameloop_times: [10]}
     {:noreply, reset_state} = PerformanceMonitor.handle_cast({:reset}, state)
     assert reset_state == init_state
   end
@@ -182,7 +182,6 @@ defmodule PerformanceMonitorStatefulTest do
     PerformanceMonitor.store_gameloop_duration(duration)
     PerformanceMonitor.reset()
 
-    assert PerformanceMonitor.get_gameloop_count() == 0
     assert PerformanceMonitor.get_gameloop_durations() == []
     assert PerformanceMonitor.get_broadcast_delays() == []
   end

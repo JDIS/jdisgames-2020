@@ -22,10 +22,8 @@ defmodule RealTimeTest do
   end
 
   test "max game loop iteration time should be under 333ms" do
-    {:ok, _pid} = start_supervised({Gameloop, get_gameloop_spec(1000)})
-    Gameloop.stop_game(@game_name)
+    start_and_wait_until_completion(get_gameloop_spec(1000))
 
-    wait_for_game_end()
     {_average, _std_dev, max} = stats = PerformanceMonitor.get_gameloop_stats()
     assert max <= 333
 
@@ -33,21 +31,24 @@ defmodule RealTimeTest do
   end
 
   test "standard deviation of time between state updates should be under 10ms" do
-    {:ok, _pid} = start_supervised({Gameloop, get_gameloop_spec(15)})
+    start_and_wait_until_completion(get_gameloop_spec(15))
 
-    wait_for_game_end()
     {_average, std_dev, _max} = stats = PerformanceMonitor.get_broadcast_stats()
     assert std_dev <= 10
 
     write_file("broadcast_std_dev", stats)
   end
 
-  defp wait_for_game_end do
-    count = PerformanceMonitor.get_gameloop_count()
+  # Starts the gameloop and returns :ok when it end
+  defp start_and_wait_until_completion(opts) do
+    {:ok, pid} = Gameloop.start_link(opts)
 
-    if count < @game_time - 1 do
-      Process.sleep(100)
-      wait_for_game_end()
+    Gameloop.stop_game(Keyword.get(opts, :name))
+
+    ref = Process.monitor(pid)
+
+    receive do
+      {:DOWN, ^ref, _, _, _} -> :ok
     end
   end
 

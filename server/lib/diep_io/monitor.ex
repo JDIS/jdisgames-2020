@@ -31,9 +31,6 @@ defmodule Diep.Io.PerformanceMonitor do
   @spec get_gameloop_durations :: [integer()]
   def get_gameloop_durations, do: GenServer.call(__MODULE__, {:get_gameloop})
 
-  @spec get_gameloop_count :: integer()
-  def get_gameloop_count, do: GenServer.call(__MODULE__, {:get_gameloop_count})
-
   @spec store_broadcasted_at(integer()) :: :ok
   def store_broadcasted_at(time), do: GenServer.cast(__MODULE__, {:add_broadcast, time})
 
@@ -93,7 +90,6 @@ defmodule Diep.Io.PerformanceMonitor do
     updated_state =
       state
       |> Map.update!(:gameloop_times, fn times -> [iteration_time | times] end)
-      |> Map.update!(:gameloop_count, &(&1 + 1))
 
     {:noreply, updated_state}
   end
@@ -135,16 +131,11 @@ defmodule Diep.Io.PerformanceMonitor do
   end
 
   @impl true
-  def handle_call({:get_gameloop_count}, _from, state) do
-    {:reply, Map.get(state, :gameloop_count), state}
-  end
-
-  @impl true
   def handle_call({:get_broadcast}, _from, state) do
     {:reply, Map.get(state, :broadcast_times), state}
   end
 
   defp get_initial_state(time_unit) do
-    %{gameloop_times: [], gameloop_count: 0, time_unit: time_unit, broadcast_times: []}
+    %{gameloop_times: [], time_unit: time_unit, broadcast_times: []}
   end
 end
