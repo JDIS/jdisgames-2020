@@ -5,7 +5,7 @@ defmodule Diep.Io.PerformanceMonitor do
     There are two main aspects that we monitor:
     * The amount of time that a single gameloop iteration takes to execute.
     At the time of writing, this should never exceed 333ms.
-    * The delay between the state updates that are send to the client.
+    * The time between the state updates that are sent to the client.
     At the time of writing, the standard deviation of these should never exceed 10ms.
 
 
@@ -34,8 +34,8 @@ defmodule Diep.Io.PerformanceMonitor do
   @spec get_gameloop_count :: integer()
   def get_gameloop_count, do: GenServer.call(__MODULE__, {:get_gameloop_count})
 
-  @spec store_broadcast_time(integer()) :: :ok
-  def store_broadcast_time(time), do: GenServer.cast(__MODULE__, {:add_broadcast, time})
+  @spec store_broadcasted_at(integer()) :: :ok
+  def store_broadcasted_at(time), do: GenServer.cast(__MODULE__, {:add_broadcast, time})
 
   @spec get_broadcast_stats :: {float(), float(), float()} | {:error, String.t()}
   def get_broadcast_stats do
@@ -49,8 +49,8 @@ defmodule Diep.Io.PerformanceMonitor do
     end
   end
 
-  @spec get_broadcast_times :: [integer()]
-  def get_broadcast_times, do: GenServer.call(__MODULE__, {:get_broadcast})
+  @spec get_broadcast_delays :: [integer()]
+  def get_broadcast_delays, do: GenServer.call(__MODULE__, {:get_broadcast})
 
   @spec reset :: :ok
   def reset, do: GenServer.cast(__MODULE__, {:reset})
@@ -100,22 +100,26 @@ defmodule Diep.Io.PerformanceMonitor do
 
   @doc """
     Stores the difference between the latest broadcast time and the previous broadcast time
-    in state. The first broadcast time is compared against itself, meaning that the first stored
-    diff will always be 0.
+    in state. The first broadcast time is stored without storing a delay since it has nothing to be compared to.
   """
   @impl true
-  def handle_cast({:add_broadcast, broadcast_time}, %{time_unit: target_unit} = state) do
-    last_time = Map.get(state, :last_broadcast_time, broadcast_time)
-
-    state = Map.put(state, :last_broadcast_time, broadcast_time)
-
+  def handle_cast({:add_broadcast, broadcast_time}, %{time_unit: target_unit, last_broadcast_time: last_time} = state) do
     time_diff = broadcast_time - last_time
 
     Telemetry.execute(@telemetry_prefix, %{broadcast_time: time_diff}, %{})
 
     time_diff = Erlang.convert_time_unit(time_diff, :native, target_unit)
 
-    updated_state = Map.update!(state, :broadcast_times, fn times -> [time_diff | times] end)
+    updated_state =
+      state
+      |> Map.update!(:last_broadcast_time, fn _ -> broadcast_time end)
+      |> Map.update!(:broadcast_times, fn times -> [time_diff | times] end)
+
+    {:noreply, updated_state}
+  end
+
+  def handle_cast({:add_broadcast, broadcast_time}, state) do
+    updated_state = Map.put(state, :last_broadcast_time, broadcast_time)
 
     {:noreply, updated_state}
   end

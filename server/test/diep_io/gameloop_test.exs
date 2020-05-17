@@ -109,8 +109,8 @@ defmodule GameloopTest do
           clock: clock
         )
 
-      client_update_count = length(PerformanceMonitor.get_broadcast_times())
-      assert client_update_count == max_tick / client_frequency
+      client_update_count = length(PerformanceMonitor.get_broadcast_delays())
+      assert client_update_count + 1 == max_tick / client_frequency
     end
 
     test ":reset_game saves the scores when is_is_ranked true", %{game_name: game_name, clock: clock} do

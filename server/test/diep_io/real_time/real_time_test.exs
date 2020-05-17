@@ -33,7 +33,7 @@ defmodule RealTimeTest do
   end
 
   test "standard deviation of time between state updates should be under 10ms" do
-    {:ok, _pid} = start_supervised({Gameloop, get_gameloop_spec(3)})
+    {:ok, _pid} = start_supervised({Gameloop, get_gameloop_spec(15)})
 
     wait_for_game_end()
     {_average, std_dev, _max} = stats = PerformanceMonitor.get_broadcast_stats()
