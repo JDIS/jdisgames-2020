@@ -21,23 +21,23 @@ Le serveur sera disponible à l'adresse http://localhost:4000.
 
 ### Pages du client web
 
-* **/**
+- **/**
 
   Page d'accueil de l'application. Cette page est présentement vide, mais sera éventuellement remplie d'informations utiles pour les participants de la compétition.
 
-* **/admin**
+- **/admin**
 
   Page d'administration de la compétition. Le nom d'utilisateur et le mot de passe sont tous les deux "admin". Permet de démarrer, arrêter le redémarrage automatique et terminer la partie.
 
-* **/spectate**
+- **/spectate**
 
   Permet de visualiser la partie en cours.
 
-* **/scoreboard**
+- **/scoreboard**
 
   Permet de consulter le tableau des scores pour l'entièreté de la compétition.
 
-* **/team-registration**
+- **/team-registration**
 
   Permet d'inscrire une équipe pour la compétition.
 
@@ -54,21 +54,23 @@ Une fois la partie démarrée, vous pouvez vous rendre dans les pages de visuali
 L'agent inclus dans le projet est écrit en Python. Voir [ici](https://www.python.org/downloads/) pour le télécharger si nécessaire. L'agent a été testé avec les versions 3.7 et 3.8.
 
 Pour démarrer l'agent, rendez-vous dans le dossier `StarterPacks/python` puis exécutez la commande suivante :
+
 ```
 python run_bot.py {secret_key}
 ```
 
 L'agent se connectera au serveur et enverra périodiquement des actions au serveur.
 
-Il est possible de démmarrer plusieurs agents simultanément avec des clés secrètes différentes pour simuler plusieurs équipes.
+Il est possible de démarrer plusieurs agents simultanément avec des clés secrètes différentes pour simuler plusieurs équipes.
 
 ## Développement
 
 Pour apporter des modifications ou pour exécuter le serveur dans un environnement de développement, il faut d'abord installer [Elixir](https://elixir-lang.org/install.html) (version 1.9.4) et [PostgreSQL](https://www.postgresql.org/download/) (n'importe quelle version récente).
 
 Une fois ces dépendances installées, assurez-vous d'avoir une base de données PostgreSQL accessible avec les paramètres suivants :
-* **nom d'utilisateur** : postgres
-* **mot de passe** : postgres
-* **nom de la base de données** : diep_io_dev
+
+- **nom d'utilisateur** : postgres
+- **mot de passe** : postgres
+- **nom de la base de données** : diep_io_dev
 
 Le reste des instructions de développement sont disponibles dans le [fichier README du serveur](server/README.md).
