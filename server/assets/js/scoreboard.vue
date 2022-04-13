@@ -11,12 +11,11 @@
 </template>
 
 <script>
-    import Vue from "vue"
     import axios from "axios"
     import Chart from "chart.js"
     import {COLORS} from "./modules/constants";
 
-    export default Vue.extend({
+    export default {
         name: 'Scoreboard',
         data() {
             return {
@@ -96,6 +95,6 @@
         methods: {
 
         }
-    })
+    }
 </script>
 

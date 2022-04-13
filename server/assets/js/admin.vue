@@ -9,10 +9,9 @@
 </template>
 
 <script>
-import Vue from "vue";
 import GameSettings from "./game_settings.vue";
 
-export default Vue.extend({
+export default {
   name: "Admin",
   data() {
     return {};
@@ -24,6 +23,6 @@ export default Vue.extend({
   components: {
     GameSettings
   }
-});
+};
 </script>
 

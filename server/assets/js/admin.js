@@ -1,6 +1,4 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import Admin from "./admin.vue";
 
-const admin = new Vue({
-    render: h => h(Admin)
-}).$mount("#admin")
+createApp(Admin).mount("#admin");
