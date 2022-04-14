@@ -74,7 +74,6 @@
 </template>
 
 <script>
-    import Vue from "vue"
     import {createGrid, createMinimap, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.js"
     import {CANVAS_UPDATE_RATE, MAX_ZOOM, MIN_ZOOM} from "./modules/constants.js"
     import {getDifference} from "./modules/utils.js"
@@ -83,7 +82,7 @@
     import {Debris} from "./classes/Debris";
     import {Projectile} from "./classes/Projectile";
 
-    export default Vue.extend({
+    export default {
         name: 'Spectate',
         data() {
             return {
@@ -343,6 +342,6 @@
                 }
             }
         }
-    })
+    }
 </script>
 

@@ -1,6 +1,4 @@
-import Vue from "vue";
+import { createApp } from "vue";
 import Scoreboard from "./scoreboard.vue";
 
-const scoreboard = new Vue({
-    render: h => h(Scoreboard)
-}).$mount("#scoreboard")
+createApp(Scoreboard).mount("#scoreboard");

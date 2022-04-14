@@ -14,10 +14,7 @@
 </template>
 
 <script>
-import Vue from "vue";
-import axios from "axios";
-
-export default Vue.extend({
+export default {
   name: "GameSettings",
   data() {
     return {
@@ -41,6 +38,6 @@ export default Vue.extend({
       window.location = `/admin/kill?game_name=${this.$props.game_name}`;
     }
   }
-});
+};
 </script>
 
