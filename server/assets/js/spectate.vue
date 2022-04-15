@@ -182,7 +182,7 @@
                     this.mainCanvas.add(tank.toCanvas)
                     this.minimap.add(tank.body)
                     tank.toCanvas.bringToFront()
-                    this.$set(this.elements.tanks, id, tank)
+                    this.elements.tanks[id] = tank
                 })
 
                 this.autoSpectate = true
