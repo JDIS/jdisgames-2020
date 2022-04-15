@@ -1,0 +1,57 @@
+name: Build and test
+
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
+    env:
+      MIX_ENV: test
+    strategy:
+      matrix:
+        elixir: ["1.13.4"]
+        otp: ["24.3.3"]
+
+    services:
+      db:
+        image: postgres:12.1-alpine
+        env:
+          POSTGRES_DB: diep_io_test
+          POSTGRES_HOST: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Elixir project
+        uses: ./.github/actions/elixir-setup
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+          build-flags: --all-warnings --warnings-as-errors
+      
+      - name: Run Migrations
+        run: mix ecto.migrate
+        if: false
+      
+      - name: Run Tests
+        run: mix test --warnings-as-errors
+        if: always()
