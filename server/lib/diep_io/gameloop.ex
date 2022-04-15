@@ -146,7 +146,7 @@ defmodule Diep.Io.Gameloop do
 
   defp broadcast(state) do
     Endpoint.broadcast!("game_state", "new_state", state)
-    if state.monitor_performance?, do: PerformanceMonitor.store_broadcast_time(Erlang.monotonic_time())
+    if state.monitor_performance?, do: PerformanceMonitor.store_broadcasted_at(Erlang.monotonic_time())
   end
 
   defp save_scores(%{is_ranked: true} = state) do
