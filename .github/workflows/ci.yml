@@ -20,7 +20,7 @@ jobs:
 
   build-and-test:
     runs-on: ubuntu-latest
-    container: elixir:1.9.4-alpine
+    container: elixir:1.13.4-alpine
 
     services:
       # Label used to access the service container

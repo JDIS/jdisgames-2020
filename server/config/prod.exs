@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :diep_io, Diep.IoWeb.Endpoint,
   # force_ssl: [hsts: true],

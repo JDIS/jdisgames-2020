@@ -7,7 +7,7 @@ defmodule Diep.Io.UsersRepository do
   alias Diep.Io.Users.User
   require Logger
 
-  @spec list_users() :: [%User{}]
+  @spec list_users() :: [User.t()]
   def list_users do
     Repo.all(User)
   end
@@ -31,7 +31,7 @@ defmodule Diep.Io.UsersRepository do
       {:ok, %User{}} On success
       {:error, %Ecto.Changeset{}} On error
   """
-  @spec create_user(map()) :: {:ok, User.t()} | {:error, %Ecto.Changeset{}}
+  @spec create_user(map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t(User.t())}
   def create_user(attrs) do
     attrs_with_secret_key =
       attrs

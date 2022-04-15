@@ -139,7 +139,7 @@ defmodule TankTest do
       tank
       |> Tank.set_target(Position.random())
 
-    assert {tank, nil} =
+    assert {_, nil} =
              tank
              |> Tank.set_cooldown()
              |> Tank.shoot()

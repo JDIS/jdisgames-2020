@@ -65,7 +65,7 @@ Il est possible de démarrer plusieurs agents simultanément avec des clés secr
 
 ## Développement
 
-Pour apporter des modifications ou pour exécuter le serveur dans un environnement de développement, il faut d'abord installer [Elixir](https://elixir-lang.org/install.html) (version 1.9.4) et [PostgreSQL](https://www.postgresql.org/download/) (n'importe quelle version récente).
+Pour apporter des modifications ou pour exécuter le serveur dans un environnement de développement, il faut d'abord installer [Elixir](https://elixir-lang.org/install.html) (version 1.13.4) et [PostgreSQL](https://www.postgresql.org/download/) (n'importe quelle version récente).
 
 Une fois ces dépendances installées, assurez-vous d'avoir une base de données PostgreSQL accessible avec les paramètres suivants :
 

@@ -1,6 +1,6 @@
 defmodule Diep.IoWeb.Router do
   use Diep.IoWeb, :router
-  alias Diep.IoWeb.Authentication
+  alias Diep.IoWeb.AuthenticationPlug
   import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
@@ -16,8 +16,7 @@ defmodule Diep.IoWeb.Router do
   end
 
   pipeline :basic_auth do
-    plug BasicAuth,
-      callback: &Authentication.authenticate/3
+    plug AuthenticationPlug
   end
 
   scope "/", Diep.IoWeb do

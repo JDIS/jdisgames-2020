@@ -11,7 +11,7 @@ defmodule Diep.Io.ScoreRepository do
   @doc """
   Returns the list of all scores.
   """
-  @spec get_scores() :: [%Score{}]
+  @spec get_scores() :: [Score.t()]
   def get_scores do
     Repo.all(Score)
   end

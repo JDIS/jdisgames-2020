@@ -5,7 +5,7 @@ defmodule Diep.MixProject do
     [
       app: :diep_io,
       version: "0.1.0",
-      elixir: "~> 1.9.4",
+      elixir: "~> 1.13.4",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [warnings_as_errors: true],
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
@@ -38,25 +38,25 @@ defmodule Diep.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.5.1"},
-      {:phoenix_pubsub, "~> 2.0"},
-      {:phoenix_ecto, "~> 4.0"},
-      {:ecto_sql, "~> 3.1"},
-      {:postgrex, ">= 0.0.0"},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:gettext, "~> 0.11"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.1"},
-      {:secure_random, "~>0.5"},
-      {:basic_auth, "~> 2.2"},
-      {:phoenix_live_dashboard, "~> 0.1"},
-      {:telemetry_poller, "~> 0.4"},
-      {:telemetry_metrics, "~> 0.4"},
+      {:phoenix, "== 1.6.6"},
+      {:phoenix_pubsub, "== 2.1.1"},
+      {:phoenix_ecto, "== 4.4.0"},
+      {:ecto_sql, "== 3.7.2"},
+      {:postgrex, "== 0.16.2"},
+      {:phoenix_html, "== 3.2.0"},
+      {:phoenix_live_reload, "== 1.3.3", only: :dev},
+      {:gettext, "== 0.19.1"},
+      {:jason, "== 1.3.0"},
+      {:plug_cowboy, "== 2.5.2"},
+      {:secure_random, "== 0.5.1"},
+      {:phoenix_live_dashboard, "== 0.6.5"},
+      {:telemetry_poller, "== 1.0.0"},
+      {:telemetry_metrics, "== 0.6.1"},
+      {:plug, "== 1.13.6"},
 
       # dev, test
-      {:credo, "~> 1.1", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc3", only: [:dev, :test], runtime: false}
+      {:credo, "== 1.6.4", only: [:dev, :test], runtime: false},
+      {:dialyxir, "== 1.1.0", only: [:dev, :test], runtime: false}
       # {:sobelow, "~> 0.9.3", only: [:dev, :test], runtime: false}
     ]
   end

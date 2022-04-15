@@ -16,7 +16,7 @@ defmodule Diep.Io.Core.GameState do
   @experience_loss_rate 0.5
   @experience_score_ratio_on_kill 0.1
 
-  @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance]}
+  @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
   defstruct [
     :name,
     :tanks,
