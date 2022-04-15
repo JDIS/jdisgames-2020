@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = (env, options) => ({
+  devtool: 'eval-source-map',
   optimization: {
     minimizer: [
       new TerserPlugin({ parallel: true }),
