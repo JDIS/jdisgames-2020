@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :diep_io,
   namespace: Diep.Io,

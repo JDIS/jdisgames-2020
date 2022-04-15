@@ -21,6 +21,6 @@ defmodule Diep.IoWeb.BotSocketTest do
   end
 
   test "connect/2 with wrong secret refuses connection", %{user: %{secret_key: secret_key}} do
-    assert :error = connect(BotSocket, %{secret: secret_key <> "1"}, %{})
+    assert {:error, "Not found"} == connect(BotSocket, %{secret: secret_key <> "1"}, %{})
   end
 end

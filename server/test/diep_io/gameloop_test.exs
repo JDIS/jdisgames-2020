@@ -55,9 +55,7 @@ defmodule GameloopTest do
 
       assert {:ok,
               %GameState{
-                name: game_name,
-                is_ranked: is_ranked,
-                clock: clock
+                name: game_name
               }} =
                Gameloop.init(
                  name: game_name,
@@ -133,8 +131,6 @@ defmodule GameloopTest do
 
       assert [
                %Score{
-                 game_id: game_id,
-                 user_id: tank_id,
                  score: 0
                }
              ] = ScoreRepository.get_scores()
