@@ -55,9 +55,9 @@ defmodule Diep.MixProject do
       {:plug, "== 1.13.6"},
 
       # dev, test
-      {:credo, "== 1.6.4", only: [:dev, :test], runtime: false},
-      {:dialyxir, "== 1.1.0", only: [:dev, :test], runtime: false}
-      # {:sobelow, "~> 0.9.3", only: [:dev, :test], runtime: false}
+      {:credo, "== 1.6.4", only: [:dev], runtime: false},
+      {:dialyxir, "== 1.1.0", only: [:dev], runtime: false},
+      {:sobelow, "== 0.11.1", only: [:dev], runtime: false}
     ]
   end
 
@@ -72,7 +72,7 @@ defmodule Diep.MixProject do
       quality: [
         "format",
         "credo --strict",
-        # "sobelow --verbose",
+        "sobelow",
         "dialyzer",
         "test"
       ],
@@ -80,7 +80,7 @@ defmodule Diep.MixProject do
         "test --cover --raise",
         "format --check-formatted",
         "credo --strict",
-        # "sobelow --exit",
+        "sobelow --exit",
         "dialyzer"
       ],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
