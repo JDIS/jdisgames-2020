@@ -79,6 +79,7 @@ runs:
     # I force a full recompile only on builds that we retry.
     - name: Clean to rule out incremental build as a source of flakiness
       if: github.run_attempt != '1'
+      working-directory: server
       run: | 
         mix deps.clean --all
         mix clean
@@ -95,15 +96,18 @@ runs:
       if: inputs.install-hex == 'true'
 
     - name: Install Dependencies
+      working-directory: server
       run: mix deps.get
       shell: sh
 
     - name: Compile Dependencies
+      working-directory: server
       run: mix deps.compile
       shell: sh
       if: inputs.build-deps == 'true'
 
     - name: Compile Application
+      working-directory: server
       run: mix compile ${{ inputs.build-flags }}
       shell: sh
       if: inputs.build-app == 'true'

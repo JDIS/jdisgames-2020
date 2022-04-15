@@ -8,13 +8,14 @@ on:
     branches:
       - master
 
+defaults:
+  run:
+    working-directory: server
+
 jobs:
   build:
     name: Run Dialyzer
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./server
     env:
       MIX_ENV: dev
     strategy:
@@ -27,7 +28,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup Elixir Project
-        uses: ./../.github/actions/elixir-setup
+        uses: ./.github/actions/elixir-setup
         with:
           elixir-version: ${{ matrix.elixir }}
           otp-version: ${{ matrix.otp }}
