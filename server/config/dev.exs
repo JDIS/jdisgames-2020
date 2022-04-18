@@ -16,7 +16,9 @@ config :diep_io, Diep.Io.Repo,
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :diep_io, Diep.IoWeb.Endpoint,
-  http: [port: 4000],
+  # Binding to loopback ipv4 address prevents access from other machines.
+  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  http: [ip: {127, 0, 0, 1}, port: 4000],
   https: [
     port: 4001,
     cipher_suite: :strong,
@@ -26,6 +28,7 @@ config :diep_io, Diep.IoWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
+  secret_key_base: "g8VX25ZVsHysCHLvoZBcypPuUNZF3aw99FPB83G5cgLVVE6V+fiRuSFei9Tdk1rp",
   watchers: [
     npm: [
       "run",
