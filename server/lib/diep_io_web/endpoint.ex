@@ -1,6 +1,15 @@
 defmodule Diep.IoWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :diep_io
 
+  # The session will be stored in the cookie and signed,
+  # this means its contents can be read but not tampered with.
+  # Set :encryption_salt if you would also like to encrypt it.
+  @session_options [
+    store: :cookie,
+    key: "_diep_io_key",
+    signing_salt: "Xxw/nVCe"
+  ]
+
   socket "/socket/spectate", Diep.IoWeb.SpectateSocket,
     websocket: [compress: true],
     longpoll: false
@@ -33,6 +42,7 @@ defmodule Diep.IoWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
+    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :diep_io
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,
@@ -49,14 +59,6 @@ defmodule Diep.IoWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-
-  # The session will be stored in the cookie and signed,
-  # this means its contents can be read but not tampered with.
-  # Set :encryption_salt if you would also like to encrypt it.
-  plug Plug.Session,
-    store: :cookie,
-    key: "_diep_io_key",
-    signing_salt: "Xxw/nVCe"
-
+  plug Plug.Session, @session_options
   plug Diep.IoWeb.Router
 end

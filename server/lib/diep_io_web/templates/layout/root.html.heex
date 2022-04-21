@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <%= csrf_meta_tag() %>
+    <title>JDIS Games 2020</title>
+    <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
+    <script phx-tract-static type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}>
+    </script>
+  </head>
+  <body>
+    <header>
+      <section class="container">
+        <nav role="navigation">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/spectate?game_name=main_game">Spectate main</a></li>
+            <li><a href="/spectate?game_name=secondary_game">Spectate secondary</a></li>
+            <li><a href="/scoreboard">Scoreboard</a></li>
+          </ul>
+        </nav>
+      </section>
+    </header>
+    <%= @inner_content %>
+  </body>
+</html>

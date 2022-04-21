@@ -1,3 +1,0 @@
-<h1>Team <%= @team_data.name %>'s secret key</h1>
-
-<p>Your secret key is: <%= @team_data.secret_key %>. Please write it down since it won't be shown again.</p>

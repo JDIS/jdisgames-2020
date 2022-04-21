@@ -26,18 +26,32 @@ defmodule Diep.IoWeb.Telemetry do
   def metrics do
     [
       # VM Metrics
-      last_value("vm.memory.total", unit: :byte),
+      last_value("vm.memory.total", unit: {:byte, :kilobyte}),
       last_value("vm.total_run_queue_lengths.total"),
       last_value("vm.total_run_queue_lengths.cpu"),
       last_value("vm.total_run_queue_lengths.io"),
-      last_value("my_app.worker.memory", unit: :byte),
-      last_value("my_app.worker.message_queue_len"),
 
       # Database Time Metrics
-      summary("my_app.repo.query.total_time", unit: {:native, :millisecond}),
-      summary("my_app.repo.query.decode_time", unit: {:native, :millisecond}),
-      summary("my_app.repo.query.query_time", unit: {:native, :millisecond}),
-      summary("my_app.repo.query.queue_time", unit: {:native, :millisecond}),
+      summary("my_app.repo.query.total_time",
+        unit: {:native, :millisecond},
+        description: "The sum of the other measurements"
+      ),
+      summary("my_app.repo.query.decode_time",
+        unit: {:native, :millisecond},
+        description: "The time spent decoding the data received from the database"
+      ),
+      summary("my_app.repo.query.query_time",
+        unit: {:native, :millisecond},
+        description: "The time spent executing the query"
+      ),
+      summary("my_app.repo.query.queue_time",
+        unit: {:native, :millisecond},
+        description: "The time spent waiting for a database connection"
+      ),
+      summary("tmp.repo.query.idle_time",
+        unit: {:native, :millisecond},
+        description: "The time the connection spent waiting before being checked out for the query"
+      ),
 
       # Phoenix Time Metrics
       summary("phoenix.endpoint.stop.duration",
