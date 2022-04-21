@@ -30,10 +30,10 @@ if config_env() == :prod do
 end
 
 # Configure DiepIo
-if config_env() == :dev do
-  config :diep_io, admin_username: "admin", admin_password: "admin"
-else
+if config_env() == :prod do
   config :diep_io, admin_username: DiepIoConfig.admin_username(), admin_password: DiepIoConfig.admin_password()
+else
+  config :diep_io, admin_username: "admin", admin_password: "admin"
 end
 
 config :diep_io, custom_badges_location: DiepIoConfig.custom_badges_location()
