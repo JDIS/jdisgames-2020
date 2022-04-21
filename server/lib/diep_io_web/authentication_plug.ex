@@ -6,8 +6,8 @@ defmodule Diep.IoWeb.AuthenticationPlug do
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    good_login = System.get_env("ADMIN_USERNAME", "admin")
-    good_password = System.get_env("ADMIN_PASSWORD", "admin")
+    good_login = Application.fetch_env!(:diep_io, :admin_username)
+    good_password = Application.fetch_env!(:diep_io, :admin_password)
 
     Plug.BasicAuth.basic_auth(conn, username: good_login, password: good_password)
   end

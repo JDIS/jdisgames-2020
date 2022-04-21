@@ -2,10 +2,6 @@ import Config
 
 # Configure your database
 config :diep_io, Diep.Io.Repo,
-  username: System.get_env("POSTGRES_USER", "postgres"),
-  password: System.get_env("POSTGRES_PASSWORD", "postgres"),
-  database: System.get_env("POSTGRES_DB", "diep_io_dev"),
-  hostname: System.get_env("POSTGRES_HOST", "localhost"),
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -48,12 +44,8 @@ config :diep_io, Diep.IoWeb.Endpoint,
     ]
   ]
 
-config :logger, :console,
-  format: "$time [$level] $metadata - $message\n",
-  level: :debug,
-  metadata: [:request_id],
-  utc_log: true,
-  sync_threshold: 100
+# Do not include metadata nor timestamps in development logs
+config :logger, :console, format: "[$level] $message\n"
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

@@ -31,10 +31,7 @@ jobs:
 
     env:
       MIX_ENV: "test"
-      POSTGRES_DB: diep_io_test
-      POSTGRES_HOST: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: "postgres"
+      DIEP_DATABASE_URL: ecto://postgres:postgres@postgres/diep_io_test
 
     steps:
 

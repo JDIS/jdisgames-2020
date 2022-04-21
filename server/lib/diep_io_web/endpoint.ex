@@ -24,16 +24,10 @@ defmodule Diep.IoWeb.Endpoint do
   #
   # You should set gzip to true if you are running phx.digest
   # when deploying your static files in production.
-  compress_assets =
-    case System.get_env("MIX_ENV") do
-      "prod" -> true
-      _ -> false
-    end
-
   plug Plug.Static,
     at: "/",
     from: :diep_io,
-    gzip: compress_assets,
+    gzip: Mix.env() == :prod,
     only: ~w(css fonts images audio js favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the

@@ -66,7 +66,7 @@ defmodule RealTimeTest do
   end
 
   defp write_file(filename, {average, std_dev, max}) do
-    badges_location = System.get_env("CUSTOM_BADGES_LOCATION", "./badges")
+    badges_location = Application.fetch_env!(:diep_io, :custom_badges_location)
     File.mkdir(badges_location)
     file_path = "#{badges_location}/#{filename}.json"
     file_content = "{\"average\":#{average},\"std_dev\":#{std_dev},\"max\":#{max}}"
