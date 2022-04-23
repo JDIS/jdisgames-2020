@@ -9,18 +9,18 @@ end
 
 # Configure Repo
 if config_env() == :prod do
-  config :heardle, Heardle.Repo, pool_size: DiepIoConfig.database_pool_size()
+  config :diep_io, DiepIo.Repo, pool_size: DiepIoConfig.database_pool_size()
 end
 
 config :diep_io, Diep.Io.Repo, url: DiepIoConfig.database_url()
 
 # Configure Endpoint
 if config_env() == :prod do
-  config :diep_io, HeardleWeb.Endpoint,
+  config :diep_io, DiepIoWeb.Endpoint,
     server: true,
     url: [host: "example.com", port: 443],
     cache_static_manifest: "priv/static/cache_manifest.json",
-    http: [
+    https: [
       port: DiepIoConfig.port()
     ],
     check_origin: [
