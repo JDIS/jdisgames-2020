@@ -53,6 +53,7 @@ defmodule Diep.MixProject do
       {:telemetry_poller, "== 1.0.0"},
       {:telemetry_metrics, "== 0.6.1"},
       {:plug, "== 1.13.6"},
+      {:dotenv_parser, "== 2.0.0"},
 
       # dev, test
       {:credo, "== 1.6.4", only: [:dev], runtime: false},

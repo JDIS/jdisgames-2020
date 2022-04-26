@@ -54,3 +54,6 @@ badges/
 __pycache__/
 
 postgres-data/
+
+.env.dev
+.env.test
