@@ -1,4 +1,6 @@
 defmodule DiepIOWeb.AdminControllerTest do
+  @moduledoc false
+
   use DiepIOWeb.ConnCase, async: false
 
   setup do

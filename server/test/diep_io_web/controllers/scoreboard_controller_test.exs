@@ -1,4 +1,6 @@
 defmodule DiepIOWeb.ScoreboardControllerTest do
+  @moduledoc false
+
   use DiepIOWeb.ConnCase
   alias DiepIO.ScoreRepository
   alias DiepIO.UsersRepository

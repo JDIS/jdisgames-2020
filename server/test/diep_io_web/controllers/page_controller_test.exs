@@ -1,4 +1,6 @@
 defmodule DiepIOWeb.PageControllerTest do
+  @moduledoc false
+
   use DiepIOWeb.ConnCase
 
   test "GET /", %{conn: conn} do

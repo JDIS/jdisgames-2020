@@ -14,8 +14,6 @@ defmodule DiepIO.DataCase do
   this option is not recommendded for other databases.
   """
 
-  alias Ecto.Adapters.SQL.Sandbox, as: Sandbox
-
   use ExUnit.CaseTemplate
 
   using do
@@ -30,12 +28,8 @@ defmodule DiepIO.DataCase do
   end
 
   setup tags do
-    :ok = Sandbox.checkout(DiepIO.Repo)
-
-    unless tags[:async] do
-      Sandbox.mode(DiepIO.Repo, {:shared, self()})
-    end
-
+    pid = Ecto.Adapters.SQL.Sandbox.start_owner!(DiepIO.Repo, shared: not tags[:async])
+    on_exit(fn -> Ecto.Adapters.SQL.Sandbox.stop_owner(pid) end)
     :ok
   end
 

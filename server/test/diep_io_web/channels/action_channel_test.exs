@@ -1,4 +1,6 @@
 defmodule DiepIOWeb.ActionChannelTest do
+  @moduledoc false
+
   use DiepIOWeb.ChannelCase
 
   alias DiepIO.ActionStorage
