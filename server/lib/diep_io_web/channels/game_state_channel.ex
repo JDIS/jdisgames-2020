@@ -2,11 +2,12 @@ defmodule DiepIOWeb.GameStateChannel do
   @moduledoc false
   use DiepIOWeb, :channel
 
+  alias DiepIO.PubSub
   alias DiepIO.Core.GameState
 
   @impl true
   def join("game_state", %{"game_name" => game_name} = _payload, socket) do
-    Phoenix.PubSub.subscribe(DiepIO.PubSub, "new_state")
+    PubSub.subscribe("new_state")
     {:ok, assign(socket, :game_name, game_name)}
   end
 
