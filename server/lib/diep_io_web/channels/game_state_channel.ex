@@ -4,20 +4,16 @@ defmodule DiepIOWeb.GameStateChannel do
 
   alias DiepIO.Core.GameState
 
-  intercept(["new_state"])
-
+  @impl true
   def join("game_state", %{"game_name" => game_name} = _payload, socket) do
+    Phoenix.PubSub.subscribe(DiepIO.PubSub, "new_state")
     {:ok, assign(socket, :game_name, game_name)}
   end
 
-  def handle_in("new_state", payload, socket) do
-    broadcast(socket, "new_state", payload)
-    {:noreply, socket}
-  end
-
-  def handle_out("new_state", %GameState{name: name} = payload, socket) do
-    if to_string(name) == socket.assigns[:game_name] do
-      push(socket, "new_state", payload)
+  @impl true
+  def handle_info({:new_state, %GameState{} = new_state}, socket) do
+    if to_string(new_state.name) == socket.assigns[:game_name] do
+      broadcast(socket, "new_state", new_state)
     end
 
     {:noreply, socket}

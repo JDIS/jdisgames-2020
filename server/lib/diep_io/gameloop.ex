@@ -5,8 +5,7 @@ defmodule DiepIO.Gameloop do
   """
 
   use GenServer
-  alias DiepIO.{ActionStorage, PerformanceMonitor, ScoreRepository, UsersRepository}
-  alias DiepIOWeb.Endpoint
+  alias DiepIO.{ActionStorage, PerformanceMonitor, PubSub, ScoreRepository, UsersRepository}
   alias DiepIO.Core.{Clock, GameState}
   alias :erlang, as: Erlang
   require Logger
@@ -149,8 +148,7 @@ defmodule DiepIO.Gameloop do
   end
 
   defp broadcast(state) do
-    # TODO: Decouple GameLoop from the Endpoint (using a PubSub)
-    Endpoint.broadcast!("game_state", "new_state", state)
+    PubSub.broadcast!("new_state", {:new_state, state})
 
     if state.monitor_performance?,
       do: PerformanceMonitor.store_broadcasted_at(Erlang.monotonic_time())

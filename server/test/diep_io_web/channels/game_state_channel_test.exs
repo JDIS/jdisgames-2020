@@ -1,6 +1,7 @@
 defmodule DiepIOWeb.GameStateChannelTest do
   use DiepIOWeb.ChannelCase
 
+  alias DiepIO.PubSub
   alias DiepIO.Core.{Clock, GameState}
 
   setup do
@@ -15,9 +16,10 @@ defmodule DiepIOWeb.GameStateChannelTest do
     {:ok, socket: socket, game_name: game_name}
   end
 
-  test "new_state broadcasts to game_state", %{socket: socket} do
-    push(socket, "new_state", %{"state" => "new"})
-    assert_broadcast("new_state", %{"state" => "new"})
+  test "new_state broadcasts to game_state", %{game_name: game_name} do
+    state = GameState.new(game_name, [], 1, false, false, Clock.new(1, 1))
+    PubSub.broadcast!("new_state", {:new_state, state})
+    assert_broadcast("new_state", ^state)
   end
 
   test "broadcasts are pushed to the client", %{socket: socket} do
@@ -30,14 +32,12 @@ defmodule DiepIOWeb.GameStateChannelTest do
   end
 
   test "broadcasts are only pushed to clients who subscribed to the corresponding game", %{
-    socket: socket,
     game_name: game_name
   } do
     game_name = String.to_atom(to_string(game_name) <> "2")
     state = GameState.new(game_name, [], 1, false, false, Clock.new(1, 1))
-    broadcast_from!(socket, "new_state", state)
+    PubSub.broadcast!("new_state", {:new_state, state})
 
-    # _ in front of state doesn't make sense here but I get a warning that variable "state" is not used without it...
-    refute_push("new_state", _state)
+    refute_push("new_state", ^state)
   end
 end
