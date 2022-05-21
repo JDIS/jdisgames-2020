@@ -141,8 +141,7 @@ defmodule GameStateTest do
   end
 
   test "handle_projectiles/1 removes projectiles without hp", %{game_state: game_state} do
-    projectile =
-      Projectile.new(@user_id, Position.random(), Position.random(), 0, time_to_live: 0)
+    projectile = Projectile.new(@user_id, Position.random(), Position.random(), 0, time_to_live: 0)
 
     updated_game_state =
       game_state

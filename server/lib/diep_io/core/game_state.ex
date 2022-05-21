@@ -271,9 +271,7 @@ defmodule DiepIO.Core.GameState do
     %{game_state | tanks: tanks_map}
   end
 
-  defp handle_tank_projectile_collisions(
-         %{tanks: tanks_map, projectiles: projectiles} = game_state
-       ) do
+  defp handle_tank_projectile_collisions(%{tanks: tanks_map, projectiles: projectiles} = game_state) do
     collisions =
       tanks_map
       |> Map.values()
@@ -315,9 +313,7 @@ defmodule DiepIO.Core.GameState do
     %{updated_state | tanks: tanks_map}
   end
 
-  defp handle_projectile_debris_collision(
-         %{debris: debris, projectiles: projectiles} = game_state
-       ) do
+  defp handle_projectile_debris_collision(%{debris: debris, projectiles: projectiles} = game_state) do
     collisions =
       projectiles
       |> Collisions.calculate_collisions(debris)

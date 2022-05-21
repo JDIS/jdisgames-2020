@@ -80,11 +80,9 @@ defmodule PerformanceMonitorStatefulTest do
     PerformanceMonitor.reset()
 
     [
-      gameloop_durations:
-        [10, 20] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
+      gameloop_durations: [10, 20] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
       gameloop_stats: {15, 5, 20},
-      broadcast_times:
-        [10, 20, 40] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
+      broadcast_times: [10, 20, 40] |> Enum.map(&Erlang.convert_time_unit(&1, :millisecond, :native)),
       broadcast_stats: {15, 5, 20}
     ]
   end
