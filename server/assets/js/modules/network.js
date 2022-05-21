@@ -19,7 +19,7 @@ export function networkInit(game_name) {
 
     socket.connect()
 
-    let gameStateChannel = socket.channel("game_state", { game_name: game_name })
+    let gameStateChannel = socket.channel(`game_state:${game_name}`)
 
     gameStateChannel.join()
         .receive("ok", resp => { console.log("Joined game_state successfully", resp) })

@@ -8,7 +8,7 @@ defmodule DiepIOWeb.ActionChannel do
 
   intercept(["presence_diff"])
 
-  def join("action", %{"game_name" => game_name} = _payload, socket) do
+  def join("action:" <> game_name, _payload, socket) do
     if is_already_connected?(socket, game_name) do
       {:error, %{error: "Already connected"}}
     else
