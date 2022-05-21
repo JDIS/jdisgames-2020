@@ -148,7 +148,7 @@ defmodule DiepIO.Gameloop do
   end
 
   defp broadcast(state) do
-    PubSub.broadcast!("new_state", {:new_state, state})
+    PubSub.broadcast!("new_state:#{state.name}", {:new_state, state})
 
     if state.monitor_performance?,
       do: PerformanceMonitor.store_broadcasted_at(Erlang.monotonic_time())

@@ -13,9 +13,7 @@ defmodule DiepIOWeb.GameStateChannel do
 
   @impl true
   def handle_info({:new_state, %GameState{} = new_state}, socket) do
-    if to_string(new_state.name) == socket.assigns[:game_name] do
-      broadcast(socket, "new_state", new_state)
-    end
+    broadcast(socket, "new_state", new_state)
 
     {:noreply, socket}
   end
