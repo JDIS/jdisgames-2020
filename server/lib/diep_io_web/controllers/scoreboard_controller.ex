@@ -1,6 +1,6 @@
-defmodule Diep.IoWeb.ScoreboardController do
-  use Diep.IoWeb, :controller
-  alias Diep.Io.ScoreRepository
+defmodule DiepIOWeb.ScoreboardController do
+  use DiepIOWeb, :controller
+  alias DiepIO.ScoreRepository
 
   def index(conn, _params) do
     scores = ScoreRepository.get_scores()

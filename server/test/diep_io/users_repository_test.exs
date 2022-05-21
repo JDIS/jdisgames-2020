@@ -1,10 +1,10 @@
-defmodule Diep.Io.UsersRepositoryTest do
-  use Diep.Io.DataCase, async: true
+defmodule DiepIO.UsersRepositoryTest do
+  use DiepIO.DataCase, async: true
 
-  alias Diep.Io.UsersRepository
+  alias DiepIO.UsersRepository
 
   describe "users" do
-    alias Diep.Io.Users.User
+    alias DiepIOSchemas.User
 
     @valid_attrs %{name: "some name"}
     @invalid_attrs %{name: nil, secret_key: nil}
@@ -26,7 +26,8 @@ defmodule Diep.Io.UsersRepositoryTest do
 
     @tag :database
     test "get_user_id_from_secret/1 with a bad secret returns a tuple with error" do
-      assert {:error, _} = UsersRepository.get_user_id_from_secret("some secret that doesnt exist")
+      assert {:error, _} =
+               UsersRepository.get_user_id_from_secret("some secret that doesnt exist")
     end
 
     @tag :database

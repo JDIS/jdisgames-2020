@@ -1,9 +1,9 @@
 defmodule GameloopTest do
-  use Diep.Io.DataCase, async: false
+  use DiepIO.DataCase, async: false
 
-  alias Diep.Io.{ActionStorage, Gameloop, PerformanceMonitor, ScoreRepository, UsersRepository}
-  alias Diep.Io.Core.{Action, Clock, GameState}
-  alias Diep.Io.Users.Score
+  alias DiepIO.{ActionStorage, Gameloop, PerformanceMonitor, ScoreRepository, UsersRepository}
+  alias DiepIO.Core.{Action, Clock, GameState}
+  alias DiepIOSchemas.Score
   alias :ets, as: Ets
 
   setup do
@@ -113,7 +113,10 @@ defmodule GameloopTest do
       assert client_update_count + 1 == max_tick / client_frequency
     end
 
-    test ":reset_game saves the scores when is_is_ranked true", %{game_name: game_name, clock: clock} do
+    test ":reset_game saves the scores when is_is_ranked true", %{
+      game_name: game_name,
+      clock: clock
+    } do
       user_name = "some_name"
       game_id = 1
 
@@ -126,7 +129,14 @@ defmodule GameloopTest do
       assert {:noreply, %GameState{}} =
                Gameloop.handle_info(
                  :reset_game,
-                 GameState.new(game_name, [%{id: tank_id, name: user_name}], game_id, true, false, clock)
+                 GameState.new(
+                   game_name,
+                   [%{id: tank_id, name: user_name}],
+                   game_id,
+                   true,
+                   false,
+                   clock
+                 )
                )
 
       assert [
@@ -136,16 +146,25 @@ defmodule GameloopTest do
              ] = ScoreRepository.get_scores()
     end
 
-    test ":reset_game doesn't save the scores when is_is_ranked false", %{game_name: game_name, clock: clock} do
+    test ":reset_game doesn't save the scores when is_is_ranked false", %{
+      game_name: game_name,
+      clock: clock
+    } do
       ActionStorage.init(game_name)
 
       assert {:noreply, %GameState{}} =
-               Gameloop.handle_info(:reset_game, GameState.new(game_name, [], 1, false, false, clock))
+               Gameloop.handle_info(
+                 :reset_game,
+                 GameState.new(game_name, [], 1, false, false, clock)
+               )
 
       assert [] = ScoreRepository.get_scores()
     end
 
-    test ":reset_game sends {:stop, :normal, state} when should_stop? is true", %{game_name: game_name, clock: clock} do
+    test ":reset_game sends {:stop, :normal, state} when should_stop? is true", %{
+      game_name: game_name,
+      clock: clock
+    } do
       ActionStorage.init(game_name)
 
       game_state =

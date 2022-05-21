@@ -1,4 +1,4 @@
-defmodule Diep.IoWeb.AuthenticationPlug do
+defmodule DiepIOWeb.AuthenticationPlug do
   @moduledoc """
   HTTP Basic Auth authentication for admin section
   """

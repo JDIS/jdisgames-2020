@@ -1,11 +1,11 @@
-defmodule Diep.IoWeb.Gettext do
+defmodule DiepIOWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 
   By using [Gettext](https://hexdocs.pm/gettext),
   your module gains a set of macros for translations, for example:
 
-      import Diep.IoWeb.Gettext
+      import DiepIOWeb.Gettext
 
       # Simple translation
       gettext("Here is the string to translate")

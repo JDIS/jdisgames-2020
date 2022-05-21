@@ -1,4 +1,4 @@
-defmodule Diep.Io.Core.Upgrade do
+defmodule DiepIO.Core.Upgrade do
   @moduledoc false
 
   @speed_rate 1.15

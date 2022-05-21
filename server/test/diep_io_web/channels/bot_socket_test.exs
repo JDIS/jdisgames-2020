@@ -1,22 +1,24 @@
-defmodule Diep.IoWeb.BotSocketTest do
-  use Diep.IoWeb.ChannelCase
+defmodule DiepIOWeb.BotSocketTest do
+  use DiepIOWeb.ChannelCase
 
-  alias Diep.Io.Repo
-  alias Diep.Io.Users.User
-  alias Diep.IoWeb.BotSocket
+  alias DiepIO.Repo
+  alias DiepIO.UsersRepository
+  alias DiepIOWeb.BotSocket
 
   @a_secret_key "secret_key"
   @a_user %{name: "a_name", secret_key: @a_secret_key}
 
   setup do
-    %User{}
-    |> User.changeset(@a_user)
+    @a_user
+    |> UsersRepository.new_user()
     |> Repo.insert()
 
     {:ok, user: @a_user}
   end
 
-  test "connect/2 with authentication secret accepts connection", %{user: %{secret_key: secret_key}} do
+  test "connect/2 with authentication secret accepts connection", %{
+    user: %{secret_key: secret_key}
+  } do
     assert {:ok, _} = connect(BotSocket, %{secret: secret_key}, %{})
   end
 

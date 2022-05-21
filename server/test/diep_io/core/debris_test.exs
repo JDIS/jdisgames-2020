@@ -1,7 +1,7 @@
 defmodule DebrisTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.Debris
+  alias DiepIO.Core.Debris
 
   @damage 10
   @expected_size :medium

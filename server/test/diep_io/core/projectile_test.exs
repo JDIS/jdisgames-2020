@@ -1,7 +1,7 @@
 defmodule ProjectileTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Position, Projectile}
+  alias DiepIO.Core.{Position, Projectile}
 
   @owner_id 1
   @damage 10

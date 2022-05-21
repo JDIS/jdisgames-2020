@@ -1,7 +1,7 @@
-defmodule Diep.IoWeb.ScoreboardControllerTest do
-  use Diep.IoWeb.ConnCase
-  alias Diep.Io.ScoreRepository
-  alias Diep.Io.UsersRepository
+defmodule DiepIOWeb.ScoreboardControllerTest do
+  use DiepIOWeb.ConnCase
+  alias DiepIO.ScoreRepository
+  alias DiepIO.UsersRepository
 
   @user %{name: "some_name"}
 

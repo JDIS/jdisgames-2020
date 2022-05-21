@@ -1,3 +1,3 @@
-defmodule Diep.IoWeb.PageViewTest do
-  use Diep.IoWeb.ConnCase, async: true
+defmodule DiepIOWeb.PageViewTest do
+  use DiepIOWeb.ConnCase, async: true
 end

@@ -1,7 +1,7 @@
-defmodule Diep.Io.Core.Debris do
+defmodule DiepIO.Core.Debris do
   @moduledoc false
 
-  alias Diep.Io.Core.{Entity, Position}
+  alias DiepIO.Core.{Entity, Position}
 
   @default_size :small
   @default_hp_map %{small: 20, medium: 50, large: 100}
@@ -25,7 +25,7 @@ defmodule Diep.Io.Core.Debris do
         }
 
   defimpl Entity do
-    alias Diep.Io.Core.Debris
+    alias DiepIO.Core.Debris
 
     @spec get_position(Debris.t()) :: Position.t()
     def get_position(debris), do: debris.position

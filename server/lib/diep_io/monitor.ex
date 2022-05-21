@@ -1,4 +1,4 @@
-defmodule Diep.Io.PerformanceMonitor do
+defmodule DiepIO.PerformanceMonitor do
   @moduledoc """
     Monitors the performance of the application with regards to our real time constraints.
 
@@ -23,7 +23,8 @@ defmodule Diep.Io.PerformanceMonitor do
   def start_link(time_unit), do: GenServer.start(__MODULE__, [time_unit], name: __MODULE__)
 
   @spec store_gameloop_duration(integer()) :: :ok
-  def store_gameloop_duration(iteration_time), do: GenServer.cast(__MODULE__, {:add_gameloop, iteration_time})
+  def store_gameloop_duration(iteration_time),
+    do: GenServer.cast(__MODULE__, {:add_gameloop, iteration_time})
 
   @spec get_gameloop_stats :: {float(), float(), float()} | {:error, String.t()}
   def get_gameloop_stats, do: GenServer.call(__MODULE__, {:get_gameloop}) |> calculate_stats()
@@ -99,7 +100,10 @@ defmodule Diep.Io.PerformanceMonitor do
     in state. The first broadcast time is stored without storing a delay since it has nothing to be compared to.
   """
   @impl true
-  def handle_cast({:add_broadcast, broadcast_time}, %{time_unit: target_unit, last_broadcast_time: last_time} = state) do
+  def handle_cast(
+        {:add_broadcast, broadcast_time},
+        %{time_unit: target_unit, last_broadcast_time: last_time} = state
+      ) do
     time_diff = broadcast_time - last_time
 
     Telemetry.execute(@telemetry_prefix, %{broadcast_time: time_diff}, %{})

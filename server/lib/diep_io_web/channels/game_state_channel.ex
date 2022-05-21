@@ -1,8 +1,8 @@
-defmodule Diep.IoWeb.GameStateChannel do
+defmodule DiepIOWeb.GameStateChannel do
   @moduledoc false
-  use Diep.IoWeb, :channel
+  use DiepIOWeb, :channel
 
-  alias Diep.Io.Core.GameState
+  alias DiepIO.Core.GameState
 
   intercept(["new_state"])
 

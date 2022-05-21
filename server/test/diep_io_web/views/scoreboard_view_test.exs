@@ -1,6 +1,6 @@
-defmodule Diep.IoWeb.ScoreboardViewTest do
-  use Diep.IoWeb.ConnCase, async: true
-  alias Diep.IoWeb.ScoreboardView
+defmodule DiepIOWeb.ScoreboardViewTest do
+  use DiepIOWeb.ConnCase, async: true
+  alias DiepIOWeb.ScoreboardView
 
   test "render(scoreboard.json) formats like it should" do
     render =

@@ -1,10 +1,11 @@
-defmodule Diep.Io.UsersRepository do
+defmodule DiepIO.UsersRepository do
   @moduledoc """
   The Users context.
   """
 
-  alias Diep.Io.Repo
-  alias Diep.Io.Users.User
+  import Ecto.Changeset
+  alias DiepIO.Repo
+  alias DiepIOSchemas.User
   require Logger
 
   @spec list_users() :: [User.t()]
@@ -39,8 +40,8 @@ defmodule Diep.Io.UsersRepository do
       |> keys_to_atom()
 
     result =
-      %User{}
-      |> User.changeset(attrs_with_secret_key)
+      attrs_with_secret_key
+      |> new_user()
       |> Repo.insert()
 
     case result do
@@ -61,5 +62,12 @@ defmodule Diep.Io.UsersRepository do
       {key, value}, acc when is_atom(key) -> Map.put(acc, key, value)
       {key, value}, acc when is_binary(key) -> Map.put(acc, String.to_existing_atom(key), value)
     end)
+  end
+
+  def new_user(attrs \\ %{}) do
+    %User{}
+    |> cast(attrs, [:name, :secret_key])
+    |> validate_required([:name, :secret_key])
+    |> unique_constraint(:name)
   end
 end

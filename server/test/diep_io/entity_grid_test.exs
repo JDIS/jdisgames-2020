@@ -1,8 +1,8 @@
 defmodule EntityGridTest do
   use ExUnit.Case
 
-  alias Diep.Io.Core.Tank
-  alias Diep.Io.EntityGrid
+  alias DiepIO.Core.Tank
+  alias DiepIO.EntityGrid
 
   @tile_size 100
 
@@ -32,7 +32,9 @@ defmodule EntityGridTest do
     assert EntityGrid.new([tank], @tile_size) == expected_result
   end
 
-  test "get_set_for_coords/2 returns the list of entities for the given tile coordinates", %{tank: tank} do
+  test "get_set_for_coords/2 returns the list of entities for the given tile coordinates", %{
+    tank: tank
+  } do
     coords = {0, 0}
     expected_result = MapSet.new([tank])
 

@@ -1,7 +1,7 @@
-defmodule Diep.IoWeb.AdminController do
-  use Diep.IoWeb, :controller
+defmodule DiepIOWeb.AdminController do
+  use DiepIOWeb, :controller
 
-  alias Diep.Io.GameSupervisor
+  alias DiepIO.GameSupervisor
 
   def index(conn, _params) do
     render(conn, "index.html")

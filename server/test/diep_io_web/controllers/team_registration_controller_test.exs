@@ -1,7 +1,7 @@
-defmodule Diep.IoWeb.TeamRegistrationControllerTest do
-  use Diep.IoWeb.ConnCase, async: false
+defmodule DiepIOWeb.TeamRegistrationControllerTest do
+  use DiepIOWeb.ConnCase, async: false
 
-  alias Diep.Io.UsersRepository
+  alias DiepIO.UsersRepository
 
   test "GET /team-registration", %{conn: conn} do
     response =

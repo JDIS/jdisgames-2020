@@ -1,5 +1,5 @@
-defmodule Diep.IoWeb.PageControllerTest do
-  use Diep.IoWeb.ConnCase
+defmodule DiepIOWeb.PageControllerTest do
+  use DiepIOWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, Routes.page_path(conn, :index))

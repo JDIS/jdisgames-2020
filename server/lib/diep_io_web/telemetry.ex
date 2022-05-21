@@ -1,4 +1,4 @@
-defmodule Diep.IoWeb.Telemetry do
+defmodule DiepIOWeb.Telemetry do
   @moduledoc """
     Provides telemtry for the application. Periodically fetches various data points and
     makes them available to any provider.
@@ -50,7 +50,8 @@ defmodule Diep.IoWeb.Telemetry do
       ),
       summary("tmp.repo.query.idle_time",
         unit: {:native, :millisecond},
-        description: "The time the connection spent waiting before being checked out for the query"
+        description:
+          "The time the connection spent waiting before being checked out for the query"
       ),
 
       # Phoenix Time Metrics
@@ -75,7 +76,7 @@ defmodule Diep.IoWeb.Telemetry do
 
   def periodic_measurements do
     [
-      {Diep.Io.PerformanceMonitor, :get_broadcast_stats, []}
+      {DiepIO.PerformanceMonitor, :get_broadcast_stats, []}
     ]
   end
 end

@@ -1,5 +1,5 @@
-defmodule Diep.IoWeb.PageController do
-  use Diep.IoWeb, :controller
+defmodule DiepIOWeb.PageController do
+  use DiepIOWeb, :controller
 
   def index(conn, _params) do
     render(conn, "index.html")

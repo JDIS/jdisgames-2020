@@ -1,7 +1,7 @@
 defmodule ActionTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Action, Position}
+  alias DiepIO.Core.{Action, Position}
 
   test "new/1 creates an empty action" do
     tank_id = "test_tank"

@@ -1,8 +1,8 @@
-defmodule Diep.Io.Core.Tank do
+defmodule DiepIO.Core.Tank do
   @moduledoc false
 
-  alias Diep.Io.Core.{Entity, Position, Projectile, Upgrade}
-  alias Diep.Io.Helpers.Angle
+  alias DiepIO.Core.{Entity, Position, Projectile, Upgrade}
+  alias DiepIO.Helpers.Angle
   alias :math, as: Math
 
   @default_hp 100
@@ -55,7 +55,14 @@ defmodule Diep.Io.Core.Tank do
     experience: 0,
     cannon_angle: 0,
     upgrade_tokens: 0,
-    upgrade_levels: %{max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0, hp_regen: 0}
+    upgrade_levels: %{
+      max_hp: 0,
+      speed: 0,
+      fire_rate: 0,
+      projectile_damage: 0,
+      body_damage: 0,
+      hp_regen: 0
+    }
   ]
 
   @type t :: %__MODULE__{
@@ -79,7 +86,7 @@ defmodule Diep.Io.Core.Tank do
         }
 
   defimpl Entity do
-    alias Diep.Io.Core.Tank
+    alias DiepIO.Core.Tank
 
     @spec get_position(Tank.t()) :: Position.t()
     def get_position(tank), do: tank.position
@@ -128,7 +135,8 @@ defmodule Diep.Io.Core.Tank do
 
   @spec add_experience(t(), integer) :: t()
   def add_experience(tank, amount) do
-    token_to_add = get_token_amount_from_experience(tank.experience + amount) - upgrade_tokenss_spent(tank)
+    token_to_add =
+      get_token_amount_from_experience(tank.experience + amount) - upgrade_tokenss_spent(tank)
 
     tank
     |> add_to_value(:experience, amount)
@@ -232,7 +240,8 @@ defmodule Diep.Io.Core.Tank do
   @spec default_hp_regen() :: number
   def default_hp_regen, do: @default_hp_regen
 
-  defp buy_upgrade(%__MODULE__{upgrade_tokens: upgrade_tokens} = tank, _stat) when upgrade_tokens <= 0 do
+  defp buy_upgrade(%__MODULE__{upgrade_tokens: upgrade_tokens} = tank, _stat)
+       when upgrade_tokens <= 0 do
     tank
   end
 

@@ -1,59 +1,59 @@
-defmodule Diep.IoWeb.Router do
-  use Diep.IoWeb, :router
-  alias Diep.IoWeb.AuthenticationPlug
+defmodule DiepIOWeb.Router do
+  use DiepIOWeb, :router
+  alias DiepIOWeb.AuthenticationPlug
   import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, {Diep.IoWeb.LayoutView, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, {DiepIOWeb.LayoutView, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   pipeline :basic_auth do
-    plug AuthenticationPlug
+    plug(AuthenticationPlug)
   end
 
-  scope "/", Diep.IoWeb do
-    pipe_through :browser
+  scope "/", DiepIOWeb do
+    pipe_through(:browser)
 
-    get "/", PageController, :index
-    get "/spectate", PageController, :spectate
-    get "/scoreboard", PageController, :scoreboard
+    get("/", PageController, :index)
+    get("/spectate", PageController, :spectate)
+    get("/scoreboard", PageController, :scoreboard)
   end
 
   # Other scopes may use custom stacks.
-  scope "/api", Diep.IoWeb do
-    pipe_through :api
+  scope "/api", DiepIOWeb do
+    pipe_through(:api)
 
-    resources "/scoreboard", ScoreboardController, only: [:index]
+    resources("/scoreboard", ScoreboardController, only: [:index])
   end
 
-  scope "/admin", Diep.IoWeb do
-    pipe_through [:browser, :basic_auth]
+  scope "/admin", DiepIOWeb do
+    pipe_through([:browser, :basic_auth])
 
-    get "/", AdminController, :index
+    get("/", AdminController, :index)
 
-    get "/start", AdminController, :start_game
-    get "/stop", AdminController, :stop_game
-    get "/kill", AdminController, :kill_game
+    get("/start", AdminController, :start_game)
+    get("/stop", AdminController, :stop_game)
+    get("/kill", AdminController, :kill_game)
   end
 
-  scope "/team-registration", Diep.IoWeb do
-    pipe_through :browser
+  scope "/team-registration", DiepIOWeb do
+    pipe_through(:browser)
 
-    get "/", TeamRegistrationController, :new
-    post "/register", TeamRegistrationController, :create
+    get("/", TeamRegistrationController, :new)
+    post("/register", TeamRegistrationController, :create)
   end
 
   scope "/dashboard" do
-    pipe_through [:browser, :basic_auth]
-    live_dashboard "/", metrics: Diep.IoWeb.Telemetry
+    pipe_through([:browser, :basic_auth])
+    live_dashboard("/", metrics: DiepIOWeb.Telemetry)
   end
 end

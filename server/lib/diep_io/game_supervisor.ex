@@ -1,4 +1,4 @@
-defmodule Diep.Io.GameSupervisor do
+defmodule DiepIO.GameSupervisor do
   @moduledoc """
   The game supervisor is responsible to supervise each game.
   It can dynamically start the main game or private games.
@@ -6,8 +6,8 @@ defmodule Diep.Io.GameSupervisor do
 
   use DynamicSupervisor
 
-  alias Diep.Io.Core.Clock
-  alias Diep.Io.Gameloop
+  alias DiepIO.Core.Clock
+  alias DiepIO.Gameloop
 
   @main_game_name :main_game
   @secondary_game_name :secondary_game

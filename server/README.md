@@ -1,4 +1,4 @@
-# Diep.Io
+# DiepIO
 
 To start your Phoenix server:
 

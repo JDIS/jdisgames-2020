@@ -1,12 +1,12 @@
 defmodule RealTimeTest do
-  use Diep.Io.DataCase, async: false
+  use DiepIO.DataCase, async: false
 
   @moduletag :RT
   @moduletag timeout: 335_000
 
-  alias Diep.Io.Core.{Action, Clock}
-  alias Diep.Io.{ActionStorage, Gameloop, PerformanceMonitor, Repo, UsersRepository}
-  alias Diep.Io.Users.User
+  alias DiepIO.Core.{Action, Clock}
+  alias DiepIO.{ActionStorage, Gameloop, PerformanceMonitor, Repo, UsersRepository}
+  alias DiepIOSchemas.User
   alias :rand, as: Rand
 
   @game_time 1000

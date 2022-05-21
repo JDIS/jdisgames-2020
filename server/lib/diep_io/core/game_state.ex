@@ -1,12 +1,12 @@
-defmodule Diep.Io.Core.GameState do
+defmodule DiepIO.Core.GameState do
   @moduledoc """
   Module that handles most of the game's business logic
   (handle player actions, debris generation, etc).
   """
 
-  alias Diep.Io.Collisions
-  alias Diep.Io.Core.{Action, Clock, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
-  alias Diep.Io.Users.User
+  alias DiepIO.Collisions
+  alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
+  alias DiepIOSchemas.User
   alias :rand, as: Rand
 
   @max_debris_count 400
@@ -271,7 +271,9 @@ defmodule Diep.Io.Core.GameState do
     %{game_state | tanks: tanks_map}
   end
 
-  defp handle_tank_projectile_collisions(%{tanks: tanks_map, projectiles: projectiles} = game_state) do
+  defp handle_tank_projectile_collisions(
+         %{tanks: tanks_map, projectiles: projectiles} = game_state
+       ) do
     collisions =
       tanks_map
       |> Map.values()
@@ -313,7 +315,9 @@ defmodule Diep.Io.Core.GameState do
     %{updated_state | tanks: tanks_map}
   end
 
-  defp handle_projectile_debris_collision(%{debris: debris, projectiles: projectiles} = game_state) do
+  defp handle_projectile_debris_collision(
+         %{debris: debris, projectiles: projectiles} = game_state
+       ) do
     collisions =
       projectiles
       |> Collisions.calculate_collisions(debris)
