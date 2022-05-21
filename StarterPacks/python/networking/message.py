@@ -32,8 +32,8 @@ class Message:
 
 
 class JoinMessage(Message):
-    def __init__(self, topic, payload):
+    def __init__(self, topic):
         self.event = Message.PHX_JOIN
         self.topic = topic
-        self.payload = payload
+        self.payload = {}
         self.ref = None
