@@ -5,7 +5,7 @@ defmodule DiepIOConfig do
   All functions contained in this module should return the values in their ready-to-use form. This means all parsing
   (eg. parsing strings to ints) should be done here instead of expecting the caller to do it.
   """
-  use Boundary, deps: [], exports: [], check: [in: false, out: true]
+  use Boundary, deps: [], exports: []
 
   @spec database_url() :: String.t()
   def database_url, do: System.fetch_env!("DIEP_DATABASE_URL")
