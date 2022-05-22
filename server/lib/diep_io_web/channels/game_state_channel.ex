@@ -7,8 +7,8 @@ defmodule DiepIOWeb.GameStateChannel do
 
   @impl true
   def join("game_state", %{"game_name" => game_name} = _payload, socket) do
-    PubSub.subscribe("new_state")
-    {:ok, assign(socket, :game_name, game_name)}
+    PubSub.subscribe("new_state:#{game_name}")
+    {:ok, socket}
   end
 
   @impl true

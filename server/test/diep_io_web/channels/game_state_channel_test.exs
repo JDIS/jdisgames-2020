@@ -26,8 +26,4 @@ defmodule DiepIOWeb.GameStateChannelTest do
     broadcast_from!(socket, "broadcast", %{"some" => "data"})
     assert_push("broadcast", %{"some" => "data"})
   end
-
-  test "join/3 assigns game name as string to the socket", %{socket: socket, game_name: game_name} do
-    assert socket.assigns[:game_name] == to_string(game_name)
-  end
 end
