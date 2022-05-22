@@ -74,6 +74,7 @@
 </template>
 
 <script>
+    import { fabric } from 'fabric';
     import {createGrid, createMinimap, DrawnElements, initFabricAndCreateMainCanvas} from "./modules/canvas.js"
     import {CANVAS_UPDATE_RATE, MAX_ZOOM, MIN_ZOOM} from "./modules/constants.js"
     import {getDifference} from "./modules/utils.js"

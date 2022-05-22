@@ -8,6 +8,7 @@
   "dependencies": {
     "axios": "^0.26.1",
     "chart.js": "^2.9",
+    "fabric": "3.6.3",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "vue": "^3.2.32"
