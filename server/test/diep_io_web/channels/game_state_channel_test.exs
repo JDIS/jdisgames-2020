@@ -10,10 +10,9 @@ defmodule DiepIOWeb.GameStateChannelTest do
     game_name = :main_game
 
     {:ok, _, socket} =
-      socket(DiepIOWeb.SpectateSocket, "user_id", %{some: :assign})
-      |> subscribe_and_join(DiepIOWeb.GameStateChannel, "game_state", %{
-        "game_name" => Atom.to_string(game_name)
-      })
+      DiepIOWeb.SpectateSocket
+      |> socket("user_id", %{some: :assign})
+      |> subscribe_and_join(DiepIOWeb.GameStateChannel, "game_state:#{game_name}")
 
     {:ok, socket: socket, game_name: game_name}
   end
