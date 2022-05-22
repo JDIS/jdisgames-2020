@@ -2,8 +2,8 @@ defmodule DiepIOWeb.GameStateChannel do
   @moduledoc false
   use DiepIOWeb, :channel
 
-  alias DiepIO.PubSub
   alias DiepIO.Core.GameState
+  alias DiepIO.PubSub
 
   @impl true
   def join("game_state", %{"game_name" => game_name} = _payload, socket) do
