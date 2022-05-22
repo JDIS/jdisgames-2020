@@ -69,7 +69,7 @@ defmodule DiepIO.MixProject do
       {:telemetry_metrics, "== 0.6.1"},
       {:plug, "== 1.13.6"},
       {:dotenv_parser, "== 2.0.0"},
-      {:boundary, "~> 0.9.2", runtime: false},
+      {:boundary, "== 0.9.2", runtime: false},
 
       # dev, test
       {:credo, "== 1.6.4", only: [:dev], runtime: false},
