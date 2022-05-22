@@ -6,9 +6,6 @@ defmodule DiepIOSchemas.Score do
 
   use Ecto.Schema
 
-  # TODO: Decouple \/ from schema
-  @derive {Jason.Encoder, only: [:game_id, :user_id, :score, :inserted_at]}
-
   @type t :: %__MODULE__{
           game_id: integer(),
           user_id: integer(),
