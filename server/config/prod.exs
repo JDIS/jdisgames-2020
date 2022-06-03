@@ -13,16 +13,15 @@ config :diep_io, DiepIOWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {0, 0, 0, 0}, port: 80],
-  #https: [
+  # https: [
   #  port: 443,
   #  cipher_suite: :strong,
   #  keyfile: "priv/cert/selfsigned_key.pem",
   #  certfile: "priv/cert/selfsigned.pem"
-  #],
+  # ],
   check_origin: false,
   secret_key_base: "g8VX25ZVsHysCHLvoZBcypPuUNZF3aw99FPB83G5cgLVVE6V+fiRuSFei9Tdk1rp",
   cache_static_manifest: "priv/static/cache_manifest.json"
-
 
 # Do not print debug messages in production
 config :logger, level: :info
