@@ -1,3 +1,4 @@
+import { fabric } from 'fabric';
 import {ANIMATION_DURATION, HEALTH_OFFSET, linear} from "../modules/constants";
 
 const FACTOR = 0.8;
