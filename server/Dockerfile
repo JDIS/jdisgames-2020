@@ -42,6 +42,7 @@ RUN mix phx.gen.secret > secret_key.txt
 # prepare release image
 FROM alpine:3.9 AS app
 RUN apk add --update bash openssl libstdc++
+RUN apk add lsof
 
 RUN mkdir /app
 WORKDIR /app
@@ -53,5 +54,8 @@ RUN chown -R nobody: /app
 USER nobody
 
 ENV HOME=/app
+
+EXPOSE 80
+EXPOSE 443
 
 CMD ["./entrypoint.sh"]
