@@ -1,8 +1,8 @@
 defmodule TankTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Position, Tank}
-  alias Diep.Io.Helpers.Angle
+  alias DiepIO.Core.{Position, Tank}
+  alias DiepIO.Helpers.Angle
 
   @tank_name "Tank"
   @tank_id 1
@@ -18,7 +18,13 @@ defmodule TankTest do
              current_hp: current_hp,
              max_hp: max_hp,
              speed: speed,
-             upgrade_levels: %{max_hp: 0, speed: 0, fire_rate: 0, projectile_damage: 0, body_damage: 0},
+             upgrade_levels: %{
+               max_hp: 0,
+               speed: 0,
+               fire_rate: 0,
+               projectile_damage: 0,
+               body_damage: 0
+             },
              fire_rate: fire_rate,
              projectile_damage: projectile_damage,
              body_damage: body_damage,
@@ -139,7 +145,7 @@ defmodule TankTest do
       tank
       |> Tank.set_target(Position.random())
 
-    assert {tank, nil} =
+    assert {_, nil} =
              tank
              |> Tank.set_cooldown()
              |> Tank.shoot()

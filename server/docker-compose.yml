@@ -7,8 +7,6 @@ services:
       POSTGRES_USER: jdisgames2020
       POSTGRES_PASSWORD: jdisgames2020
       POSTGRES_DB: jdisgames2020_prod_db
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
     restart: on-failure
 
   server:
@@ -16,7 +14,10 @@ services:
     build:
       context: .
     environment:
-      DATABASE_URL: ecto://jdisgames2020:jdisgames2020@db:5432/jdisgames2020_prod_db
+      DIEP_DATABASE_URL: ecto://jdisgames2020:jdisgames2020@db:5432/jdisgames2020_prod_db
+      DIEP_SECRET_KEY_BASE: mIuSqWDD1cx8VTPTpaZYVp2ItVk84OReX3PQpLojSkdXZ0Y05jeLkaJOnXKPvMn7
+      DIEP_ADMIN_USERNAME: admin
+      DIEP_ADMIN_PASSWORD: admin
     ports:
       - "4000:4000"
     restart: on-failure

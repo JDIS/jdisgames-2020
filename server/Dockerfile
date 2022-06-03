@@ -1,9 +1,9 @@
 # https://hexdocs.pm/phoenix/releases.html#ecto-migrations-and-custom-commands
 
-FROM elixir:1.9.4-alpine as build
+FROM elixir:1.13.4-alpine as build
 
 # install build dependencies
-RUN apk add --update git build-base nodejs yarn python npm
+RUN apk add --update git build-base nodejs yarn python3 npm
 
 # prepare build dir
 RUN mkdir /app
@@ -41,7 +41,7 @@ RUN mix phx.gen.secret > secret_key.txt
 
 # prepare release image
 FROM alpine:3.9 AS app
-RUN apk add --update bash openssl
+RUN apk add --update bash openssl libstdc++
 
 RUN mkdir /app
 WORKDIR /app

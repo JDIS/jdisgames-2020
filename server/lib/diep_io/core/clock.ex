@@ -1,4 +1,4 @@
-defmodule Diep.Io.Core.Clock do
+defmodule DiepIO.Core.Clock do
   @moduledoc """
     Handles the time aspect of the game.
 
@@ -81,7 +81,8 @@ defmodule Diep.Io.Core.Clock do
   end
 
   @spec add_time_correction(t(), integer()) :: t()
-  def add_time_correction(%{corrections: corrections} = clock, elapsed_time) when length(corrections) >= 16 do
+  def add_time_correction(%{corrections: corrections} = clock, elapsed_time)
+      when length(corrections) >= 16 do
     add_time_correction(%{clock | corrections: Enum.drop(corrections, -1)}, elapsed_time)
   end
 

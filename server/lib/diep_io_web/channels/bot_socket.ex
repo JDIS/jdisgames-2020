@@ -1,10 +1,10 @@
-defmodule Diep.IoWeb.BotSocket do
-  alias Diep.Io.UsersRepository
+defmodule DiepIOWeb.BotSocket do
+  alias DiepIO.UsersRepository
 
   use Phoenix.Socket
 
   ## Channels
-  channel "action", Diep.IoWeb.ActionChannel
+  channel("action:*", DiepIOWeb.ActionChannel)
 
   def connect(%{"secret" => secret}, socket) do
     case UsersRepository.get_user_id_from_secret(secret) do

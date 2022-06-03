@@ -1,4 +1,4 @@
-defmodule Diep.IoWeb.ChannelCase do
+defmodule DiepIOWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -8,32 +8,31 @@ defmodule Diep.IoWeb.ChannelCase do
   to build common data structures and query the data layer.
 
   Finally, if the test case interacts with the database,
-  it cannot be async. For this reason, every test runs
-  inside a transaction which is reset at the beginning
-  of the test unless the test case is marked as async.
+  we enable the SQL sandbox, so changes done to the database
+  are reverted at the end of every test. If you are using
+  PostgreSQL, you can even run database tests asynchronously
+  by setting `use TmpWeb.ChannelCase, async: true`, although
+  this option is not recommended for other databases.
   """
 
-  alias Ecto.Adapters.SQL.Sandbox, as: Sandbox
+  alias Ecto.Adapters.SQL.Sandbox
 
   use ExUnit.CaseTemplate
 
   using do
     quote do
       # Import conveniences for testing with channels
-      use Phoenix.ChannelTest
+      import Phoenix.ChannelTest
+      import DiepIOWeb.ChannelCase
 
       # The default endpoint for testing
-      @endpoint Diep.IoWeb.Endpoint
+      @endpoint DiepIOWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Sandbox.checkout(Diep.Io.Repo)
-
-    unless tags[:async] do
-      Sandbox.mode(Diep.Io.Repo, {:shared, self()})
-    end
-
+    pid = Sandbox.start_owner!(DiepIO.Repo, shared: not tags[:async])
+    on_exit(fn -> Sandbox.stop_owner(pid) end)
     :ok
   end
 end

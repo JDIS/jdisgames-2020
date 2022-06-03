@@ -1,5 +1,5 @@
-defmodule Diep.IoWeb.ErrorView do
-  use Diep.IoWeb, :view
+defmodule DiepIOWeb.ErrorView do
+  use DiepIOWeb, :view
 
   # If you want to customize a particular status code
   # for a certain format, you may uncomment below.

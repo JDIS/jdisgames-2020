@@ -1,5 +1,5 @@
-defprotocol Diep.Io.Core.Entity do
-  alias Diep.Io.Core.Position
+defprotocol DiepIO.Core.Entity do
+  alias DiepIO.Core.Position
 
   @spec get_position(t) :: Position.t()
   def get_position(entity)

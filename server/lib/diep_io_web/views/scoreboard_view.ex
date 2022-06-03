@@ -1,5 +1,5 @@
-defmodule Diep.IoWeb.ScoreboardView do
-  use Diep.IoWeb, :view
+defmodule DiepIOWeb.ScoreboardView do
+  use DiepIOWeb, :view
 
   def render("scoreboard.json", %{scores: scores}) do
     %{

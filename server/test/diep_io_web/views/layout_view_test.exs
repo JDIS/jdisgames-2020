@@ -1,3 +1,5 @@
-defmodule Diep.IoWeb.LayoutViewTest do
-  use Diep.IoWeb.ConnCase, async: true
+defmodule DiepIOWeb.LayoutViewTest do
+  @moduledoc false
+
+  use DiepIOWeb.ConnCase, async: true
 end

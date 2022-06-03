@@ -1,4 +1,4 @@
-defmodule Diep.Io.Repo do
+defmodule DiepIO.Repo do
   use Ecto.Repo,
     otp_app: :diep_io,
     adapter: Ecto.Adapters.Postgres

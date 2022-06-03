@@ -1,10 +1,10 @@
-defmodule Diep.Io.UsersRepositoryTest do
-  use Diep.Io.DataCase, async: true
+defmodule DiepIO.UsersRepositoryTest do
+  use DiepIO.DataCase, async: true
 
-  alias Diep.Io.UsersRepository
+  alias DiepIO.UsersRepository
 
   describe "users" do
-    alias Diep.Io.Users.User
+    alias DiepIOSchemas.User
 
     @valid_attrs %{name: "some name"}
     @invalid_attrs %{name: nil, secret_key: nil}

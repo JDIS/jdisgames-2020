@@ -1,21 +1,30 @@
-defmodule Diep.IoWeb.GameStateChannelTest do
-  use Diep.IoWeb.ChannelCase
+defmodule DiepIOWeb.GameStateChannelTest do
+  @moduledoc false
+
+  use DiepIOWeb.ChannelCase
+
+  alias DiepIO.PubSub
+  alias DiepIO.Core.{Clock, GameState}
 
   setup do
-    {:ok, _, socket} =
-      socket(Diep.IoWeb.SpectateSocket, "user_id", %{some: :assign})
-      |> subscribe_and_join(Diep.IoWeb.GameStateChannel, "game_state")
+    game_name = :main_game
 
-    {:ok, socket: socket}
+    {:ok, _, socket} =
+      DiepIOWeb.SpectateSocket
+      |> socket("user_id", %{some: :assign})
+      |> subscribe_and_join(DiepIOWeb.GameStateChannel, "game_state:#{game_name}")
+
+    {:ok, socket: socket, game_name: game_name}
   end
 
-  test "new_state broadcasts to game_state", %{socket: socket} do
-    push(socket, "new_state", %{"state" => "new"})
-    assert_broadcast "new_state", %{"state" => "new"}
+  test "new_state broadcasts to game_state", %{game_name: game_name} do
+    state = GameState.new(game_name, [], 1, false, false, Clock.new(1, 1))
+    PubSub.broadcast!("new_state:#{game_name}", {:new_state, state})
+    assert_broadcast("new_state", ^state)
   end
 
   test "broadcasts are pushed to the client", %{socket: socket} do
     broadcast_from!(socket, "broadcast", %{"some" => "data"})
-    assert_push "broadcast", %{"some" => "data"}
+    assert_push("broadcast", %{"some" => "data"})
   end
 end

@@ -1,7 +1,7 @@
 defmodule PositionTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.Position
+  alias DiepIO.Core.Position
   alias Jason
   alias :math, as: Math
 

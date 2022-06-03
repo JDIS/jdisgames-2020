@@ -1,23 +1,25 @@
 //import {mockNetworkInit} from "./mock.js"
-import {Socket} from "phoenix"
+import { Socket } from "phoenix"
 import app from "../spectate"
 
-export function networkInit() {
-    let options = {decode: function(rawPayload, callback) {
-        let [join_ref, ref, topic, event, payload] = JSON.parse(rawPayload, (key, value) => {
-          if (key === "id" && typeof(value) == "string") {
-            return BigInt(value)
-          }
-          return value
-      })
-      
-          return callback({join_ref, ref, topic, event, payload})
-      }}
+export function networkInit(game_name) {
+    let options = {
+        decode: function (rawPayload, callback) {
+            let [join_ref, ref, topic, event, payload] = JSON.parse(rawPayload, (key, value) => {
+                if (key === "id" && typeof (value) == "string") {
+                    return BigInt(value)
+                }
+                return value
+            })
+
+            return callback({ join_ref, ref, topic, event, payload })
+        }
+    }
     let socket = new Socket("/socket/spectate", options)
 
     socket.connect()
 
-    let gameStateChannel = socket.channel("game_state", {})
+    let gameStateChannel = socket.channel(`game_state:${game_name}`)
 
     gameStateChannel.join()
         .receive("ok", resp => { console.log("Joined game_state successfully", resp) })

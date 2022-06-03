@@ -1,7 +1,7 @@
 defmodule ClockTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.Clock
+  alias DiepIO.Core.Clock
   alias :erlang, as: Erlang
 
   setup do

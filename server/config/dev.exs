@@ -1,11 +1,7 @@
-use Mix.Config
+import Config
 
 # Configure your database
-config :diep_io, Diep.Io.Repo,
-  username: System.get_env("POSTGRES_USER", "postgres"),
-  password: System.get_env("POSTGRES_PASSWORD", "postgres"),
-  database: System.get_env("POSTGRES_DB", "diep_io_dev"),
-  hostname: System.get_env("POSTGRES_HOST", "localhost"),
+config :diep_io, DiepIO.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -15,8 +11,10 @@ config :diep_io, Diep.Io.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :diep_io, Diep.IoWeb.Endpoint,
-  http: [port: 4000],
+config :diep_io, DiepIOWeb.Endpoint,
+  # Binding to loopback ipv4 address prevents access from other machines.
+  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  http: [ip: {127, 0, 0, 1}, port: 4000],
   https: [
     port: 4001,
     cipher_suite: :strong,
@@ -26,18 +24,17 @@ config :diep_io, Diep.IoWeb.Endpoint,
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
+  secret_key_base: "g8VX25ZVsHysCHLvoZBcypPuUNZF3aw99FPB83G5cgLVVE6V+fiRuSFei9Tdk1rp",
   watchers: [
-    node: [
-      "node_modules/webpack/bin/webpack.js",
-      "--mode",
-      "development",
-      "--watch-stdin",
+    npm: [
+      "run",
+      "watch",
       cd: Path.expand("../assets", __DIR__)
     ]
   ]
 
 # Watch static and templates for browser reloading.
-config :diep_io, Diep.IoWeb.Endpoint,
+config :diep_io, DiepIOWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
@@ -47,12 +44,8 @@ config :diep_io, Diep.IoWeb.Endpoint,
     ]
   ]
 
-config :logger, :console,
-  format: "$time [$level] $metadata - $message\n",
-  level: :debug,
-  metadata: [:request_id],
-  utc_log: true,
-  sync_threshold: 100
+# Do not include metadata nor timestamps in development logs
+config :logger, :console, format: "[$level] $message\n"
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.

@@ -1,13 +1,20 @@
-defmodule Diep.IoWeb.GameStateChannel do
+defmodule DiepIOWeb.GameStateChannel do
   @moduledoc false
-  use Diep.IoWeb, :channel
+  use DiepIOWeb, :channel
 
-  def join("game_state", _payload, socket) do
+  alias DiepIO.Core.GameState
+  alias DiepIO.PubSub
+
+  @impl true
+  def join("game_state:" <> game_name, _payload, socket) do
+    PubSub.subscribe("new_state:#{game_name}")
     {:ok, socket}
   end
 
-  def handle_in("new_state", payload, socket) do
-    broadcast(socket, "new_state", payload)
+  @impl true
+  def handle_info({:new_state, %GameState{} = new_state}, socket) do
+    broadcast(socket, "new_state", new_state)
+
     {:noreply, socket}
   end
 end

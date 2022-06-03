@@ -1,5 +1,6 @@
 import json
 
+
 class Message:
 
     PHX_JOIN = "phx_join"
@@ -28,6 +29,7 @@ class Message:
             message["topic"],
             message["payload"]
         )
+
 
 class JoinMessage(Message):
     def __init__(self, topic):

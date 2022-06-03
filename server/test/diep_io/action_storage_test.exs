@@ -1,8 +1,8 @@
 defmodule ActionStorageTest do
   use ExUnit.Case, async: false
 
-  alias Diep.Io.ActionStorage
-  alias Diep.Io.Core.Action
+  alias DiepIO.ActionStorage
+  alias DiepIO.Core.Action
   alias :ets, as: Ets
 
   setup do

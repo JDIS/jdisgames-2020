@@ -1,8 +1,8 @@
 defmodule CollisionsTest do
   use ExUnit.Case
 
-  alias Diep.Io.Collisions
-  alias Diep.Io.Core.{Entity, Tank}
+  alias DiepIO.Collisions
+  alias DiepIO.Core.{Entity, Tank}
 
   setup do
     origin_tank = Tank.new(1, "origin_tank") |> Tank.move({0, 0})
@@ -39,7 +39,9 @@ defmodule CollisionsTest do
     assert Collisions.calculate_collisions([origin_tank], [tank2]) == expected_result
   end
 
-  test "calculate_collisions/2 does not return a collisions between an Entity and itself", %{origin_tank: origin_tank} do
+  test "calculate_collisions/2 does not return a collisions between an Entity and itself", %{
+    origin_tank: origin_tank
+  } do
     assert Collisions.calculate_collisions([origin_tank], [origin_tank]) == MapSet.new()
   end
 end

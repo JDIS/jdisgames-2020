@@ -78,7 +78,7 @@ test_rt:
   only: 
     - master
   variables:
-    CUSTOM_BADGES_LOCATION: $CI_PROJECT_DIR/server/badges
+    DIEP_CUSTOM_BADGES_LOCATION: $CI_PROJECT_DIR/server/badges
   before_script:
     - cd server
     - mix local.rebar --force

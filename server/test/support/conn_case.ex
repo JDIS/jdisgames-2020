@@ -1,4 +1,4 @@
-defmodule Diep.IoWeb.ConnCase do
+defmodule DiepIOWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,32 +11,30 @@ defmodule Diep.IoWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use Diep.IoWeb.ConnCase, async: true`, although
+  by setting `use DiepIOWeb.ConnCase, async: true`, although
   this option is not recommendded for other databases.
   """
 
-  alias Ecto.Adapters.SQL.Sandbox, as: Sandbox
+  alias Ecto.Adapters.SQL.Sandbox
 
   use ExUnit.CaseTemplate
 
   using do
     quote do
       # Import conveniences for testing with connections
-      use Phoenix.ConnTest
-      alias Diep.IoWeb.Router.Helpers, as: Routes
+      import Plug.Conn
+      import Phoenix.ConnTest
+
+      alias DiepIOWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint Diep.IoWeb.Endpoint
+      @endpoint DiepIOWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Sandbox.checkout(Diep.Io.Repo)
-
-    unless tags[:async] do
-      Sandbox.mode(Diep.Io.Repo, {:shared, self()})
-    end
-
+    pid = Sandbox.start_owner!(DiepIO.Repo, shared: not tags[:async])
+    on_exit(fn -> Sandbox.stop_owner(pid) end)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

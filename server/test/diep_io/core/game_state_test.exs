@@ -1,8 +1,19 @@
 defmodule GameStateTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Core.{Action, Clock, Debris, Entity, GameMap, GameState, Position, Projectile, Tank}
-  alias Diep.Io.Users.User
+  alias DiepIO.Core.{
+    Action,
+    Clock,
+    Debris,
+    Entity,
+    GameMap,
+    GameState,
+    Position,
+    Projectile,
+    Tank
+  }
+
+  alias DiepIOSchemas.User
 
   @max_ticks 324
   @tick_rate 3
@@ -214,7 +225,9 @@ defmodule GameStateTest do
              Tank.hit(tank, tank.projectile_damage).current_hp
   end
 
-  test "handle_collisions/1 does not decrease hp of tank hit by it's own projectile", %{game_state: game_state} do
+  test "handle_collisions/1 does not decrease hp of tank hit by it's own projectile", %{
+    game_state: game_state
+  } do
     game_state =
       game_state
       |> GameState.handle_tanks([Action.new(@user_id, target: Position.random())])
@@ -236,7 +249,9 @@ defmodule GameStateTest do
     {tank, _debris, game_state} = setup_tank_debris_collision()
 
     updated_game_state = GameState.handle_collisions(game_state)
-    assert Map.fetch!(updated_game_state.tanks, tank.id) == Tank.hit(tank, Debris.default_body_damage())
+
+    assert Map.fetch!(updated_game_state.tanks, tank.id) ==
+             Tank.hit(tank, Debris.default_body_damage())
   end
 
   test "handle_collisions/1 reduces hp of debris hit by a tank" do
@@ -300,7 +315,9 @@ defmodule GameStateTest do
 
     updated_game_state =
       game_state
-      |> update_all_projectiles(fn projectile -> Map.replace!(projectile, :damage, tank.current_hp) end)
+      |> update_all_projectiles(fn projectile ->
+        Map.replace!(projectile, :damage, tank.current_hp)
+      end)
       |> GameState.handle_collisions()
 
     assert get_tank(updated_game_state, tank.id).score > get_tank(game_state, tank.id).score
@@ -346,7 +363,8 @@ defmodule GameStateTest do
     state_with_healed_tanks = GameState.handle_hp_regen(state_with_damaged_tanks)
 
     for id <- Map.keys(game_state.tanks) do
-      assert state_with_damaged_tanks.tanks[id].current_hp < state_with_healed_tanks.tanks[id].current_hp
+      assert state_with_damaged_tanks.tanks[id].current_hp <
+               state_with_healed_tanks.tanks[id].current_hp
     end
   end
 
@@ -367,7 +385,9 @@ defmodule GameStateTest do
   end
 
   defp move_tanks_out_of_collision(game_state) do
-    update_all_tanks(game_state, fn {id, tank} -> {id, Tank.move(tank, {0, id * Entity.get_radius(tank) * 2})} end)
+    update_all_tanks(game_state, fn {id, tank} ->
+      {id, Tank.move(tank, {0, id * Entity.get_radius(tank) * 2})}
+    end)
   end
 
   defp update_all_tanks(game_state, func) do

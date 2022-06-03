@@ -1,3 +1,3 @@
-defmodule Diep.IoWeb.AdminView do
-  use Diep.IoWeb, :view
+defmodule DiepIOWeb.AdminView do
+  use DiepIOWeb, :view
 end

@@ -39,6 +39,7 @@ class Socket:
         logging.info("Receiving: {}".format(message))
         message = Message.from_json(message)
         asyncio.ensure_future(self._dispatch(message))
+        return message
 
     async def listen(self):
         while True:

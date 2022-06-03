@@ -1,7 +1,7 @@
-defmodule Diep.Io.Core.Projectile do
+defmodule DiepIO.Core.Projectile do
   @moduledoc false
 
-  alias Diep.Io.Core.{Entity, Position}
+  alias DiepIO.Core.{Entity, Position}
 
   @default_radius 15
   @default_speed 20
@@ -23,7 +23,7 @@ defmodule Diep.Io.Core.Projectile do
         }
 
   defimpl Entity do
-    alias Diep.Io.Core.Projectile
+    alias DiepIO.Core.Projectile
 
     @spec get_position(Projectile.t()) :: Position.t()
     def get_position(projectile), do: projectile.position

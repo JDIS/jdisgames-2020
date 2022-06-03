@@ -1,3 +1,5 @@
+import { fabric } from 'fabric';
+
 export class FabricText {
 
     constructor(text, x, y) {

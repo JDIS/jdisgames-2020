@@ -1,8 +1,13 @@
-defmodule Diep.IoWeb.ActionChannelTest do
-  use Diep.IoWeb.ChannelCase
+defmodule DiepIOWeb.ActionChannelTest do
+  @moduledoc false
 
-  alias Diep.Io.ActionStorage
-  alias Diep.Io.Core.Action
+  use DiepIOWeb.ChannelCase
+
+  import Phoenix.ChannelTest, except: [{:subscribe_and_join, 2}]
+
+  alias DiepIO.ActionStorage
+  alias DiepIO.Core.Action
+  alias DiepIOWeb.{ActionChannel, BotSocket}
 
   @tank_id 444
   @input %{
@@ -17,20 +22,43 @@ defmodule Diep.IoWeb.ActionChannelTest do
     target: nil
   }
 
-  setup do
-    :ok = ActionStorage.init(:main_game)
+  setup %{test: test} do
+    game_name = test
+    :ok = ActionStorage.init(game_name)
 
     {:ok, _, socket} =
-      socket(Diep.IoWeb.BotSocket, "user_id", %{user_id: @tank_id})
-      |> subscribe_and_join(Diep.IoWeb.ActionChannel, "action")
+      BotSocket
+      |> socket("user_id", %{user_id: @tank_id})
+      |> subscribe_and_join(game_name)
 
-    {:ok, socket: socket}
+    {:ok, socket: socket, game_name: game_name}
   end
 
-  test "pushing a new action in the action channel stores stores it in ActionStorage", %{socket: socket} do
+  test "pushing a new action in the action channel stores stores it in ActionStorage", %{
+    socket: socket,
+    game_name: game_name
+  } do
     push(socket, "new", @input)
     # Needed because async
     Process.sleep(10)
-    assert ActionStorage.pop_action(:main_game, @tank_id) == @action
+    assert ActionStorage.pop_action(game_name, @tank_id) == @action
   end
+
+  test "join/3 returns an error when connecting to the same game twice", %{
+    socket: socket,
+    game_name: game_name
+  } do
+    response = subscribe_and_join(socket, game_name)
+
+    assert response == {:error, %{error: "Already connected"}}
+  end
+
+  test "join/3 allows connecting to multiple games simultaneously", %{
+    socket: socket,
+    game_name: game_name
+  } do
+    assert subscribe_and_join(socket, to_string(game_name) <> "2")
+  end
+
+  defp subscribe_and_join(socket, game_name), do: subscribe_and_join(socket, ActionChannel, "action:#{game_name}")
 end

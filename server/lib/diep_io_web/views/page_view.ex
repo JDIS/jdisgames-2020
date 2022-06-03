@@ -1,3 +1,3 @@
-defmodule Diep.IoWeb.PageView do
-  use Diep.IoWeb, :view
+defmodule DiepIOWeb.PageView do
+  use DiepIOWeb, :view
 end

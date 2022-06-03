@@ -1,24 +1,36 @@
-defmodule Diep.IoWeb.ActionChannel do
+defmodule DiepIOWeb.ActionChannel do
   @moduledoc false
-  use Diep.IoWeb, :channel
+  use DiepIOWeb, :channel
 
-  alias Diep.Io.ActionStorage
-  alias Diep.Io.Core.Action
+  alias DiepIO.ActionStorage
+  alias DiepIO.Core.Action
+  alias DiepIOWeb.Presence
 
-  def join("action", _payload, socket) do
-    send(self(), :after_join)
-    {:ok, socket}
+  intercept(["presence_diff"])
+
+  def join("action:" <> game_name, _payload, socket) do
+    if is_already_connected?(socket, game_name) do
+      {:error, %{error: "Already connected"}}
+    else
+      send(self(), :after_join)
+      {:ok, assign(socket, :game_name, game_name)}
+    end
   end
 
-  def handle_info(:after_join, socket) do
-    push(socket, "id", %{id: socket.assigns[:user_id]})
+  def handle_info(:after_join, %{assigns: %{user_id: user_id, game_name: game_name}} = socket) do
+    push(socket, "id", %{id: user_id})
+
+    {:ok, _} = Presence.track(socket, user_id, %{connected: game_name})
+
     {:noreply, socket}
   end
 
-  def handle_in("new", action, socket) do
+  def handle_out("presence_diff", _payload, socket), do: {:noreply, socket}
+
+  def handle_in("new", action, %{assigns: %{user_id: user_id, game_name: game_name}} = socket) do
     action
-    |> parse_action(socket.assigns[:user_id])
-    |> store_action()
+    |> parse_action(user_id)
+    |> store_action(game_name)
 
     {:noreply, socket}
   end
@@ -38,9 +50,8 @@ defmodule Diep.IoWeb.ActionChannel do
     end
   end
 
-  defp store_action(action) do
-    # TODO: handle multiple game names
-    true = ActionStorage.store_action(:main_game, action)
+  defp store_action(action, game_name) do
+    true = ActionStorage.store_action(String.to_existing_atom(game_name), action)
   end
 
   defp parse_purchase(action, key) do
@@ -52,6 +63,16 @@ defmodule Diep.IoWeb.ActionChannel do
       "body_damage" -> :body_damage
       "hp_regen" -> :hp_regen
       _ -> nil
+    end
+  end
+
+  defp is_already_connected?(%{assigns: %{user_id: user_id}} = socket, game_name) do
+    case Presence.get_by_key(socket, user_id) do
+      [] ->
+        false
+
+      %{metas: metas} ->
+        Enum.any?(metas, fn %{connected: connected_game} -> connected_game == game_name end)
     end
   end
 end

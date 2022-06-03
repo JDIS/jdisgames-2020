@@ -1,10 +1,10 @@
-defmodule Diep.Io.ScoreRepositoryTest do
-  use Diep.Io.DataCase
+defmodule DiepIO.ScoreRepositoryTest do
+  use DiepIO.DataCase
 
-  alias Diep.Io.{ScoreRepository, UsersRepository}
+  alias DiepIO.{ScoreRepository, UsersRepository}
 
   describe "scores" do
-    alias Diep.Io.Users.Score
+    alias DiepIOSchemas.Score
 
     @valid_attrs %{game_id: 42, score: 120, user_id: 41}
     @user %{name: "some_user"}

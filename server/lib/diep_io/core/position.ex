@@ -1,9 +1,9 @@
-defmodule Diep.Io.Core.Position do
+defmodule DiepIO.Core.Position do
   @moduledoc false
 
   alias :math, as: Math
-  alias Diep.Io.Core.GameMap
-  alias Diep.Io.Helpers.Angle
+  alias DiepIO.Core.GameMap
+  alias DiepIO.Helpers.Angle
   alias Jason.Encoder
 
   @type t :: {integer, integer}

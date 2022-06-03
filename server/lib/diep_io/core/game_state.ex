@@ -1,12 +1,12 @@
-defmodule Diep.Io.Core.GameState do
+defmodule DiepIO.Core.GameState do
   @moduledoc """
   Module that handles most of the game's business logic
   (handle player actions, debris generation, etc).
   """
 
-  alias Diep.Io.Collisions
-  alias Diep.Io.Core.{Action, Clock, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
-  alias Diep.Io.Users.User
+  alias DiepIO.Collisions
+  alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
+  alias DiepIOSchemas.User
   alias :rand, as: Rand
 
   @max_debris_count 400
@@ -16,7 +16,7 @@ defmodule Diep.Io.Core.GameState do
   @experience_loss_rate 0.5
   @experience_score_ratio_on_kill 0.1
 
-  @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance]}
+  @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
   defstruct [
     :name,
     :tanks,

@@ -1,13 +1,12 @@
-defmodule Diep.Io.Gameloop do
+defmodule DiepIO.Gameloop do
   @moduledoc """
   Module that handles the time constraint of the server.
   It is responsible for generating iterations.
   """
 
   use GenServer
-  alias Diep.Io.{ActionStorage, PerformanceMonitor, ScoreRepository, UsersRepository}
-  alias Diep.IoWeb.Endpoint
-  alias Diep.Io.Core.{Clock, GameState}
+  alias DiepIO.{ActionStorage, PerformanceMonitor, PubSub, ScoreRepository, UsersRepository}
+  alias DiepIO.Core.{Clock, GameState}
   alias :erlang, as: Erlang
   require Logger
 
@@ -76,7 +75,8 @@ defmodule Diep.Io.Gameloop do
   def handle_info(:loop, state) do
     begin_time = Erlang.monotonic_time()
     elasped_time = Clock.calculate_elasped_time(state.clock, begin_time)
-    Logger.debug("looperoo took #{Erlang.convert_time_unit(elasped_time, :native, :millisecond)}ms")
+
+    Logger.debug("#{state.name}: looperoo took #{Erlang.convert_time_unit(elasped_time, :native, :millisecond)}ms")
 
     actions =
       state.tanks
@@ -102,7 +102,10 @@ defmodule Diep.Io.Gameloop do
     case GameState.in_progress?(updated_state) do
       true ->
         iteration_duration = end_time - begin_time
-        if updated_state.monitor_performance?, do: PerformanceMonitor.store_gameloop_duration(iteration_duration)
+
+        if updated_state.monitor_performance?,
+          do: PerformanceMonitor.store_gameloop_duration(iteration_duration)
+
         sleep_time = Clock.calculate_time_until_next_tick(updated_state.clock, iteration_duration)
         Process.send_after(self(), :loop, sleep_time)
 
@@ -145,8 +148,10 @@ defmodule Diep.Io.Gameloop do
   end
 
   defp broadcast(state) do
-    Endpoint.broadcast!("game_state", "new_state", state)
-    if state.monitor_performance?, do: PerformanceMonitor.store_broadcast_time(Erlang.monotonic_time())
+    PubSub.broadcast!("new_state:#{state.name}", {:new_state, state})
+
+    if state.monitor_performance?,
+      do: PerformanceMonitor.store_broadcasted_at(Erlang.monotonic_time())
   end
 
   defp save_scores(%{is_ranked: true} = state) do

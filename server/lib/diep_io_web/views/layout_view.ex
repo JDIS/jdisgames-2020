@@ -1,3 +1,3 @@
-defmodule Diep.IoWeb.LayoutView do
-  use Diep.IoWeb, :view
+defmodule DiepIOWeb.LayoutView do
+  use DiepIOWeb, :view
 end
