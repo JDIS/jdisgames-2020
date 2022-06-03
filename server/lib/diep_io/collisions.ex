@@ -1,12 +1,12 @@
-defmodule Diep.Io.Collisions do
+defmodule DiepIO.Collisions do
   @moduledoc """
   Module for calculating collisions between two lists of entities.
 
   This module does not use any message passing and is perfectly pure.
   """
 
-  alias Diep.Io.Core.{Entity, Position}
-  alias Diep.Io.EntityGrid
+  alias DiepIO.Core.{Entity, Position}
+  alias DiepIO.EntityGrid
 
   @default_tile_size 100
 

@@ -1,7 +1,7 @@
 defmodule PerformanceMonitorStatelessTest do
   use ExUnit.Case
 
-  alias Diep.Io.PerformanceMonitor
+  alias DiepIO.PerformanceMonitor
 
   setup do
     init_state = %{gameloop_times: [], time_unit: :native, broadcast_times: []}
@@ -32,7 +32,9 @@ defmodule PerformanceMonitorStatelessTest do
     assert new_state == init_state
   end
 
-  test "add_broadcast cast should store the differences between the given times in state", %{init_state: init_state} do
+  test "add_broadcast cast should store the differences between the given times in state", %{
+    init_state: init_state
+  } do
     times = [10, 20]
 
     expected_diffs =
@@ -47,7 +49,9 @@ defmodule PerformanceMonitorStatelessTest do
     assert new_state.broadcast_times == Enum.reverse(expected_diffs)
   end
 
-  test "get_broadcast call should return the list of differences between broadcast times", %{init_state: init_state} do
+  test "get_broadcast call should return the list of differences between broadcast times", %{
+    init_state: init_state
+  } do
     expected_diffs = [5, 10, 20, 35]
     state = %{init_state | broadcast_times: expected_diffs}
     {:reply, times, _} = PerformanceMonitor.handle_call({:get_broadcast}, :ok, state)
@@ -69,7 +73,7 @@ end
 defmodule PerformanceMonitorStatefulTest do
   use ExUnit.Case, async: false
 
-  alias Diep.Io.PerformanceMonitor
+  alias DiepIO.PerformanceMonitor
   alias :erlang, as: Erlang
 
   setup do
@@ -122,7 +126,9 @@ defmodule PerformanceMonitorStatefulTest do
     assert {:error, _} = PerformanceMonitor.get_gameloop_stats()
   end
 
-  test "get_gameloop_durations/0 returns the whole list of stored times", %{gameloop_durations: durations} do
+  test "get_gameloop_durations/0 returns the whole list of stored times", %{
+    gameloop_durations: durations
+  } do
     Enum.each(durations, &PerformanceMonitor.store_gameloop_duration/1)
     durations = Enum.map(durations, &Erlang.convert_time_unit(&1, :native, :millisecond))
 
@@ -168,7 +174,9 @@ defmodule PerformanceMonitorStatefulTest do
     assert {:error, _} = PerformanceMonitor.get_broadcast_stats()
   end
 
-  test "get_broadcast_delays/0 returns the whole list of diffs between logged times", %{broadcast_times: times} do
+  test "get_broadcast_delays/0 returns the whole list of diffs between logged times", %{
+    broadcast_times: times
+  } do
     Enum.each(times, &PerformanceMonitor.store_broadcasted_at/1)
 
     expected_diffs =

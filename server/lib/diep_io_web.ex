@@ -1,12 +1,12 @@
-defmodule Diep.IoWeb do
+defmodule DiepIOWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
   as controllers, views, channels and so on.
 
   This can be used in your application as:
 
-      use Diep.IoWeb, :controller
-      use Diep.IoWeb, :view
+      use DiepIOWeb, :controller
+      use DiepIOWeb, :view
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -16,14 +16,15 @@ defmodule Diep.IoWeb do
   below. Instead, define any helper function in modules
   and import those modules here.
   """
+  use Boundary, deps: [DiepIO, Phoenix, Ecto.Changeset], exports: [Endpoint]
 
   def controller do
     quote do
-      use Phoenix.Controller, namespace: Diep.IoWeb
+      use Phoenix.Controller, namespace: DiepIOWeb
 
       import Plug.Conn
-      import Diep.IoWeb.Gettext
-      alias Diep.IoWeb.Router.Helpers, as: Routes
+      import DiepIOWeb.Gettext
+      alias DiepIOWeb.Router.Helpers, as: Routes
     end
   end
 
@@ -31,21 +32,22 @@ defmodule Diep.IoWeb do
     quote do
       use Phoenix.View,
         root: "lib/diep_io_web/templates",
-        namespace: Diep.IoWeb
+        namespace: DiepIOWeb
 
       # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
+      import Phoenix.Controller,
+        only: [get_flash: 1, get_flash: 2, view_module: 1, view_template: 1]
 
       # Include shared imports and aliases for views
       unquote(view_helpers())
-      alias Diep.IoWeb.Router.Helpers, as: Routes
+      alias DiepIOWeb.Router.Helpers, as: Routes
     end
   end
 
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {Diep.IoWeb.LayoutView, "live.html"}
+        layout: {DiepIOWeb.LayoutView, "live.html"}
 
       unquote(view_helpers())
     end
@@ -80,7 +82,7 @@ defmodule Diep.IoWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import Diep.IoWeb.Gettext
+      import DiepIOWeb.Gettext
     end
   end
 
@@ -95,9 +97,9 @@ defmodule Diep.IoWeb do
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
 
-      import Diep.IoWeb.ErrorHelpers
-      import Diep.IoWeb.Gettext
-      alias Diep.IoWeb.Router.Helpers, as: Routes
+      import DiepIOWeb.ErrorHelpers
+      import DiepIOWeb.Gettext
+      alias DiepIOWeb.Router.Helpers, as: Routes
     end
   end
 

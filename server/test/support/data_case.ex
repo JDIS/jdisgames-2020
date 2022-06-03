@@ -1,4 +1,4 @@
-defmodule Diep.Io.DataCase do
+defmodule DiepIO.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -10,7 +10,7 @@ defmodule Diep.Io.DataCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use Diep.IoWeb.DataCase, async: true`, although
+  by setting `use DiepIOWeb.DataCase, async: true`, although
   this option is not recommendded for other databases.
   """
 
@@ -20,20 +20,20 @@ defmodule Diep.Io.DataCase do
 
   using do
     quote do
-      alias Diep.Io.Repo
+      alias DiepIO.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Diep.Io.DataCase
+      import DiepIO.DataCase
     end
   end
 
   setup tags do
-    :ok = Sandbox.checkout(Diep.Io.Repo)
+    :ok = Sandbox.checkout(DiepIO.Repo)
 
     unless tags[:async] do
-      Sandbox.mode(Diep.Io.Repo, {:shared, self()})
+      Sandbox.mode(DiepIO.Repo, {:shared, self()})
     end
 
     :ok

@@ -1,7 +1,7 @@
 defmodule AngleTest do
   use ExUnit.Case, async: true
 
-  alias Diep.Io.Helpers.Angle
+  alias DiepIO.Helpers.Angle
   alias :math, as: Math
 
   test "degree/2 gives angles in degree" do

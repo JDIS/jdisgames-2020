@@ -1,7 +1,7 @@
-defmodule Diep.Io.Core.Action do
+defmodule DiepIO.Core.Action do
   @moduledoc false
 
-  alias Diep.Io.Core.Position
+  alias DiepIO.Core.Position
 
   @enforce_keys [:tank_id]
   defstruct [:tank_id, :destination, :target, :purchase]

@@ -1,5 +1,5 @@
-defmodule Diep.IoWeb.AdminControllerTest do
-  use Diep.IoWeb.ConnCase, async: false
+defmodule DiepIOWeb.AdminControllerTest do
+  use DiepIOWeb.ConnCase, async: false
 
   setup do
     %{game_name: "main_game"}

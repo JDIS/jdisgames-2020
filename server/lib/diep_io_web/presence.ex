@@ -1,7 +1,7 @@
-defmodule Diep.IoWeb.Presence do
+defmodule DiepIOWeb.Presence do
   @moduledoc false
 
   use Phoenix.Presence,
     otp_app: :diep_io_web,
-    pubsub_server: Diep.Io.PubSub
+    pubsub_server: DiepIO.PubSub
 end

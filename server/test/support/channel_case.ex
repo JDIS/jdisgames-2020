@@ -1,4 +1,4 @@
-defmodule Diep.IoWeb.ChannelCase do
+defmodule DiepIOWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -23,15 +23,15 @@ defmodule Diep.IoWeb.ChannelCase do
       import Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint Diep.IoWeb.Endpoint
+      @endpoint DiepIOWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Sandbox.checkout(Diep.Io.Repo)
+    :ok = Sandbox.checkout(DiepIO.Repo)
 
     unless tags[:async] do
-      Sandbox.mode(Diep.Io.Repo, {:shared, self()})
+      Sandbox.mode(DiepIO.Repo, {:shared, self()})
     end
 
     :ok

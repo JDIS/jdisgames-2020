@@ -1,4 +1,4 @@
-defmodule Diep.Io.Helpers.Angle do
+defmodule DiepIO.Helpers.Angle do
   @moduledoc false
 
   alias :math, as: Math

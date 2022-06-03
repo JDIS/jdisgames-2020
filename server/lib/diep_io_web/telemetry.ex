@@ -1,4 +1,4 @@
-defmodule Diep.IoWeb.Telemetry do
+defmodule DiepIOWeb.Telemetry do
   @moduledoc """
     Provides telemtry for the application. Periodically fetches various data points and
     makes them available to any provider.
@@ -75,7 +75,7 @@ defmodule Diep.IoWeb.Telemetry do
 
   def periodic_measurements do
     [
-      {Diep.Io.PerformanceMonitor, :get_broadcast_stats, []}
+      {DiepIO.PerformanceMonitor, :get_broadcast_stats, []}
     ]
   end
 end

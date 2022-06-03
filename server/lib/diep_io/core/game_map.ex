@@ -1,4 +1,4 @@
-defmodule Diep.Io.Core.GameMap do
+defmodule DiepIO.Core.GameMap do
   @moduledoc false
 
   @width 10_000

@@ -1,4 +1,4 @@
 exclude = [:RT]
 
 ExUnit.start(exclude: exclude)
-Ecto.Adapters.SQL.Sandbox.mode(Diep.Io.Repo, :manual)
+Ecto.Adapters.SQL.Sandbox.mode(DiepIO.Repo, :manual)

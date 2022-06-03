@@ -1,4 +1,4 @@
-defmodule Diep.MixProject do
+defmodule DiepIO.MixProject do
   use Mix.Project
 
   def project do
@@ -8,10 +8,11 @@ defmodule Diep.MixProject do
       elixir: "~> 1.13.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [warnings_as_errors: true],
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:boundary, :phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      boundary: boundary(),
       dialyzer: [
         plt_add_apps: [:ex_unit],
         plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
@@ -24,8 +25,22 @@ defmodule Diep.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {Diep.Io.Application, []},
+      mod: {DiepIOApplication, []},
       extra_applications: [:logger, :runtime_tools, :os_mon]
+    ]
+  end
+
+  defp boundary do
+    [
+      default: [
+        check: [
+          apps: [
+            :phoenix,
+            :ecto,
+            {:mix, :runtime}
+          ]
+        ]
+      ]
     ]
   end
 
@@ -54,6 +69,7 @@ defmodule Diep.MixProject do
       {:telemetry_metrics, "== 0.6.1"},
       {:plug, "== 1.13.6"},
       {:dotenv_parser, "== 2.0.0"},
+      {:boundary, "== 0.9.2", runtime: false},
 
       # dev, test
       {:credo, "== 1.6.4", only: [:dev], runtime: false},

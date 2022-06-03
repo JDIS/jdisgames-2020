@@ -1,13 +1,13 @@
 import Config
 
 config :diep_io,
-  ecto_repos: [Diep.Io.Repo]
+  ecto_repos: [DiepIO.Repo]
 
 # Configures the endpoint
-config :diep_io, Diep.IoWeb.Endpoint,
+config :diep_io, DiepIOWeb.Endpoint,
   url: [host: "localhost"],
-  render_errors: [view: Diep.IoWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: Diep.Io.PubSub,
+  render_errors: [view: DiepIOWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: DiepIO.PubSub,
   live_view: [signing_salt: "1MeJOTSEqr9E/VaL7SRcwkCFdR3z4kB7"]
 
 # Configures Elixir's Logger

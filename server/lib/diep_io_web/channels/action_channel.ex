@@ -1,10 +1,10 @@
-defmodule Diep.IoWeb.ActionChannel do
+defmodule DiepIOWeb.ActionChannel do
   @moduledoc false
-  use Diep.IoWeb, :channel
+  use DiepIOWeb, :channel
 
-  alias Diep.Io.ActionStorage
-  alias Diep.Io.Core.Action
-  alias Diep.IoWeb.Presence
+  alias DiepIO.ActionStorage
+  alias DiepIO.Core.Action
+  alias DiepIOWeb.Presence
 
   intercept(["presence_diff"])
 
@@ -68,8 +68,11 @@ defmodule Diep.IoWeb.ActionChannel do
 
   defp is_already_connected?(%{assigns: %{user_id: user_id}} = socket, game_name) do
     case Presence.get_by_key(socket, user_id) do
-      [] -> false
-      %{metas: metas} -> Enum.any?(metas, fn %{connected: connected_game} -> connected_game == game_name end)
+      [] ->
+        false
+
+      %{metas: metas} ->
+        Enum.any?(metas, fn %{connected: connected_game} -> connected_game == game_name end)
     end
   end
 end

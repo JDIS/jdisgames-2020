@@ -1,3 +1,3 @@
-defmodule Diep.IoWeb.TeamRegistrationView do
-  use Diep.IoWeb, :view
+defmodule DiepIOWeb.TeamRegistrationView do
+  use DiepIOWeb, :view
 end

@@ -1,23 +1,25 @@
-defmodule Diep.Io.Application do
+defmodule DiepIOApplication do
   @moduledoc false
 
-  alias Diep.Io.{GameSupervisor, PerformanceMonitor, Repo}
-  alias Diep.IoWeb.{Endpoint, Presence}
+  use Boundary, deps: [DiepIO, DiepIOWeb], exports: []
 
   use Application
+
+  alias DiepIO.{GameSupervisor, PerformanceMonitor, Repo}
+  alias DiepIOWeb.{Endpoint, Presence}
 
   def start(_type, _args) do
     children = [
       Repo,
-      {Phoenix.PubSub, name: Diep.Io.PubSub},
+      {Phoenix.PubSub, name: DiepIO.PubSub},
       Presence,
       Endpoint,
       GameSupervisor,
       {PerformanceMonitor, :millisecond},
-      Diep.IoWeb.Telemetry
+      DiepIOWeb.Telemetry
     ]
 
-    opts = [strategy: :one_for_one, name: Diep.Io.Supervisor]
+    opts = [strategy: :one_for_one, name: DiepIO.Supervisor]
     Supervisor.start_link(children, opts)
   end
 

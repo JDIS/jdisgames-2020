@@ -1,8 +1,8 @@
-defmodule Diep.IoWeb.SpectateSocket do
+defmodule DiepIOWeb.SpectateSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "game_state", Diep.IoWeb.GameStateChannel
+  channel "game_state", DiepIOWeb.GameStateChannel
 
   def connect(_params, socket), do: {:ok, socket}
 

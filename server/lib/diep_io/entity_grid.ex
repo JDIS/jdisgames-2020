@@ -1,4 +1,4 @@
-defmodule Diep.Io.EntityGrid do
+defmodule DiepIO.EntityGrid do
   @moduledoc """
   An EntityGrid is a tiled representation of a game map.
 
@@ -21,7 +21,7 @@ defmodule Diep.Io.EntityGrid do
       All entities received in the input list are guaranteed to be in the EntityGrid.
   """
 
-  alias Diep.Io.Core.Entity
+  alias DiepIO.Core.Entity
 
   @type tile_coordinates :: {integer(), integer()}
   @type t :: %{tile_coordinates => MapSet.t(Entity.t())}

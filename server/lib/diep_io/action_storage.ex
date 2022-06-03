@@ -1,8 +1,8 @@
-defmodule Diep.Io.ActionStorage do
+defmodule DiepIO.ActionStorage do
   @moduledoc false
 
   alias :ets, as: Ets
-  alias Diep.Io.Core.Action
+  alias DiepIO.Core.Action
   require Logger
 
   @spec init(atom()) :: :ok
