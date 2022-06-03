@@ -45,8 +45,8 @@ async def start(secret_key, loop, is_ranked):
 
             game_name = get_game_name(is_ranked)
 
-            action_channel: Channel = await bot_connection.channel("action", {"game_name": game_name})
-            game_state_channel = await spectate_connection.channel("game_state", {"game_name": game_name})
+            action_channel: Channel = await bot_connection.channel(f"action:{game_name}")
+            game_state_channel = await spectate_connection.channel(f"game_state:{game_name}")
 
             action_channel.on("id", on_receive_id)
             game_state_channel.on("new_state", on_state_update)
@@ -61,13 +61,13 @@ async def start(secret_key, loop, is_ranked):
             await bot_connection.receive()
 
             # start the tick task
-            task = loop.create_task(tick(queue, bot_connection))
+            task = loop.create_task(tick(queue, bot_connection, game_name))
 
             # Start listening for game state updates
             await spectate_connection.listen()
 
 
-async def tick(queue: Queue, bot_connection):
+async def tick(queue: Queue, bot_connection, game_name: str):
     """
     Task that infinitely send bot actions to the server with the latest
     game_state available.
@@ -84,7 +84,7 @@ async def tick(queue: Queue, bot_connection):
             traceback.print_exc()
             continue
         payload = dataclasses.asdict(tick)
-        await bot_connection.send(Message("new", "action", payload))
+        await bot_connection.send(Message("new", f"action:{game_name}", payload))
 
 
 def loop(secret, is_ranked):

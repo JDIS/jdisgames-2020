@@ -4,7 +4,7 @@ defmodule DiepIOWeb.BotSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel("action", DiepIOWeb.ActionChannel)
+  channel("action:*", DiepIOWeb.ActionChannel)
 
   def connect(%{"secret" => secret}, socket) do
     case UsersRepository.get_user_id_from_secret(secret) do

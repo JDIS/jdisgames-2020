@@ -3,6 +3,8 @@ defmodule DiepIOWeb.ActionChannelTest do
 
   use DiepIOWeb.ChannelCase
 
+  import Phoenix.ChannelTest, except: [{:subscribe_and_join, 2}]
+
   alias DiepIO.ActionStorage
   alias DiepIO.Core.Action
   alias DiepIOWeb.{ActionChannel, BotSocket}
@@ -20,14 +22,14 @@ defmodule DiepIOWeb.ActionChannelTest do
     target: nil
   }
 
-  setup do
-    game_name = :main_game
+  setup %{test: test} do
+    game_name = test
     :ok = ActionStorage.init(game_name)
 
     {:ok, _, socket} =
       BotSocket
       |> socket("user_id", %{user_id: @tank_id})
-      |> subscribe_and_join(ActionChannel, "action", %{"game_name" => Atom.to_string(game_name)})
+      |> subscribe_and_join(game_name)
 
     {:ok, socket: socket, game_name: game_name}
   end
@@ -42,17 +44,11 @@ defmodule DiepIOWeb.ActionChannelTest do
     assert ActionStorage.pop_action(game_name, @tank_id) == @action
   end
 
-  test "join/3 assigns game name as string to the socket", %{socket: socket, game_name: game_name} do
-    assert socket.assigns[:game_name] == Atom.to_string(game_name)
-  end
-
   test "join/3 returns an error when connecting to the same game twice", %{
     socket: socket,
     game_name: game_name
   } do
-    response =
-      socket
-      |> subscribe_and_join(ActionChannel, "action", %{"game_name" => Atom.to_string(game_name)})
+    response = subscribe_and_join(socket, game_name)
 
     assert response == {:error, %{error: "Already connected"}}
   end
@@ -61,8 +57,8 @@ defmodule DiepIOWeb.ActionChannelTest do
     socket: socket,
     game_name: game_name
   } do
-    assert subscribe_and_join!(socket, ActionChannel, "action", %{
-             "game_name" => Atom.to_string(game_name) <> "2"
-           })
+    assert subscribe_and_join(socket, to_string(game_name) <> "2")
   end
+
+  defp subscribe_and_join(socket, game_name), do: subscribe_and_join(socket, ActionChannel, "action:#{game_name}")
 end
