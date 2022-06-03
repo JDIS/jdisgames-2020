@@ -1,4 +1,6 @@
 defmodule DiepIOWeb.BotSocketTest do
+  @moduledoc false
+
   use DiepIOWeb.ChannelCase
 
   alias DiepIO.Repo

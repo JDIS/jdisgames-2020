@@ -1,4 +1,6 @@
 defmodule DiepIOWeb.GameStateChannelTest do
+  @moduledoc false
+
   use DiepIOWeb.ChannelCase
 
   alias DiepIO.PubSub
