@@ -11,8 +11,9 @@ import json
 
 
 def generate_badge(filename, label, thresholds, stat_key, format=''):
+    data_file_name = f'badges/{filename}.json'
     try:
-        with open(f'badges/{filename}.json') as f:
+        with open(data_file_name) as f:
             val = json.load(f)[stat_key]
 
         badge = anybadge.Badge(
@@ -20,15 +21,17 @@ def generate_badge(filename, label, thresholds, stat_key, format=''):
 
         badge.write_badge(f'badges/{filename}.svg', True)
     except FileNotFoundError:
+        print(f'{data_file_name} not found. Skipping badge generation.')
         pass
 
-
+print('Generating badge for max iteration time')
 thresholds = {101: 'green',
               201: 'yellow',
               334: 'orange',
               335: 'red'}
 generate_badge('max_iteration_time', 'max iteration time', thresholds, 'max')
 
+print('Generating badge for broadcast standard deviation')
 thresholds = {2: 'green',
               4: 'yellow',
               6: 'orange',
