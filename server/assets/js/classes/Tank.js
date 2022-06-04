@@ -40,7 +40,7 @@ export class Tank {
     top() {
         return this.toCanvas.top
     }
-    
+
     select() {
         this.body.item(0).stroke = SELECTED_TANK_OUTLINE_COLOR
         this.body.item(0).strokeWidth = 6
@@ -50,7 +50,7 @@ export class Tank {
         // Needed for a special case where changing lock to a tank in the same viewport as precedent selection.
         this.body.item(0).dirty = true // Invalidate caching
     }
-    
+
     unselect() {
         this.body.item(0).stroke = 'black'
         this.body.item(0).strokeWidth = 3
@@ -83,8 +83,7 @@ export class Tank {
         }
 
         this.destinationLine.visible = false
-        this.destinationLine.left = this.position.x
-        this.destinationLine.top = this.position.y
+        this.targetLine.visible = false
 
         this.current_hp = newServerTank.current_hp
         this.max_hp = newServerTank.max_hp
@@ -144,6 +143,7 @@ export class Tank {
             stroke: this.color,
             originX: 'left',
             originY: 'top',
+            strokeWidth: 5,
             visible: !(this.destination === undefined || this.destination === null)
         })
     }
@@ -158,7 +158,7 @@ export class Tank {
         return new fabric.Line([this.toCanvas.left, this.toCanvas.top, targetX, targetY], {
             stroke: this.color,
             strokeDashArray: [10, 15],
-            strokeWidth: 3,
+            strokeWidth: 5,
             originX: 'left',
             originY: 'top',
             visible: !(this.target === undefined || this.target === null)

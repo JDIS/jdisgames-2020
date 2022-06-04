@@ -106,9 +106,9 @@ def str2bool(v):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Starts your bot!")
     parser.add_argument(
-        "secret", help="The secret which authentifies your bot")
+        "-s", "--secret", help="The secret which authentifies your bot", required=True)
     parser.add_argument(
-        "is_ranked", help="Whether the bot should connect to the ranked game or the practice one", type=str2bool, const=True, default=True, nargs='?')
+        "-r", "--is_ranked", help="Whether the bot should connect to the ranked game (True) or the practice one (False). Defaults to True", type=str2bool, const=True, default=True, nargs='?')
     args = parser.parse_args()
 
     asyncio.get_event_loop().run_until_complete(

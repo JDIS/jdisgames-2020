@@ -51,6 +51,7 @@ COPY --from=build /app/_build/prod/rel/diep_io ./
 COPY --from=build /app/secret_key.txt ./
 COPY entrypoint.sh ./
 RUN chown -R nobody: /app
+RUN chmod +x ./entrypoint.sh
 USER nobody
 
 ENV HOME=/app

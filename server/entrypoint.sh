@@ -9,5 +9,7 @@ DIEP_SECRET_KEY_BASE=$(cat secret_key.txt) bin/diep_io eval "DiepIORelease.migra
 
 echo "Seeding database before starting..."
 
+# DIEP_SECRET_KEY_BASE=$(cat secret_key.txt) bin/diep_io eval "DiepIORelease.seed"
+
 echo "Starting JDISGames 2020 Server...."
 DIEP_SECRET_KEY_BASE=$(cat secret_key.txt) bin/diep_io start

@@ -211,7 +211,11 @@
                 }
                 this.hideIfUnzoomed()
                 this.mainCanvas.renderAll()
+                if(this.performanceMode && this.i % 60 === 0) {
                 this.renderMinimap()
+                } else if(this.i % 2 === 0) {
+                    this.renderMinimap()
+                }
             },
             drawAndRemoveProjectiles(updatedProjectiles) {
                 const newProjectileIds = new Set()

@@ -38,7 +38,7 @@ export function initFabricAndCreateMainCanvas() {
         height: 500,
         selection: false,
         renderOnAddRemove: false,
-        backgroundColor: 'rgb(220,225,220)'
+        backgroundColor: 'rgb(255,255,255)'
     });
 
     canvas.setBackgroundImage('/images/jdis.svg', null, {
@@ -65,6 +65,19 @@ export function createMinimap() {
         renderOnAddRemove: false
     })
     minimap.setZoom(MINIMAP_WIDTH / MAP_HEIGHT)
+    fabric.Image.fromURL('/images/jdis.svg', function(img) {
+        // add background image
+        minimap.setBackgroundImage(img, minimap.renderAll.bind(minimap), {
+            opacity: 0.2,
+            angle: 0,
+            top: MAP_HEIGHT / 2,
+            left: MAP_WIDTH / 2,
+            width: MAP_WIDTH / 1.05,
+            height: MAP_HEIGHT / 1.05,
+            originX: 'center',
+            originY: 'center'
+        });
+     });
 
     minimap.viewPort = new fabric.Rect({
         width: 0,
@@ -74,7 +87,7 @@ export function createMinimap() {
         stroke: 'black',
         strokeWidth: 50,
         fill: null,
-        objectCaching: true
+        objectCaching: false
     })
     minimap.add(minimap.viewPort)
     return minimap
