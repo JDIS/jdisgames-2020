@@ -220,6 +220,7 @@ defmodule DiepIO.Core.GameState do
           updated_tank =
             tank
             |> Tank.move(new_position)
+            |> Tank.set_cannon_angle(tank.target)
 
           {updated_tank.id, updated_tank}
       end)

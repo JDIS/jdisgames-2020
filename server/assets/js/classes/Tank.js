@@ -10,6 +10,8 @@ export class Tank {
     constructor(serverTank) {
         this.color = getColorFromId(serverTank.id)
         this.has_died = false
+        this.destination = serverTank.destination
+        this.target = serverTank.target
         this.fire_rate = serverTank.fire_rate
         this.hp_regen = serverTank.hp_regen
         this.upgrade_tokens = serverTank.upgrade_tokens
@@ -27,6 +29,8 @@ export class Tank {
         this.healthBar = new HealthBar(serverTank)
         this.score = serverTank.score
         this.toCanvas = new fabric.Group([this.body, this.name.fabricObj, this.healthBar.toCanvas])
+        this.destinationLine = this.createDestinationLine()
+        this.targetLine = this.createTargetLine()
     }
 
     left() {
@@ -36,7 +40,7 @@ export class Tank {
     top() {
         return this.toCanvas.top
     }
-    
+
     select() {
         this.body.item(0).stroke = SELECTED_TANK_OUTLINE_COLOR
         this.body.item(0).strokeWidth = 6
@@ -46,7 +50,7 @@ export class Tank {
         // Needed for a special case where changing lock to a tank in the same viewport as precedent selection.
         this.body.item(0).dirty = true // Invalidate caching
     }
-    
+
     unselect() {
         this.body.item(0).stroke = 'black'
         this.body.item(0).strokeWidth = 3
@@ -63,6 +67,8 @@ export class Tank {
     update(newServerTank, hitCallback) {
         this.score = newServerTank.score
         this.speed = newServerTank.speed
+        this.destination = newServerTank.destination
+        this.target = newServerTank.target
         this.hp_regen = newServerTank.hp_regen
         this.body_damage = newServerTank.body_damage
         this.upgrade_tokens = newServerTank.upgrade_tokens
@@ -75,6 +81,9 @@ export class Tank {
 
             hitCallback(this)
         }
+
+        this.destinationLine.visible = false
+        this.targetLine.visible = false
 
         this.current_hp = newServerTank.current_hp
         this.max_hp = newServerTank.max_hp
@@ -112,6 +121,48 @@ export class Tank {
             this.cannon_angle = newServerTank.cannon_angle
         }
         this.has_died = newServerTank.has_died
+    }
+
+    updateLines(canvas) {
+        canvas.remove(this.destinationLine)
+        canvas.remove(this.targetLine)
+        this.destinationLine = this.createDestinationLine()
+        this.targetLine = this.createTargetLine()
+        canvas.add(this.destinationLine)
+        canvas.add(this.targetLine)
+    }
+
+    createDestinationLine() {
+        let destinationX = this.position.x
+        let destinationY = this.position.y
+        if (this.destination) {
+            destinationX = this.destination[0];
+            destinationY = this.destination[1];
+        }
+        return new fabric.Line([this.toCanvas.left, this.toCanvas.top, destinationX, destinationY], {
+            stroke: this.color,
+            originX: 'left',
+            originY: 'top',
+            strokeWidth: 5,
+            visible: !(this.destination === undefined || this.destination === null)
+        })
+    }
+
+    createTargetLine() {
+        let targetX = this.position.x
+        let targetY = this.position.y
+        if (this.target) {
+            targetX = this.target[0];
+            targetY = this.target[1];
+        }
+        return new fabric.Line([this.toCanvas.left, this.toCanvas.top, targetX, targetY], {
+            stroke: this.color,
+            strokeDashArray: [10, 15],
+            strokeWidth: 5,
+            originX: 'left',
+            originY: 'top',
+            visible: !(this.target === undefined || this.target === null)
+        })
     }
 
     createFabricObj(serverTank) {

@@ -211,7 +211,11 @@
                 }
                 this.hideIfUnzoomed()
                 this.mainCanvas.renderAll()
-                this.renderMinimap()
+                if(this.performanceMode && this.i % 60 === 0) {
+                    this.renderMinimap()
+                } else if(this.i % 2 === 0) {
+                    this.renderMinimap()
+                }
             },
             drawAndRemoveProjectiles(updatedProjectiles) {
                 const newProjectileIds = new Set()
@@ -266,8 +270,10 @@
                     const updatedTank = updatedTanks[id]
                     const tank = this.elements.tanks[id]
                     tank.update(updatedTank, this.playTankHitSound)
-
                 })
+                if(this.focusedPlayer) {
+                    this.focusedPlayer.updateLines(this.mainCanvas)
+                }
                 this.drawAndRemoveProjectiles(updatedGameState.projectiles)
                 this.drawAndRemoveDebris(updatedGameState.debris)
                 this.lastUpdateTimestamp = Date.now()

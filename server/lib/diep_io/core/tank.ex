@@ -166,10 +166,7 @@ defmodule DiepIO.Core.Tank do
     angle = Angle.radian(tank.position, tank.target)
     projectile = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage)
 
-    updated_tank =
-      tank
-      |> set_cooldown
-      |> set_cannon_angle(tank.target)
+    updated_tank = set_cooldown(tank)
 
     {updated_tank, projectile}
   end
@@ -186,6 +183,10 @@ defmodule DiepIO.Core.Tank do
 
   def decrease_cooldown(tank) do
     remove_from_value(tank, :cooldown, 1)
+  end
+
+  def set_cannon_angle(tank, nil) do
+    set_cannon_angle(tank, tank.position)
   end
 
   @spec set_cannon_angle(t(), Position.t()) :: t()
