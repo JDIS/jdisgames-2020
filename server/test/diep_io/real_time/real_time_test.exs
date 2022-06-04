@@ -9,7 +9,7 @@ defmodule RealTimeTest do
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
-  @game_time 1000
+  @game_time 10
   @game_name :what_a_name
 
   setup do
