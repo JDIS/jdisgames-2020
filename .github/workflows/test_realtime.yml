@@ -1,9 +1,6 @@
 name: Test real-time constraints
 
-on:
-  push:
-    branches:
-      - '*'
+on: push
 
 defaults:
   run:
