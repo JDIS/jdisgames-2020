@@ -61,7 +61,7 @@ jobs:
         run: pip install anybadge
       
       - name: Generate badges
-        working-directory: .
+        working-directory: ..
         run: python generate_badges.py
 
       - name: Archive badges
