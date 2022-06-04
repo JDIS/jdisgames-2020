@@ -24,7 +24,7 @@
     </ul>
 
     <h2>🛹 Le style de compétition 🛹</h2>
-    <p>Il s'agit d'une compétition de type <i>long-running</i>, ce qui signifie que <strong>vous accumulerez des points toute la journée, dès le début</strong>. Il n'y a pas de concept de rondes, et c'est votre ordinateur qui roulera le bot et qui envoiera les actions au serveur via des appels HTTP. Il est donc primordial de concevoir son bot de façon incrémentale et faire de l'amélioration continue.</p>
+    <p>Il s'agit d'une compétition de type <em>long-running</em>, ce qui signifie que <strong>vous accumulerez des points toute la journée, dès le début</strong>. Il n'y a pas de concept de rondes, et c'est votre ordinateur qui roulera le bot et qui envoiera les actions au serveur via des appels HTTP. Il est donc primordial de concevoir son bot de façon incrémentale et faire de l'amélioration continue.</p>
 
     <h2>🤖 Le jeu 🤖</h2>
     <h3>🥇 Comment gagner 🥇</h3>
@@ -32,12 +32,24 @@
 
     <h3>🔢 Comment obtenir des points 🔢</h3>
     <p>Chaque destruction donne des points:</p>
-    <ul>
-        <li>Petit débris <img style="width:1em;" src="/images/small_debris.png" alt="Petit débris" />: </li>
-        <li>Moyen débris <img style="width:1.3em;" src="/images/medium_debris.png" alt="Moyen débris" />: </li>
-        <li>Gros débris <img style="width:2em;" src="/images/large_debris.png" alt="Gros débris" />: <strong></strong></li>
-        <li>Tank ennemi <img style="width:2em;" src="/images/tank.png" alt="Tank" />: </li>
-    </ul>
+    <table>
+        <tr>
+            <td>Petit débris <img style="width:1em;" src="/images/small_debris.png" alt="Petit débris" /></td>
+            <td><strong><%= DiepIO.Core.Debris.get_points()[:small] %> points</strong> </td>
+        </tr>
+        <tr>
+            <td>Moyen débris <img style="width:1.3em;" src="/images/medium_debris.png" alt="Moyen débris" /></td>
+            <td><strong><%= DiepIO.Core.Debris.get_points()[:medium] %> points</strong></td>
+        </tr>
+        <tr>
+            <td>Gros débris <img style="width:2em;" src="/images/large_debris.png" alt="Gros débris" /></td>
+            <td><strong><%= DiepIO.Core.Debris.get_points()[:large] %> points</strong></td>
+        </tr>
+        <tr>
+            <td>Tank ennemi <img style="width:2em;" src="/images/tank.png" alt="Tank" /></td>
+            <td><strong><%= Integer.to_string(DiepIO.Core.GameState.minimum_score_on_kill()) %> + (total_tank_experience * <%= DiepIO.Core.GameState.experience_score_ratio_on_kill() %>) </strong></td>
+        </tr>
+    </table>
     <h3>❌ Le multiplicateur de points ❌</h3>
     <p>Pendant chaque partie, les points accumulés sont multipliés par un chiffre. Durant la journée, ce chiffre va augmenter, faisant en sorte que les points accumulés en fin de journée vaudront pour plus que ceux accumulés au début de la journée. <strong>Le multiplicateur commencera à 1 et terminera à 10.</strong></p>
 </div>

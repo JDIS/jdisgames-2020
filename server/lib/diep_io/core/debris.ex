@@ -82,4 +82,6 @@ defmodule DiepIO.Core.Debris do
   defp(remove_from_value(tank, field, amount),
     do: Map.update!(tank, field, &(&1 - amount))
   )
+
+  def get_points(), do: @points_map
 end

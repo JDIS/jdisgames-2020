@@ -15,6 +15,7 @@ defmodule DiepIO.Core.GameState do
   @projectile_decay 1
   @experience_loss_rate 0.5
   @experience_score_ratio_on_kill 0.1
+  @minimum_score_on_kill 100
 
   @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
   defstruct [
@@ -375,8 +376,12 @@ defmodule DiepIO.Core.GameState do
   end
 
   defp calculate_score_and_xp_gain(dead_tank) do
-    Kernel.floor(dead_tank.experience * @experience_score_ratio_on_kill) + 100
+    Kernel.floor(dead_tank.experience * @experience_score_ratio_on_kill) + @minimum_score_on_kill
   end
+
+  def minimum_score_on_kill(), do: @minimum_score_on_kill
+
+  def experience_score_ratio_on_kill(), do: @experience_score_ratio_on_kill
 
   defp handle_projectiles_collision(projectiles, collided_projectiles) do
     projectiles
