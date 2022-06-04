@@ -1,6 +1,9 @@
 name: Test real-time constraints
 
-on: push
+on:
+  push:
+    branches:
+      - master
 
 defaults:
   run:
@@ -51,23 +54,3 @@ jobs:
       - name: Run Tests
         run: mix test --warnings-as-errors --only RT
         if: always()
-      
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.8'
-
-      - name: Install anybadge
-        run: pip install anybadge
-      
-      - name: Generate badges
-        run: python generate_badges.py
-
-      - name: tmp
-        run: ls badges
-
-      - name: Archive badges
-        uses: actions/upload-artifact@v3
-        with:
-          name: badges
-          path: server/badges/*.svg

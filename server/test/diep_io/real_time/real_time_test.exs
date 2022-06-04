@@ -26,8 +26,6 @@ defmodule RealTimeTest do
 
     {_average, _std_dev, max} = stats = PerformanceMonitor.get_gameloop_stats()
     assert max <= 333
-
-    write_file("max_iteration_time", stats)
   end
 
   test "standard deviation of time between state updates should be under 10ms" do
@@ -35,8 +33,6 @@ defmodule RealTimeTest do
 
     {_average, std_dev, _max} = stats = PerformanceMonitor.get_broadcast_stats()
     assert std_dev <= 10
-
-    write_file("broadcast_std_dev", stats)
   end
 
   # Starts the gameloop and returns :ok when it end
@@ -63,14 +59,6 @@ defmodule RealTimeTest do
 
     Process.sleep(10)
     randomize_actions_infinite(users)
-  end
-
-  defp write_file(filename, {average, std_dev, max}) do
-    badges_location = Application.fetch_env!(:diep_io, :custom_badges_location)
-    File.mkdir(badges_location)
-    file_path = "#{badges_location}/#{filename}.json"
-    file_content = "{\"average\":#{average},\"std_dev\":#{std_dev},\"max\":#{max}}"
-    File.write!(file_path, file_content)
   end
 
   defp get_gameloop_spec(tick_rate) do

@@ -13,7 +13,6 @@ variables:
 stages:
   - test_and_build
   - test_rt
-  - generate_badges
 
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html
 .job_template: &definition_build
@@ -77,8 +76,6 @@ test_rt:
     - RT
   only: 
     - master
-  variables:
-    DIEP_CUSTOM_BADGES_LOCATION: $CI_PROJECT_DIR/server/badges
   before_script:
     - cd server
     - mix local.rebar --force
@@ -91,25 +88,3 @@ test_rt:
     paths:
       - server/deps
       - server/priv/plts
-  artifacts:
-    paths:
-      - server/badges
-    when: always
-
-generate_badges:
-  stage: generate_badges
-  image: python:3.8-alpine
-  when: always
-  only: 
-    - master
-  script:
-    - pip install anybadge
-    - cd server
-    - python generate_badges.py
-  artifacts:
-    paths:
-      - server/badges
-    when: always
-    expire_in: 4 weeks
-  dependencies:
-    - test_rt
