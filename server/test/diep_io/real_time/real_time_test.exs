@@ -9,7 +9,7 @@ defmodule RealTimeTest do
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
-  @game_time 10
+  @game_time 1000
   @game_name :what_a_name
 
   setup do
@@ -24,14 +24,14 @@ defmodule RealTimeTest do
   test "max game loop iteration time should be under 333ms" do
     start_and_wait_until_completion(get_gameloop_spec(1000))
 
-    {_average, _std_dev, max} = stats = PerformanceMonitor.get_gameloop_stats()
+    {_average, _std_dev, max} = PerformanceMonitor.get_gameloop_stats()
     assert max <= 333
   end
 
   test "standard deviation of time between state updates should be under 10ms" do
     start_and_wait_until_completion(get_gameloop_spec(15))
 
-    {_average, std_dev, _max} = stats = PerformanceMonitor.get_broadcast_stats()
+    {_average, std_dev, _max} = PerformanceMonitor.get_broadcast_stats()
     assert std_dev <= 10
   end
 
