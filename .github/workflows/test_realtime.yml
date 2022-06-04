@@ -1,54 +1,77 @@
 name: Test real-time constraints
 
 on:
+  pull_request:
+    branches:
+      - chore/fix-realtime-badges
   push:
     branches:
       - master
 
-jobs:
+defaults:
+  run:
+    working-directory: server
 
-  test-realtime:
+jobs:
+  test:
+    name: Test real-time constraints
     runs-on: ubuntu-latest
-    container: elixir:1.9.4-alpine
+    env:
+      MIX_ENV: test
+      DIEP_DATABASE_URL: ecto://postgres:postgres@localhost/diep_io_test
+    strategy:
+      matrix:
+        elixir: ["1.13.4"]
+        otp: ["24.3.3"]
 
     services:
-      # Label used to access the service container
-      postgres:
-        # Docker Hub image
+      db:
         image: postgres:12.1-alpine
-        # Provide the password for postgres
         env:
           POSTGRES_DB: diep_io_test
           POSTGRES_HOST: postgres
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: "postgres"
-        # Set health checks to wait until postgres has started
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
 
-    env:
-      MIX_ENV: "test"
-      DIEP_DATABASE_URL: ecto://postgres:postgres@localhost/diep_io_test
-
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - uses: actions/checkout@v2
+      - name: Setup Elixir project
+        uses: ./.github/actions/elixir-setup
+        with:
+          elixir-version: ${{ matrix.elixir }}
+          otp-version: ${{ matrix.otp }}
+          build-flags: --all-warnings --warnings-as-errors
+      
+      - name: Run Migrations
+        run: mix ecto.migrate
+        if: false
+      
+      - name: Run Tests
+        run: mix test --warnings-as-errors --only RT
+        if: always()
+      
+      - name: Setup Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
 
-    - name: Mix local.rebar
-      working-directory: ./server
-      run: mix local.rebar --force
-    - name: Mix local.hex
-      working-directory: ./server
-      run: mix local.hex --force
-    - name: Mix deps.get
-      working-directory: ./server
-      run: mix deps.get --only test
-    - name: ecto.setup
-      working-directory: ./server
-      run: mix ecto.setup
-    - name: Test RealTime
-      working-directory: ./server
-      run: mix test --only RT
+      - name: Install anybadge
+        run: pip install anybadge
+      
+      - name: Generate badges
+        working-directory: .
+        run: python generate_badges.py
+
+      - name: Archive badges
+        uses: actions/upload-artifact@v3
+        with:
+          name: badges
+          path: badges/*.svg

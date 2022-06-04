@@ -13,7 +13,7 @@ defmodule RealTimeTest do
   @game_name :what_a_name
 
   setup do
-    :ok = 1..40 |> Enum.each(fn i -> UsersRepository.create_user(%{name: "User#{i}"}) end)
+    :ok = 1..200 |> Enum.each(fn i -> UsersRepository.create_user(%{name: "User#{i}"}) end)
     users = Repo.all(User)
 
     {:ok, _pid} = start_supervised({Task, fn -> randomize_actions_infinite(users) end})
