@@ -42,7 +42,6 @@ RUN mix phx.gen.secret > secret_key.txt
 # prepare release image
 FROM alpine:3.9 AS app
 RUN apk add --update bash openssl libstdc++
-RUN apk add lsof
 
 RUN mkdir /app
 WORKDIR /app
