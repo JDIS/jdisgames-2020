@@ -1,9 +1,6 @@
 name: Elixir Type Linting
 
 on:
-  pull_request:
-    branches:
-      - '**'
   push:
     branches:
       - master

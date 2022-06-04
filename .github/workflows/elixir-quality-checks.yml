@@ -1,9 +1,6 @@
 name: Elixir Quality Checks
 
 on:
-  pull_request:
-    branches:
-      - '**'
   push:
     branches:
       - master
