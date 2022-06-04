@@ -1,10 +1,5 @@
 name: Test real-time constraints
 
-on:
-  pull_request:
-    branches:
-      - 'chore/fix-realtime-badges'
-
 defaults:
   run:
     working-directory: server
