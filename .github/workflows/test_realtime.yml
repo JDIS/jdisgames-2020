@@ -3,7 +3,7 @@ name: Test real-time constraints
 on:
   pull_request:
     branches:
-      - 'chore/fix-realtime-badges'
+      - '*'
   push:
     branches:
       - master
