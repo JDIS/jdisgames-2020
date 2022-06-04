@@ -1,4 +1,6 @@
 defmodule DiepIOWeb.TeamRegistrationControllerTest do
+  @moduledoc false
+
   use DiepIOWeb.ConnCase, async: false
 
   alias DiepIO.UsersRepository

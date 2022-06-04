@@ -1,5 +1,8 @@
 defmodule DiepIOWeb.ScoreboardViewTest do
+  @moduledoc false
+
   use DiepIOWeb.ConnCase, async: true
+
   alias DiepIOWeb.ScoreboardView
 
   test "render(scoreboard.json) formats like it should" do

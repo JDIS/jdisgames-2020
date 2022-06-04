@@ -1,3 +1,4 @@
+import { fabric } from 'fabric';
 import {ANIMATION_DURATION, linear, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR, TANK_RADIUS} from "../modules/constants";
 import {getColorFromId} from "../modules/utils";
 import {FabricText} from "./FabricText";
