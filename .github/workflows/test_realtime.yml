@@ -67,4 +67,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: badges
-          path: badges/*.svg
+          path: 'badges/*.svg'
