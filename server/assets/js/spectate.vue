@@ -212,7 +212,7 @@
                 this.hideIfUnzoomed()
                 this.mainCanvas.renderAll()
                 if(this.performanceMode && this.i % 60 === 0) {
-                this.renderMinimap()
+                    this.renderMinimap()
                 } else if(this.i % 2 === 0) {
                     this.renderMinimap()
                 }
