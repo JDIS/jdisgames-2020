@@ -63,6 +63,9 @@ jobs:
       - name: Generate badges
         run: python generate_badges.py
 
+      - name: tmp
+        run: ls badges
+
       - name: Archive badges
         uses: actions/upload-artifact@v3
         with:

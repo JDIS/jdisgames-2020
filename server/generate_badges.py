@@ -19,7 +19,9 @@ def generate_badge(filename, label, thresholds, stat_key, format=''):
         badge = anybadge.Badge(
             label, val, thresholds=thresholds, value_suffix='ms', value_format=format)
 
-        badge.write_badge(f'badges/{filename}.svg', True)
+        image_file_name = f'badges/{filename}.svg'
+        badge.write_badge(image_file_name, True)
+        print(f'Generated bage {image_file_name}')
     except FileNotFoundError:
         print(f'{data_file_name} not found. Skipping badge generation.')
         pass
