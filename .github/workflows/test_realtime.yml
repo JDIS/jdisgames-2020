@@ -62,7 +62,7 @@ jobs:
       
       - name: Generate badges
         working-directory: ..
-        run: python generate_badges.py
+        run: ls && python generate_badges.py
 
       - name: Archive badges
         uses: actions/upload-artifact@v3
