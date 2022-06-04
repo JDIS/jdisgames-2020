@@ -1,5 +1,10 @@
 name: Test real-time constraints
 
+on:
+  push:
+    branches:
+      - '*'
+
 defaults:
   run:
     working-directory: server
