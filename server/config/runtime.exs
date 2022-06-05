@@ -24,6 +24,7 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0},
       port: DiepIOConfig.port()
     ],
+    check_origin: true,
     secret_key_base: DiepIOConfig.secret_key_base()
 end
 
