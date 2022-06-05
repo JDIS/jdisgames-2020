@@ -72,7 +72,7 @@ defmodule TankTest do
   end
 
   test "add_experience/2 doesn't give extra upgrade tokens (non-regression test)", %{tank: tank} do
-    experienced_tank_1 = Tank.add_experience(tank, 10000)
+    experienced_tank_1 = Tank.add_experience(tank, 10_000)
     experienced_tank_2 = Tank.add_experience(experienced_tank_1, 0)
 
     assert experienced_tank_1.upgrade_tokens == experienced_tank_2.upgrade_tokens
