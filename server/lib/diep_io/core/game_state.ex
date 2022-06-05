@@ -443,4 +443,6 @@ defmodule DiepIO.Core.GameState do
   defp initialize_debris, do: create_debris(@max_debris_count)
 
   def experience_loss_rate(), do: @experience_loss_rate
+
+  def max_debris_count(), do: @max_debris_count
 end

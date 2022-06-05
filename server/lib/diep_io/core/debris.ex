@@ -84,4 +84,6 @@ defmodule DiepIO.Core.Debris do
   )
 
   def get_points(), do: @points_map
+
+  def default_hp_map(), do: @default_hp_map
 end

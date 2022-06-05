@@ -26,7 +26,7 @@
 
     <h2>🤖 La compétition 🤖</h2>
     <h3>🛹 Le style de compétition 🛹</h3>
-    <p>Il s'agit d'une compétition de type <em>long-running</em>, ce qui signifie que <strong>vous accumulerez des points toute la journée, dès le début</strong>. Il n'y a pas de concept de rondes, et c'est votre ordinateur qui roulera le bot et qui envoiera les actions au serveur via un WebSocket. Il est donc primordial de concevoir son bot de façon incrémentale et faire de l'amélioration continue.</p>
+    <p>Il s'agit d'une compétition de type <em>long-running</em>, ce qui signifie que <strong>vous accumulerez des points toute la journée, dès le début</strong>. Il n'y a pas de concept de rondes, et c'est votre ordinateur qui roulera le bot et qui enverra les actions au serveur via un WebSocket. Il est donc primordial de concevoir son bot de façon incrémentale et faire de l'amélioration continue.</p>
     <h3>🥇 Comment gagner 🥇</h3>
     <p>L'équipe qui obtient le plus de points à la fin de la compétition gagnera.</p>
 
@@ -34,20 +34,29 @@
     <p>Chaque destruction donne des points et de l'XP. 1 point = 1 XP.</p>
     <table>
         <tr>
+            <td><strong>Entité</strong></td>
+            <td><strong>Points/XP</strong></td>
+            <td><strong>HP</strong></td>
+        </tr>
+        <tr>
             <td>Petit débris <img style="width:1em;" src="/images/small_debris.png" alt="Petit débris" /></td>
-            <td><strong><%= DiepIO.Core.Debris.get_points()[:small] %> points</strong> </td>
+            <td><strong><%= DiepIO.Core.Debris.get_points()[:small] %> points</strong></td>
+            <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:small] %> HP</strong></td>
         </tr>
         <tr>
             <td>Moyen débris <img style="width:1.3em;" src="/images/medium_debris.png" alt="Moyen débris" /></td>
             <td><strong><%= DiepIO.Core.Debris.get_points()[:medium] %> points</strong></td>
+            <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:medium] %> HP</strong></td>
         </tr>
         <tr>
             <td>Gros débris <img style="width:2em;" src="/images/large_debris.png" alt="Gros débris" /></td>
             <td><strong><%= DiepIO.Core.Debris.get_points()[:large] %> points</strong></td>
+            <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:large] %> HP</strong></td>
         </tr>
         <tr>
             <td>Tank ennemi <img style="width:2em;" src="/images/tank.png" alt="Tank" /></td>
             <td><strong><%= Integer.to_string(DiepIO.Core.GameState.minimum_score_on_kill()) %> + (total_tank_experience * <%= DiepIO.Core.GameState.experience_score_ratio_on_kill() %>) points</strong></td>
+            <td><strong>Variable (minimum <%= DiepIO.Core.Tank.default_hp() %> HP)</strong></td>
         </tr>
     </table>
     <h3>❌ Le multiplicateur de points ❌</h3>
@@ -70,39 +79,42 @@
         </tr>
         <tr>
             <td>❤️ HP</td>
-            <td>Nombre de points de vie (Hit Points). Quand les HP tombent à 0, le tank meurt et perd <%= DiepIO.Core.GameState.experience_loss_rate() * 100 %>% de son XP lors qu'il <em>respawn</em>.</td>
-            <td><%= DiepIO.Core.Tank.default_hp() %> HP</td>
+            <td>Nombre de points de vie (Hit Points). Quand les HP tombent à 0, le tank meurt et perd <strong><%= DiepIO.Core.GameState.experience_loss_rate() * 100 %></strong>% de son XP lors qu'il <em>respawn</em>.</td>
+            <td><strong><%= DiepIO.Core.Tank.default_hp() %> HP</strong></td>
         </tr>
         <tr>
             <td>💣 Projectile damage</td>
-            <td>Le nombre de HP qu'un projectile enlève à une cible (débris ou tank) qu'il touche.</td>
-            <td><%= DiepIO.Core.Tank.default_projectile_damage() %></td>
+            <td>Le nombre de HP qu'un projectile enlève à une entité (débris ou tank) qu'il touche.</td>
+            <td><strong><%= DiepIO.Core.Tank.default_projectile_damage() %></strong></td>
         </tr>
         <tr>
             <td>🕒 Fire rate</td>
             <td>Nombre de <em>ticks</em> entre chaque tir. <em>Cooldown</em> du tir de cannon.</td>
-            <td><%= DiepIO.Core.Tank.default_fire_rate() %> <em>ticks</em></td>
+            <td><strong><%= DiepIO.Core.Tank.default_fire_rate() %> <em>ticks</em></strong></td>
         </tr>
         <tr>
             <td>🐇 Speed</td>
             <td>Vitesse de déplacement en unités par <em>tick</em>.</td>
-            <td><%= DiepIO.Core.Tank.default_speed() %> unités par <em>tick</em></td>
+            <td><strong><%= DiepIO.Core.Tank.default_speed() %> unités par <em>tick</em></strong></td>
         </tr>
         <tr>
             <td>👊 Body damage</td>
             <td>Lors d'une collision, le nombre de dommage infligé à l'adversaire (débris ou tank), pour chaque <em>tick</em> où il y a collision.</td>
-            <td><%= DiepIO.Core.Tank.default_body_damage() %></td>
+            <td><strong><%= DiepIO.Core.Tank.default_body_damage() %></strong></td>
         </tr>
         <tr>
             <td>💞 HP regen</td>
             <td>Quantité d'HP regénéré chaque <em>tick</em>.</td>
-            <td><%= DiepIO.Core.Tank.default_hp_regen() %> HP par <em>tick</em></td>
+            <td><strong><%= DiepIO.Core.Tank.default_hp_regen() %> HP par <em>tick</em></strong></td>
         </tr>
     </table>
 
     <h3>🌎 La carte 🌎</h3>
-    <p>La carte fait <%= DiepIO.Core.GameMap.width() %>x<%= DiepIO.Core.GameMap.height() %> unités. Il est possible d'aller en dehors de la carte, mais tous les débris sont à l'intérieur de la carte.</p>
+    <p>La carte fait <strong><%= DiepIO.Core.GameMap.width() %>x<%= DiepIO.Core.GameMap.height() %></strong> unités. Il est possible d'aller en dehors de la carte, mais tous les débris <em>spawn</em> à l'intérieur.</p>
 
     <h3>⏱️ La cadence du jeu ⏱️</h3>
     <p>Le jeu est cadencé via des <em>ticks</em>. La cadence du jeu est de <strong><%= DiepIO.GameSupervisor.default_tick_rate %> <em>ticks</em> par seconde</strong>.</p>
+
+    <h3>🔺 Les débris 🔻</h3>
+    <p>À tout moment, il ne peut y avoir qu'un maximum de <strong><%= DiepIO.Core.GameState.max_debris_count() %></strong> débris sur la carte.</p>
 </div>
