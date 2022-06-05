@@ -1,135 +1,192 @@
-<h1> ⚔️ JDIS Games 2022 ⚔️</h1>
-<link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+<h1>⚔️ JDIS Games 2022 ⚔️</h1>
+<link href="http://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" type="text/css" />
 <style>
-    * {
-        font-family: 'Roboto', sans-serif;
-    }
-    h1,h2,h3,h4,h5,h6 {
-        text-align: center;
-        margin-top: 0.2em;
-        margin-bottom: 0.2em;
-    }
-    h2 {
-        margin-top: 0.8em;
-    }
-    p {
-        margin-bottom: 0.5em;
-    }
+  * {
+      font-family: 'Roboto', sans-serif;
+  }
+  h1,h2,h3,h4,h5,h6 {
+      text-align: center;
+      margin-top: 0.2em;
+      margin-bottom: 0.2em;
+  }
+  h2 {
+      margin-top: 0.8em;
+  }
+  p {
+      margin-bottom: 0.5em;
+  }
 </style>
 
 <div style="max-width: 1024px;margin:auto;">
-    <h2>📜 Règles des JDISGames 2022📜</h2>
-    <ul>
-        <li>Il est interdit d'attaquer l'infrastructure de la compétition.</li>
-        <li>En cas de conflit, la décision des organisateurs est finale</li>
-        <li>Il est interdit de former des alliances</li>
-        <li>Il est interdit de coder pendant la pause du midi</li>
-        <li>Tout code doit être écrit durant la compétition</li>
-        <li>On ne s'inscrit qu'une seule fois par équipe</li>
-        <li>Soyez créatifs dans vos noms d'équipe, mais gardez-ça PG-16.</li>
-    </ul>
+  <h2>📜 Règles des JDISGames 2022📜</h2>
+  <ul>
+    <li>Il est interdit d'attaquer l'infrastructure de la compétition.</li>
+    <li>En cas de conflit, la décision des organisateurs est finale</li>
+    <li>Il est interdit de former des alliances</li>
+    <li>Il est interdit de coder pendant la pause du midi</li>
+    <li>Tout code doit être écrit durant la compétition</li>
+    <li>On ne s'inscrit qu'une seule fois par équipe</li>
+    <li>Soyez créatifs dans vos noms d'équipe, mais gardez-ça PG-16.</li>
+  </ul>
 
-    <h2>🤖 La compétition 🤖</h2>
-    <h3>🛹 Le style de compétition 🛹</h3>
-    <p>Il s'agit d'une compétition de type <em>long-running</em>, ce qui signifie que <strong>vous accumulerez des points toute la journée, dès le début</strong>. Il n'y a pas de concept de rondes, et c'est votre ordinateur qui roulera le bot et qui enverra les actions au serveur via un WebSocket. Il est donc primordial de concevoir son bot de façon incrémentale et faire de l'amélioration continue.</p>
-    <h3>🥇 Comment gagner 🥇</h3>
-    <p>L'équipe qui obtient le plus de points à la fin de la compétition gagnera.</p>
+  <h2>🤖 La compétition 🤖</h2>
+  <h3>🛹 Le style de compétition 🛹</h3>
+  <p>
+    Il s'agit d'une compétition de type <em>long-running</em>, ce qui signifie que
+    <strong>vous accumulerez des points toute la journée, dès le début</strong>
+    . Il n'y a pas de concept de rondes, et c'est votre ordinateur qui roulera le bot et qui enverra les actions au serveur via un WebSocket. Il est donc primordial de concevoir son bot de façon incrémentale et faire de l'amélioration continue.
+  </p>
+  <h3>🥇 Comment gagner 🥇</h3>
+  <p>L'équipe qui obtient le plus de points à la fin de la compétition gagnera.</p>
 
-    <h3>🔢 Comment obtenir des points et de l'expérience (XP) 🔢</h3>
-    <p>Chaque destruction donne des points et de l'XP. 1 point = 1 XP.</p>
-    <table>
-        <tr>
-            <td><strong>Entité</strong></td>
-            <td><strong>Points/XP</strong></td>
-            <td><strong>HP</strong></td>
-        </tr>
-        <tr>
-            <td>Petit débris <img style="width:1em;" src="/images/small_debris.png" alt="Petit débris" /></td>
-            <td><strong><%= DiepIO.Core.Debris.get_points()[:small] %> points</strong></td>
-            <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:small] %> HP</strong></td>
-        </tr>
-        <tr>
-            <td>Moyen débris <img style="width:1.3em;" src="/images/medium_debris.png" alt="Moyen débris" /></td>
-            <td><strong><%= DiepIO.Core.Debris.get_points()[:medium] %> points</strong></td>
-            <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:medium] %> HP</strong></td>
-        </tr>
-        <tr>
-            <td>Gros débris <img style="width:2em;" src="/images/large_debris.png" alt="Gros débris" /></td>
-            <td><strong><%= DiepIO.Core.Debris.get_points()[:large] %> points</strong></td>
-            <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:large] %> HP</strong></td>
-        </tr>
-        <tr>
-            <td>Tank ennemi <img style="width:2em;" src="/images/tank.png" alt="Tank" /></td>
-            <td><strong><%= Integer.to_string(DiepIO.Core.GameState.minimum_score_on_kill()) %> + (total_tank_experience * <%= DiepIO.Core.GameState.experience_score_ratio_on_kill() %>) points</strong></td>
-            <td><strong>Variable (minimum <%= DiepIO.Core.Tank.default_hp() %> HP)</strong></td>
-        </tr>
-    </table>
-    <h3>❌ Le multiplicateur de points ❌</h3>
-    <p>Pendant chaque partie, les points accumulés sont multipliés par un chiffre. Durant la journée, ce chiffre va augmenter, faisant en sorte que les points accumulés en fin de journée vaudront pour plus que ceux accumulés au début de la journée. <strong>Le multiplicateur commencera à 1 et terminera à 10.</strong></p>
+  <h3>🔢 Comment obtenir des points et de l'expérience (XP) 🔢</h3>
+  <p>Chaque destruction donne des points et de l'XP. 1 point = 1 XP.</p>
+  <table>
+    <tr>
+      <td><strong>Entité</strong></td>
+      <td><strong>Points/XP</strong></td>
+      <td><strong>HP</strong></td>
+    </tr>
+    <tr>
+      <td>
+        Petit débris
+        <img style="width:1em;" src="/images/small_debris.png" alt="Petit débris" />
+      </td>
+      <td><strong><%= DiepIO.Core.Debris.get_points()[:small] %> points</strong></td>
+      <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:small] %> HP</strong></td>
+    </tr>
+    <tr>
+      <td>
+        Moyen débris
+        <img style="width:1.3em;" src="/images/medium_debris.png" alt="Moyen débris" />
+      </td>
+      <td><strong><%= DiepIO.Core.Debris.get_points()[:medium] %> points</strong></td>
+      <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:medium] %> HP</strong></td>
+    </tr>
+    <tr>
+      <td>
+        Gros débris
+        <img style="width:2em;" src="/images/large_debris.png" alt="Gros débris" />
+      </td>
+      <td><strong><%= DiepIO.Core.Debris.get_points()[:large] %> points</strong></td>
+      <td><strong><%= DiepIO.Core.Debris.default_hp_map()[:large] %> HP</strong></td>
+    </tr>
+    <tr>
+      <td>
+        Tank ennemi
+        <img style="width:2em;" src="/images/tank.png" alt="Tank" />
+      </td>
+      <td>
+        <strong>
+          <%= Integer.to_string(DiepIO.Core.GameState.minimum_score_on_kill()) %> + (total_tank_experience *
+          <%= DiepIO.Core.GameState.experience_score_ratio_on_kill() %>) points
+        </strong>
+      </td>
+      <td><strong>Variable (minimum <%= DiepIO.Core.Tank.default_hp() %> HP)</strong></td>
+    </tr>
+  </table>
+  <h3>❌ Le multiplicateur de points ❌</h3>
+  <p>
+    Pendant chaque partie, les points accumulés sont multipliés par un chiffre. Durant la journée, ce chiffre va augmenter, faisant en sorte que les points accumulés en fin de journée vaudront pour plus que ceux accumulés au début de la journée.
+    <strong>Le multiplicateur commencera à 1 et terminera à 10.</strong>
+  </p>
 
-    <h2>🎮 Le jeu 🎮</h2>
-    <p>Le jeu est inspiré de <a href="https://diep.io/">diep.io</a>. Vous coderez un bot qui contrôlera un tank. Ce tank peut faire plusieurs actions:</p>
-    <ul>
-        <li>Se déplacer vers un point donné.</li>
-        <li>Tirer vers une cible donnée.</li>
-        <li><em>Upgrade</em> ses <em>specs</em>.</li>
-    </ul>
-    <h3>🥷 Specs 🥷</h3>
-    <p>Chaque tank a des spécifications qui dépend de leur niveau.</p>
-    <table>
-        <tr>
-            <td><strong>Spec</strong></td>
-            <td><strong>Description</strong></td>
-            <td><strong>Valeur par défaut</strong></td>
-        </tr>
-        <tr>
-            <td>❤️ HP</td>
-            <td>Nombre de points de vie (Hit Points). Quand les HP tombent à 0, le tank meurt et perd <strong><%= DiepIO.Core.GameState.experience_loss_rate() * 100 %></strong>% de son XP lors qu'il <em>respawn</em>.</td>
-            <td><strong><%= DiepIO.Core.Tank.default_hp() %> HP</strong></td>
-        </tr>
-        <tr>
-            <td>💣 Projectile damage</td>
-            <td>Le nombre de HP qu'un projectile enlève à une entité (débris ou tank) qu'il touche.</td>
-            <td><strong><%= DiepIO.Core.Tank.default_projectile_damage() %></strong></td>
-        </tr>
-        <tr>
-            <td>🕒 Fire rate</td>
-            <td>Nombre de <em>ticks</em> entre chaque tir. <em>Cooldown</em> du tir de cannon.</td>
-            <td><strong><%= DiepIO.Core.Tank.default_fire_rate() %> <em>ticks</em></strong></td>
-        </tr>
-        <tr>
-            <td>🐇 Speed</td>
-            <td>Vitesse de déplacement en unités par <em>tick</em>.</td>
-            <td><strong><%= DiepIO.Core.Tank.default_speed() %> unités par <em>tick</em></strong></td>
-        </tr>
-        <tr>
-            <td>👊 Body damage</td>
-            <td>Lors d'une collision, le nombre de dommage infligé à l'adversaire (débris ou tank), pour chaque <em>tick</em> où il y a collision.</td>
-            <td><strong><%= DiepIO.Core.Tank.default_body_damage() %></strong></td>
-        </tr>
-        <tr>
-            <td>💞 HP regen</td>
-            <td>Quantité d'HP regénéré chaque <em>tick</em>.</td>
-            <td><strong><%= DiepIO.Core.Tank.default_hp_regen() %> HP par <em>tick</em></strong></td>
-        </tr>
-    </table>
+  <h2>🎮 Le jeu 🎮</h2>
+  <p>
+    Le jeu est inspiré de <a href="https://diep.io/">diep.io</a>
+    . Vous coderez un bot qui contrôlera un tank. Ce tank peut faire plusieurs actions:
+  </p>
+  <ul>
+    <li>Se déplacer vers un point donné.</li>
+    <li>Tirer vers une cible donnée.</li>
+    <li><em>Upgrade</em> ses <em>specs</em>.</li>
+  </ul>
+  <h3>🥷 Specs 🥷</h3>
+  <p>Chaque tank a des spécifications qui dépend de leur niveau.</p>
+  <table>
+    <tr>
+      <td><strong>Spec</strong></td>
+      <td><strong>Description</strong></td>
+      <td><strong>Valeur par défaut</strong></td>
+    </tr>
+    <tr>
+      <td>❤️ HP</td>
+      <td>
+        Nombre de points de vie (Hit Points). Quand les HP tombent à 0, le tank meurt et perd
+        <strong><%= DiepIO.Core.GameState.experience_loss_rate() * 100 %></strong>% de son XP lors qu'il
+        <em>respawn</em>.
+      </td>
+      <td><strong><%= DiepIO.Core.Tank.default_hp() %> HP</strong></td>
+    </tr>
+    <tr>
+      <td>💣 Projectile damage</td>
+      <td>Le nombre de HP qu'un projectile enlève à une entité (débris ou tank) qu'il touche.</td>
+      <td><strong><%= DiepIO.Core.Tank.default_projectile_damage() %></strong></td>
+    </tr>
+    <tr>
+      <td>🕒 Fire rate</td>
+      <td>Nombre de <em>ticks</em> entre chaque tir. <em>Cooldown</em> du tir de cannon.</td>
+      <td><strong><%= DiepIO.Core.Tank.default_fire_rate() %> <em>ticks</em></strong></td>
+    </tr>
+    <tr>
+      <td>🐇 Speed</td>
+      <td>Vitesse de déplacement en unités par <em>tick</em>.</td>
+      <td><strong><%= DiepIO.Core.Tank.default_speed() %> unités par <em>tick</em></strong></td>
+    </tr>
+    <tr>
+      <td>👊 Body damage</td>
+      <td>
+        Lors d'une collision, le nombre de dommage infligé à l'adversaire (débris ou tank), pour chaque <em>tick</em>
+        où il y a collision.
+      </td>
+      <td><strong><%= DiepIO.Core.Tank.default_body_damage() %></strong></td>
+    </tr>
+    <tr>
+      <td>💞 HP regen</td>
+      <td>Quantité d'HP regénéré chaque <em>tick</em>.</td>
+      <td><strong><%= DiepIO.Core.Tank.default_hp_regen() %> HP par <em>tick</em></strong></td>
+    </tr>
+  </table>
 
-    <h3>🌎 La carte 🌎</h3>
-    <p>La carte fait <strong><%= DiepIO.Core.GameMap.width() %>x<%= DiepIO.Core.GameMap.height() %></strong> unités. Il est possible d'aller en dehors de la carte, mais tous les débris <em>spawn</em> à l'intérieur.</p>
+  <h3>🌎 La carte 🌎</h3>
+  <p>
+    La carte fait <strong><%= DiepIO.Core.GameMap.width() %>x<%= DiepIO.Core.GameMap.height() %></strong>
+    unités. Il est possible d'aller en dehors de la carte, mais tous les débris <em>spawn</em> à l'intérieur.
+  </p>
 
-    <h3>⏱️ La cadence du jeu ⏱️</h3>
-    <p>Le jeu est cadencé via des <em>ticks</em>. La cadence du jeu est de <strong><%= DiepIO.GameSupervisor.default_tick_rate %> <em>ticks</em> par seconde</strong>.</p>
-    <p>Les bots reçoivent et peuvent envoyer <strong><%= round(1 / (DiepIO.Gameloop.client_tick_frequency() / DiepIO.GameSupervisor.default_tick_rate())) %></strong> mises à jour par seconde</p>
+  <h3>⏱️ La cadence du jeu ⏱️</h3>
+  <p>
+    Le jeu est cadencé via des <em>ticks</em>. La cadence du jeu est de
+    <strong><%= DiepIO.GameSupervisor.default_tick_rate() %> <em>ticks</em> par seconde</strong>.
+  </p>
+  <p>
+    Les bots reçoivent et peuvent envoyer
+    <strong>
+      <%= round(1 / (DiepIO.Gameloop.client_tick_frequency() / DiepIO.GameSupervisor.default_tick_rate())) %>
+    </strong> mises à jour par seconde
+  </p>
 
-    <h3>🔺 Les débris 🔻</h3>
-    <p>À tout moment, il ne peut y avoir qu'un maximum de <strong><%= DiepIO.Core.GameState.max_debris_count() %></strong> débris sur la carte. EXPLIQUER REGEN ICI</p>
+  <h3>🔺 Les débris 🔻</h3>
+  <p>
+    À tout moment, il ne peut y avoir qu'un maximum de <strong><%= DiepIO.Core.GameState.max_debris_count() %></strong>
+    débris sur la carte. EXPLIQUER REGEN ICI
+  </p>
 
-    <h3>🔭 Information disponible pour les bots 🔭</h3>
-    <p>C'est un jeu à information ouverte. Donc, <strong>toutes les informations sur l'état du jeu sont disponibles à tous les joueurs, tout le temps</strong>. Ça inclut la position des débris, des joueurs, la progression de la partie, mais aussi la position et la direction des projectiles, la direction des tanks, où ils visent, et les niveaux de chaque spec de chaque tank ainsi que leur score. En gros, si l'information est disponible dans la page <em>spectate</em>, votre bot y a accès et vous pouvez baser la logique de votre code sur ces éléments.</p>
+  <h3>🔭 Information disponible pour les bots 🔭</h3>
+  <p>
+    C'est un jeu à information ouverte. Donc,
+    <strong>toutes les informations sur l'état du jeu sont disponibles à tous les joueurs, tout le temps</strong>
+    . Ça inclut la position des débris, des joueurs, la progression de la partie, mais aussi la position et la direction des projectiles, la direction des tanks, où ils visent, et les niveaux de chaque spec de chaque tank ainsi que leur score. En gros, si l'information est disponible dans la page
+    <em>spectate</em>, votre bot y a accès et vous pouvez baser la logique de votre code sur ces éléments.
+  </p>
 
-    <h2>▶️ Starter Packs ▶️</h2>
-    <p>Référez-vous au README du starter pack du langage choisi pour savoir comment l'utiliser. </p>
+  <h2>▶️ Starter Packs ▶️</h2>
+  <p>Référez-vous au README du starter pack du langage choisi pour savoir comment l'utiliser.</p>
 
-    <h2>⭕ Déroulement des parties ⭕</h2>
-    <p>Durant toute la journée, les parties s'enchaineront de façon fluide. Chaque partie est d'une durée de quelques minutes. À la fin de chaque partie, les scores sont persistés dans le <em>scoreboard</em> et une nouvelle partie recommence. Votre bot continuera de rouler comme si de rien n'était. Si vous le désirez, vous pouvez coder une logique selon l'état de la partie, la progression de la partie est disponible dans l'état du jeu envoyée aux bots.</p>
+  <h2>⭕ Déroulement des parties ⭕</h2>
+  <p>
+    Durant toute la journée, les parties s'enchaineront de façon fluide. Chaque partie est d'une durée de quelques minutes. À la fin de chaque partie, les scores sont persistés dans le
+    <em>scoreboard</em>
+    et une nouvelle partie recommence. Votre bot continuera de rouler comme si de rien n'était. Si vous le désirez, vous pouvez coder une logique selon l'état de la partie, la progression de la partie est disponible dans l'état du jeu envoyée aux bots.
+  </p>
 </div>
