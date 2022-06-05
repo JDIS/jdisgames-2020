@@ -22,7 +22,7 @@ if config_env() == :prod do
     cache_static_manifest: "priv/static/cache_manifest.json",
     http: [
       ip: {0, 0, 0, 0},
-      port: DiepIOConfig.port()
+      port: 80
     ],
     check_origin: true,
     secret_key_base: DiepIOConfig.secret_key_base()
