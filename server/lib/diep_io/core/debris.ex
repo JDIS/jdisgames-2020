@@ -83,7 +83,7 @@ defmodule DiepIO.Core.Debris do
     do: Map.update!(tank, field, &(&1 - amount))
   )
 
-  def get_points(), do: @points_map
+  def get_points, do: @points_map
 
-  def default_hp_map(), do: @default_hp_map
+  def default_hp_map, do: @default_hp_map
 end

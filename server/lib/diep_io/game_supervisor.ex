@@ -49,5 +49,5 @@ defmodule DiepIO.GameSupervisor do
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
 
-  def default_tick_rate(), do: @default_tick_rate
+  def default_tick_rate, do: @default_tick_rate
 end

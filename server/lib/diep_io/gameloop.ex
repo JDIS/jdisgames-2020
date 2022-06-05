@@ -172,5 +172,5 @@ defmodule DiepIO.Gameloop do
     |> Clock.register(:client_tick, @client_tick_frequency)
   end
 
-  def client_tick_frequency(), do: @client_tick_frequency
+  def client_tick_frequency, do: @client_tick_frequency
 end
