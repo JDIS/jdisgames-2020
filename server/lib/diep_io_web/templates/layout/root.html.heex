@@ -5,24 +5,29 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <%= csrf_meta_tag() %>
-    <title>JDIS Games 2020</title>
+    <title>JDIS Games 2022</title>
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/css/app.css")} />
     <script phx-tract-static type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}>
     </script>
   </head>
   <body>
     <header>
-      <section class="container">
+      <section class="container" style="justify-content:space-between;">
         <nav role="navigation">
           <ul>
-            <li><a href="/">Home</a></li>
+            <li><a href="/">Documentation</a></li>
             <li><a href="/spectate?game_name=main_game">Spectate main</a></li>
             <li><a href="/spectate?game_name=secondary_game">Spectate secondary</a></li>
             <li><a href="/scoreboard">Scoreboard</a></li>
           </ul>
         </nav>
+        <a href="/" style="flex-grow: 5;"><img src="/images/jdis.svg", alt="Logo JDIS" style="width: 4em;"/></a>
       </section>
     </header>
     <%= @inner_content %>
+    <footer>
+        <hr />
+        <span style="float:right">Fait avec ❤️ par <a href="https://twitter.com/Blond11516">Étienne Lévesque</a>, <a href="https://twitter.com/res260">Émilio Gonzalez</a>, <a href="https://github.com/zelarpmaster">Guillaume Jean</a>, <a href="https://github.com/francishamel">Francis Hamel</a> et <a href="https://github.com/LaMachineCaron">Alexandre Caron</a>.</span>
+    </footer>
   </body>
 </html>

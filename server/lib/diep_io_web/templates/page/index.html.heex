@@ -9,6 +9,9 @@
         margin-top: 0.2em;
         margin-bottom: 0.2em;
     }
+    h2 {
+        margin-top: 0.8em;
+    }
     p {
         margin-bottom: 0.5em;
     }
@@ -22,6 +25,8 @@
         <li>Il est interdit de former des alliances</li>
         <li>Il est interdit de coder pendant la pause du midi</li>
         <li>Tout code doit être écrit durant la compétition</li>
+        <li>On ne s'inscrit qu'une seule fois par équipe</li>
+        <li>Soyez créatifs dans vos noms d'équipe, mais gardez-ça PG-16.</li>
     </ul>
 
     <h2>🤖 La compétition 🤖</h2>
@@ -114,7 +119,17 @@
 
     <h3>⏱️ La cadence du jeu ⏱️</h3>
     <p>Le jeu est cadencé via des <em>ticks</em>. La cadence du jeu est de <strong><%= DiepIO.GameSupervisor.default_tick_rate %> <em>ticks</em> par seconde</strong>.</p>
+    <p>Les bots reçoivent et peuvent envoyer <strong><%= round(1 / (DiepIO.Gameloop.client_tick_frequency() / DiepIO.GameSupervisor.default_tick_rate())) %></strong> mises à jour par seconde</p>
 
     <h3>🔺 Les débris 🔻</h3>
-    <p>À tout moment, il ne peut y avoir qu'un maximum de <strong><%= DiepIO.Core.GameState.max_debris_count() %></strong> débris sur la carte.</p>
+    <p>À tout moment, il ne peut y avoir qu'un maximum de <strong><%= DiepIO.Core.GameState.max_debris_count() %></strong> débris sur la carte. EXPLIQUER REGEN ICI</p>
+
+    <h3>🔭 Information disponible pour les bots 🔭</h3>
+    <p>C'est un jeu à information ouverte. Donc, <strong>toutes les informations sur l'état du jeu sont disponibles à tous les joueurs, tout le temps</strong>. Ça inclut la position des débris, des joueurs, la progression de la partie, mais aussi la position et la direction des projectiles, la direction des tanks, où ils visent, et les niveaux de chaque spec de chaque tank ainsi que leur score. En gros, si l'information est disponible dans la page <em>spectate</em>, votre bot y a accès et vous pouvez baser la logique de votre code sur ces éléments.</p>
+
+    <h2>▶️ Starter Packs ▶️</h2>
+    <p>Référez-vous au README du starter pack du langage choisi pour savoir comment l'utiliser. </p>
+
+    <h2>⭕ Déroulement des parties ⭕</h2>
+    <p>Durant toute la journée, les parties s'enchaineront de façon fluide. Chaque partie est d'une durée de quelques minutes. À la fin de chaque partie, les scores sont persistés dans le <em>scoreboard</em> et une nouvelle partie recommence. Votre bot continuera de rouler comme si de rien n'était. Si vous le désirez, vous pouvez coder une logique selon l'état de la partie, la progression de la partie est disponible dans l'état du jeu envoyée aux bots.</p>
 </div>

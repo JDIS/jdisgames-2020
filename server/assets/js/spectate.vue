@@ -8,6 +8,7 @@
                         <label style="display: inline-block"> Full screen <input style="margin: 0" type="checkbox" v-model="fullScreen" /></label>
                         <label style="display: inline-block"> Performance mode <input style="margin: 0" type="checkbox" v-model="performanceMode" /></label>
                         <progress id="progress" :value="progress * 100" max="100"></progress>
+                        <span title="Nombre de débris sur la carte">🔺 {{ debrisCount }} 🔻</span>
                     </div>
                     <div id="invisible"></div>
                     <div id="canvas-container">
@@ -95,6 +96,7 @@
                 lockCamera: false,
                 elements: new DrawnElements(null, null, {}, {}, {}),
                 progress: 0,
+                debrisCount: 0,
                 autoSpectate: false,
                 lastUpdateTimestamp: Date.now(),
                 tankHitSound: null,
@@ -240,6 +242,7 @@
             },
             drawAndRemoveDebris(updatedDebris) {
                 const newDebrisIds = new Set()
+                this.debrisCount = updatedDebris.length
                 updatedDebris.forEach(debris => {
                     newDebrisIds.add(debris.id)
                     if (!this.elements.debris[debris.id]) {
