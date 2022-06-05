@@ -135,7 +135,7 @@ defmodule DiepIO.Core.Tank do
 
   @spec add_experience(t(), integer) :: t()
   def add_experience(tank, amount) do
-    token_to_add = get_token_amount_from_experience(tank.experience + amount) - upgrade_tokenss_spent(tank)
+    token_to_add = get_token_amount_from_experience(tank.experience + amount) - upgrade_tokenss_spent(tank) - tank.upgrade_tokens
 
     tank
     |> add_to_value(:experience, amount)
@@ -273,8 +273,8 @@ defmodule DiepIO.Core.Tank do
 
   defp upgrade_tokenss_spent(tank) do
     tank.upgrade_levels
-    |> Map.values()
-    |> Enum.sum()
+      |> Map.values()
+      |> Enum.sum()
   end
 
   defp get_token_amount_from_experience(0), do: 0
