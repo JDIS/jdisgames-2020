@@ -11,7 +11,7 @@ defmodule DiepIO.Core.Tank do
   @default_projectile_damage 20
   @default_body_damage 20
   @default_hp_regen 0.4
-  @default_radius 25
+  @default_radius 35
 
   @upgrade_rates [
     max_hp: &Upgrade.max_hp/1,

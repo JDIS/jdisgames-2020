@@ -22,7 +22,7 @@
                         <div style="width:100%; height: 15px" :style="{'background': `${focusedPlayer.color}`}"></div>
                         <table>
                             <tr>
-                                <td>❤ HP</td>
+                                <td>❤️ HP</td>
                                 <td><strong>{{Math.round(focusedPlayer.current_hp)}}</strong>/{{focusedPlayer.max_hp}} (LVL {{ focusedPlayer.upgrade_levels.max_hp }})</td>
                             </tr>
                             <tr>
