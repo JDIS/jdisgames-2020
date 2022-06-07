@@ -14,7 +14,8 @@ defmodule DiepIO.Core.GameState do
   @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]
   @projectile_decay 1
   @experience_loss_rate 0.5
-  @experience_score_ratio_on_kill 0.1
+  @experience_score_ratio_on_kill 0.2
+  @minimum_score_on_kill 100
 
   @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
   defstruct [
@@ -375,8 +376,12 @@ defmodule DiepIO.Core.GameState do
   end
 
   defp calculate_score_and_xp_gain(dead_tank) do
-    Kernel.floor(dead_tank.experience * @experience_score_ratio_on_kill) + 100
+    Kernel.floor(dead_tank.experience * @experience_score_ratio_on_kill) + @minimum_score_on_kill
   end
+
+  def minimum_score_on_kill, do: @minimum_score_on_kill
+
+  def experience_score_ratio_on_kill, do: @experience_score_ratio_on_kill
 
   defp handle_projectiles_collision(projectiles, collided_projectiles) do
     projectiles
@@ -436,4 +441,8 @@ defmodule DiepIO.Core.GameState do
     do: users |> Map.new(fn user -> {user.id, Tank.new(user.id, user.name)} end)
 
   defp initialize_debris, do: create_debris(@max_debris_count)
+
+  def experience_loss_rate, do: @experience_loss_rate
+
+  def max_debris_count, do: @max_debris_count
 end

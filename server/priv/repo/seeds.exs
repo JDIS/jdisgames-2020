@@ -11,7 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 require Logger
 alias DiepIO.Repo
-alias DiepIO.Users.{User, Score}
+alias DiepIOSchemas.{Score, User}
 
 Repo.delete_all(Score)
 Repo.delete_all(User)

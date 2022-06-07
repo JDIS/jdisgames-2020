@@ -58,7 +58,7 @@ export function initFabricAndCreateMainCanvas() {
 export function createMinimap() {
     const minimap = new fabric.StaticCanvas('minimap', {
         position: 'absolute',
-        backgroundColor: 'white',
+        backgroundColor: 'rgba(255,255,255,0.9)',
         width: MINIMAP_WIDTH,
         height: MINIMAP_HEIGHT,
         selection: false,

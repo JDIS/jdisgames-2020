@@ -35,5 +35,3 @@ if config_env() == :prod do
 else
   config :diep_io, admin_username: "admin", admin_password: "admin"
 end
-
-config :diep_io, custom_badges_location: DiepIOConfig.custom_badges_location()

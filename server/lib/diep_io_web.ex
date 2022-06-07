@@ -23,7 +23,6 @@ defmodule DiepIOWeb do
       use Phoenix.Controller, namespace: DiepIOWeb
 
       import Plug.Conn
-      import DiepIOWeb.Gettext
       alias DiepIOWeb.Router.Helpers, as: Routes
     end
   end
@@ -82,7 +81,6 @@ defmodule DiepIOWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import DiepIOWeb.Gettext
     end
   end
 
@@ -98,7 +96,6 @@ defmodule DiepIOWeb do
       import Phoenix.View
 
       import DiepIOWeb.ErrorHelpers
-      import DiepIOWeb.Gettext
       alias DiepIOWeb.Router.Helpers, as: Routes
     end
   end
