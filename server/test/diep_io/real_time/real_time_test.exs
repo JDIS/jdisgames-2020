@@ -5,7 +5,8 @@ defmodule RealTimeTest do
   @moduletag timeout: 335_000
 
   alias DiepIO.Core.{Action, Clock}
-  alias DiepIO.{ActionStorage, Gameloop, PerformanceMonitor, Repo, UsersRepository}
+  alias DiepIO.{ActionStorage, Gameloop, Repo, UsersRepository}
+  alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
@@ -26,14 +27,14 @@ defmodule RealTimeTest do
     start_and_wait_until_completion(get_gameloop_spec(1000))
 
     {:ok, stats} = PerformanceMonitor.get_gameloop_stats()
-    assert stats[:max] <= 333
+    assert stats.max <= 333
   end
 
   test "standard deviation of time between state updates should be under 10ms" do
     start_and_wait_until_completion(get_gameloop_spec(15))
 
     {:ok, stats} = PerformanceMonitor.get_broadcast_stats()
-    assert stats[:std_dev] <= 10
+    assert stats.std_dev <= 10
   end
 
   # Starts the gameloop and returns :ok when it end

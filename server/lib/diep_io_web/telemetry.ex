@@ -75,7 +75,7 @@ defmodule DiepIOWeb.Telemetry do
 
   def periodic_measurements do
     [
-      {DiepIO.PerformanceMonitor, :get_broadcast_stats, []}
+      {DiepIO.Performance.Monitor, :get_broadcast_stats, []}
     ]
   end
 end

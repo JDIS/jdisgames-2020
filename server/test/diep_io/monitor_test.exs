@@ -1,7 +1,7 @@
 defmodule PerformanceMonitorStatelessTest do
   use ExUnit.Case
 
-  alias DiepIO.PerformanceMonitor
+  alias DiepIO.Performance.Monitor, as: PerformanceMonitor
 
   setup do
     init_state = %{gameloop_times: [], time_unit: :native, broadcast_times: []}
@@ -73,7 +73,7 @@ end
 defmodule PerformanceMonitorStatefulTest do
   use ExUnit.Case, async: false
 
-  alias DiepIO.PerformanceMonitor
+  alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias :erlang, as: Erlang
 
   setup do
@@ -103,7 +103,7 @@ defmodule PerformanceMonitorStatefulTest do
     Enum.each(durations, &PerformanceMonitor.store_gameloop_duration/1)
 
     {:ok, stats} = PerformanceMonitor.get_gameloop_stats()
-    assert stats[:average] == average
+    assert stats.average == average
   end
 
   test "get_gameloop_stats/0 returns the correct standard deviation",
@@ -111,7 +111,7 @@ defmodule PerformanceMonitorStatefulTest do
     Enum.each(durations, &PerformanceMonitor.store_gameloop_duration/1)
 
     {:ok, stats} = PerformanceMonitor.get_gameloop_stats()
-    assert stats[:std_dev] == std_dev
+    assert stats.std_dev == std_dev
   end
 
   test "get_gameloop_stats/0 returns the correct maximum",
@@ -119,7 +119,7 @@ defmodule PerformanceMonitorStatefulTest do
     Enum.each(durations, &PerformanceMonitor.store_gameloop_duration/1)
 
     {:ok, stats} = PerformanceMonitor.get_gameloop_stats()
-    assert stats[:max] == max
+    assert stats.max == max
   end
 
   test "get_gameloop_stats/0 returns an error when there is no data" do
@@ -151,7 +151,7 @@ defmodule PerformanceMonitorStatefulTest do
     Enum.each(times, &PerformanceMonitor.store_broadcasted_at/1)
 
     {:ok, stats} = PerformanceMonitor.get_broadcast_stats()
-    assert stats[:average] == average
+    assert stats.average == average
   end
 
   test "get_broadcast_stats/0 returns the correct standard deviation",
@@ -159,7 +159,7 @@ defmodule PerformanceMonitorStatefulTest do
     Enum.each(times, &PerformanceMonitor.store_broadcasted_at/1)
 
     {:ok, stats} = PerformanceMonitor.get_broadcast_stats()
-    assert stats[:std_dev] == std_dev
+    assert stats.std_dev == std_dev
   end
 
   test "get_broadcast_stats/0 returns the correct maximum",
@@ -167,7 +167,7 @@ defmodule PerformanceMonitorStatefulTest do
     Enum.each(times, &PerformanceMonitor.store_broadcasted_at/1)
 
     {:ok, stats} = PerformanceMonitor.get_broadcast_stats()
-    assert stats[:max] == max
+    assert stats.max == max
   end
 
   test "get_broadcast_stats/0 returns an error given no data" do

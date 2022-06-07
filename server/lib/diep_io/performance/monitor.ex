@@ -1,4 +1,4 @@
-defmodule DiepIO.PerformanceMonitor do
+defmodule DiepIO.Performance.Monitor do
   @moduledoc """
     Monitors the performance of the application with regards to our real time constraints.
 
@@ -17,12 +17,7 @@ defmodule DiepIO.PerformanceMonitor do
   alias :erlang, as: Erlang
   alias :math, as: Math
   alias :telemetry, as: Telemetry
-
-  @type stats :: %{
-          average: float(),
-          std_dev: float(),
-          max: float()
-        }
+  alias DiepIO.Performance.Stats
 
   @telemetry_prefix [:game, :performance]
 
@@ -32,7 +27,7 @@ defmodule DiepIO.PerformanceMonitor do
   def store_gameloop_duration(iteration_time),
     do: GenServer.cast(__MODULE__, {:add_gameloop, iteration_time})
 
-  @spec get_gameloop_stats :: {:ok, stats()} | {:error, String.t()}
+  @spec get_gameloop_stats :: {:ok, Stats.t()} | {:error, String.t()}
   def get_gameloop_stats, do: GenServer.call(__MODULE__, {:get_gameloop}) |> calculate_stats()
 
   @spec get_gameloop_durations :: [integer()]
@@ -41,11 +36,11 @@ defmodule DiepIO.PerformanceMonitor do
   @spec store_broadcasted_at(integer()) :: :ok
   def store_broadcasted_at(time), do: GenServer.cast(__MODULE__, {:add_broadcast, time})
 
-  @spec get_broadcast_stats :: {:ok, stats()} | {:error, String.t()}
+  @spec get_broadcast_stats :: {:ok, Stats.t()} | {:error, String.t()}
   def get_broadcast_stats do
     case GenServer.call(__MODULE__, {:get_broadcast}) |> calculate_stats() do
       {:ok, stats} ->
-        Telemetry.execute(@telemetry_prefix, %{broadcast_time_std_dev: stats[:std_dev]}, %{})
+        Telemetry.execute(@telemetry_prefix, %{broadcast_time_std_dev: stats.std_dev}, %{})
         {:ok, stats}
 
       {:error, err} ->
@@ -76,11 +71,7 @@ defmodule DiepIO.PerformanceMonitor do
 
     max = Enum.max(times)
 
-    stats = %{
-      average: average,
-      std_dev: std_dev,
-      max: max
-    }
+    stats = Stats.new(average: average, std_dev: std_dev, max: max)
 
     {:ok, stats}
   end

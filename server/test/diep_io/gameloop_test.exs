@@ -1,7 +1,8 @@
 defmodule GameloopTest do
   use DiepIO.DataCase, async: false
 
-  alias DiepIO.{ActionStorage, Gameloop, PerformanceMonitor, ScoreRepository, UsersRepository}
+  alias DiepIO.{ActionStorage, Gameloop, ScoreRepository, UsersRepository}
+  alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Action, Clock, GameState}
   alias DiepIOSchemas.Score
   alias :ets, as: Ets
