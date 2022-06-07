@@ -77,7 +77,7 @@ export class Tank {
         this.projectile_damage = newServerTank.projectile_damage
         this.position = {x: newServerTank.position[0], y: newServerTank.position[1]}
         this.upgrade_levels = newServerTank.upgrade_levels
-        const combatLevel = Object.values(newServerTank.upgrade_levels).reduce((accumulator, value) => accumulator + value, 0)
+        const combatLevel = Object.values(newServerTank.upgrade_levels).reduce((accumulator, value) => accumulator + value)
         this.combatLevel.fabricObj.set('text', combatLevel.toString())
 
         if (newServerTank.current_hp < this.current_hp && newServerTank.max_hp === this.max_hp) {
