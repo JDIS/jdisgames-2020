@@ -1,4 +1,8 @@
 defmodule DiepIO.Performance.Stats do
+  @moduledoc """
+  Statistics about the performance of the application.
+  """
+
   @enforce_keys [:average, :std_dev, :max]
   defstruct [:average, :std_dev, :max]
 
