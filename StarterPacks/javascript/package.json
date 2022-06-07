@@ -1,0 +1,19 @@
+{
+  "name": "starter-pack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "postinstall": "patch-package"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "9.3.0",
+    "patch-package": "6.4.7",
+    "phoenix": "1.6.10",
+    "queue": "6.0.2",
+    "websocket-polyfill": "0.0.3"
+  }
+}

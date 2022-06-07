@@ -26,7 +26,6 @@ async def start(secret_key, loop, is_ranked):
     async with Socket().connect(bot_url) as bot_connection:
         async with Socket().connect(spectate_url) as spectate_connection:
 
-            bot = None
             queue: Queue = Queue(maxsize=1)
 
             async def on_state_update(state):
@@ -38,17 +37,11 @@ async def start(secret_key, loop, is_ranked):
                     queue.get_nowait()
                 queue.put_nowait(parsed_state)
 
-            async def on_receive_id(id):
-                global bot
-
-                bot = MyBot(id["id"])
-
             game_name = get_game_name(is_ranked)
 
             action_channel: Channel = await bot_connection.channel(f"action:{game_name}")
             game_state_channel = await spectate_connection.channel(f"game_state:{game_name}")
 
-            action_channel.on("id", on_receive_id)
             game_state_channel.on("new_state", on_state_update)
 
             # Receive channel join confirmation
@@ -57,8 +50,13 @@ async def start(secret_key, loop, is_ranked):
                 print(f"Couldn't connect to game \"{game_name}\": {response.payload['response']['error']}")
                 quit()
 
+            await bot_connection.send(Message("get_id", f"action:{game_name}", {}))
+
             # Receive id
-            await bot_connection.receive()
+            response = await bot_connection.receive()
+
+            global bot
+            bot = MyBot(response.payload["response"]["id"])
 
             # start the tick task
             task = loop.create_task(tick(queue, bot_connection, game_name))
@@ -106,7 +104,7 @@ def str2bool(v):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Starts your bot!")
     parser.add_argument(
-        "-s", "--secret", help="The secret which authentifies your bot", required=True)
+        "-s", "--secret", help="The secret which authenticates your bot", required=True)
     parser.add_argument(
         "-r", "--is_ranked", help="Whether the bot should connect to the ranked game (True) or the practice one (False). Defaults to True", type=str2bool, const=True, default=True, nargs='?')
     args = parser.parse_args()

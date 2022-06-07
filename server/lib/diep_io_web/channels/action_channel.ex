@@ -18,8 +18,6 @@ defmodule DiepIOWeb.ActionChannel do
   end
 
   def handle_info(:after_join, %{assigns: %{user_id: user_id, game_name: game_name}} = socket) do
-    push(socket, "id", %{id: user_id})
-
     {:ok, _} = Presence.track(socket, user_id, %{connected: game_name})
 
     {:noreply, socket}
@@ -33,6 +31,10 @@ defmodule DiepIOWeb.ActionChannel do
     |> store_action(game_name)
 
     {:noreply, socket}
+  end
+
+  def handle_in("get_id", _, socket) do
+    {:reply, {:ok, %{"id" => socket.assigns.user_id}}, socket}
   end
 
   defp parse_action(action, tank_id) do

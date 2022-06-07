@@ -1,0 +1,64 @@
+diff --git a/node_modules/phoenix/priv/static/phoenix.cjs.js b/node_modules/phoenix/priv/static/phoenix.cjs.js
+index 362f9cb..7dc6039 100644
+--- a/node_modules/phoenix/priv/static/phoenix.cjs.js
++++ b/node_modules/phoenix/priv/static/phoenix.cjs.js
+@@ -367,11 +367,11 @@ var Channel = class {
+ // js/phoenix/ajax.js
+ var Ajax = class {
+   static request(method, endPoint, accept, body, timeout, ontimeout, callback) {
+-    if (global.XDomainRequest) {
+-      let req = new global.XDomainRequest();
++    if (globalThis.XDomainRequest) {
++      let req = new globalThis.XDomainRequest();
+       this.xdomainRequest(req, method, endPoint, body, timeout, ontimeout, callback);
+     } else {
+-      let req = new global.XMLHttpRequest();
++      let req = new globalThis.XMLHttpRequest();
+       this.xhrRequest(req, method, endPoint, accept, body, timeout, ontimeout, callback);
+     }
+   }
+@@ -778,7 +778,7 @@ var Socket = class {
+     this.sendBuffer = [];
+     this.ref = 0;
+     this.timeout = opts.timeout || DEFAULT_TIMEOUT;
+-    this.transport = opts.transport || global.WebSocket || LongPoll;
++    this.transport = opts.transport || globalThis.WebSocket || LongPoll;
+     this.establishedConnections = 0;
+     this.defaultEncoder = serializer_default.encode.bind(serializer_default);
+     this.defaultDecoder = serializer_default.decode.bind(serializer_default);
+@@ -867,7 +867,6 @@ var Socket = class {
+     }
+     this.closeWasClean = false;
+     this.conn = new this.transport(this.endPointURL());
+-    this.conn.binaryType = this.binaryType;
+     this.conn.timeout = this.longpollerTimeout;
+     this.conn.onopen = () => this.onConnOpen();
+     this.conn.onerror = (error) => this.onConnError(error);
+diff --git a/node_modules/phoenix/priv/static/phoenix.js b/node_modules/phoenix/priv/static/phoenix.js
+index 681ba78..e7df2e0 100644
+--- a/node_modules/phoenix/priv/static/phoenix.js
++++ b/node_modules/phoenix/priv/static/phoenix.js
+@@ -367,11 +367,11 @@ var Phoenix = (() => {
+   // js/phoenix/ajax.js
+   var Ajax = class {
+     static request(method, endPoint, accept, body, timeout, ontimeout, callback) {
+-      if (global.XDomainRequest) {
+-        let req = new global.XDomainRequest();
++      if (globalThis.XDomainRequest) {
++        let req = new globalThis.XDomainRequest();
+         this.xdomainRequest(req, method, endPoint, body, timeout, ontimeout, callback);
+       } else {
+-        let req = new global.XMLHttpRequest();
++        let req = new globalThis.XMLHttpRequest();
+         this.xhrRequest(req, method, endPoint, accept, body, timeout, ontimeout, callback);
+       }
+     }
+@@ -778,7 +778,7 @@ var Phoenix = (() => {
+       this.sendBuffer = [];
+       this.ref = 0;
+       this.timeout = opts.timeout || DEFAULT_TIMEOUT;
+-      this.transport = opts.transport || global.WebSocket || LongPoll;
++      this.transport = opts.transport || globalThis.WebSocket || LongPoll;
+       this.establishedConnections = 0;
+       this.defaultEncoder = serializer_default.encode.bind(serializer_default);
+       this.defaultDecoder = serializer_default.decode.bind(serializer_default);
