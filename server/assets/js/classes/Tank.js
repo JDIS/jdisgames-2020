@@ -28,7 +28,8 @@ export class Tank {
         this.name = new FabricText(serverTank.name, serverTank.position[0], serverTank.position[1] + NAME_OFFSET)
         this.healthBar = new HealthBar(serverTank)
         this.score = serverTank.score
-        this.toCanvas = new fabric.Group([this.body, this.name.fabricObj, this.healthBar.toCanvas])
+        this.combatLevel = new FabricText("0", serverTank.position[0], serverTank.position[1])
+        this.toCanvas = new fabric.Group([this.body, this.name.fabricObj, this.healthBar.toCanvas, this.combatLevel.fabricObj])
         this.destinationLine = this.createDestinationLine()
         this.targetLine = this.createTargetLine()
     }
@@ -76,9 +77,10 @@ export class Tank {
         this.projectile_damage = newServerTank.projectile_damage
         this.position = {x: newServerTank.position[0], y: newServerTank.position[1]}
         this.upgrade_levels = newServerTank.upgrade_levels
+        const combatLevel = Object.values(newServerTank.upgrade_levels).reduce((accumulator, value) => accumulator + value)
+        this.combatLevel.fabricObj.set('text', combatLevel.toString())
 
         if (newServerTank.current_hp < this.current_hp && newServerTank.max_hp === this.max_hp) {
-
             hitCallback(this)
         }
 
@@ -180,7 +182,7 @@ export class Tank {
             width: 15,
             height: 27,
             fill: 'black',
-            left: 30,
+            left: 40,
             centeredRotation: false,
             originX: 'center',
             originY: 'center',
