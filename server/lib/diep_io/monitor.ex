@@ -18,6 +18,12 @@ defmodule DiepIO.PerformanceMonitor do
   alias :math, as: Math
   alias :telemetry, as: Telemetry
 
+  @type stats :: %{
+          average: float(),
+          std_dev: float(),
+          max: float()
+        }
+
   @telemetry_prefix [:game, :performance]
 
   def start_link(time_unit), do: GenServer.start(__MODULE__, [time_unit], name: __MODULE__)
@@ -26,7 +32,7 @@ defmodule DiepIO.PerformanceMonitor do
   def store_gameloop_duration(iteration_time),
     do: GenServer.cast(__MODULE__, {:add_gameloop, iteration_time})
 
-  @spec get_gameloop_stats :: {float(), float(), float()} | {:error, String.t()}
+  @spec get_gameloop_stats :: {:ok, stats()} | {:error, String.t()}
   def get_gameloop_stats, do: GenServer.call(__MODULE__, {:get_gameloop}) |> calculate_stats()
 
   @spec get_gameloop_durations :: [integer()]
@@ -35,12 +41,12 @@ defmodule DiepIO.PerformanceMonitor do
   @spec store_broadcasted_at(integer()) :: :ok
   def store_broadcasted_at(time), do: GenServer.cast(__MODULE__, {:add_broadcast, time})
 
-  @spec get_broadcast_stats :: {float(), float(), float()} | {:error, String.t()}
+  @spec get_broadcast_stats :: {:ok, stats()} | {:error, String.t()}
   def get_broadcast_stats do
     case GenServer.call(__MODULE__, {:get_broadcast}) |> calculate_stats() do
-      {_, std_dev, _} = stats ->
-        Telemetry.execute(@telemetry_prefix, %{broadcast_time_std_dev: std_dev}, %{})
-        stats
+      {:ok, stats} ->
+        Telemetry.execute(@telemetry_prefix, %{broadcast_time_std_dev: stats[:std_dev]}, %{})
+        {:ok, stats}
 
       {:error, err} ->
         {:error, err}
@@ -70,7 +76,13 @@ defmodule DiepIO.PerformanceMonitor do
 
     max = Enum.max(times)
 
-    {average, std_dev, max}
+    stats = %{
+      average: average,
+      std_dev: std_dev,
+      max: max
+    }
+
+    {:ok, stats}
   end
 
   # Server callbacks
