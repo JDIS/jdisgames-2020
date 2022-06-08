@@ -38,7 +38,7 @@ export function initFabricAndCreateMainCanvas() {
         height: 500,
         selection: false,
         renderOnAddRemove: false,
-        backgroundColor: 'rgb(255,255,255)'
+        backgroundColor: 'rgb(205,205,205)'
     });
 
     canvas.setBackgroundImage('/images/jdis.svg', null, {
@@ -46,10 +46,11 @@ export function initFabricAndCreateMainCanvas() {
         angle: 0,
         top: MAP_HEIGHT / 2,
         left: MAP_WIDTH / 2,
-        width: MAP_WIDTH / 1.05,
-        height: MAP_HEIGHT / 1.05,
+        width: MAP_WIDTH / 1.00,
+        height: MAP_HEIGHT / 1.00,
         originX: 'center',
-        originY: 'center'
+        originY: 'center',
+        backgroundColor: 'rgb(255,255,255)'
     })
 
     return canvas
@@ -72,8 +73,8 @@ export function createMinimap() {
             angle: 0,
             top: MAP_HEIGHT / 2,
             left: MAP_WIDTH / 2,
-            width: MAP_WIDTH / 1.05,
-            height: MAP_HEIGHT / 1.05,
+            width: MAP_WIDTH / 1.00,
+            height: MAP_HEIGHT / 1.00,
             originX: 'center',
             originY: 'center'
         });
