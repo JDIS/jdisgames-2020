@@ -42,7 +42,7 @@ export function initFabricAndCreateMainCanvas() {
     });
 
     canvas.setBackgroundImage('/images/jdis.svg', null, {
-        opacity: 0.2,
+        opacity: 0.6,
         angle: 0,
         top: MAP_HEIGHT / 2,
         left: MAP_WIDTH / 2,

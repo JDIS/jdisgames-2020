@@ -18,7 +18,6 @@ config :diep_io, DiepIO.Repo, url: DiepIOConfig.database_url()
 if config_env() == :prod do
   config :diep_io, DiepIOWeb.Endpoint,
     server: true,
-    url: [host: "example.com", port: 443],
     cache_static_manifest: "priv/static/cache_manifest.json",
     http: [
       ip: {0, 0, 0, 0},

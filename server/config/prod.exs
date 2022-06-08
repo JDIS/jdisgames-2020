@@ -19,7 +19,7 @@ config :diep_io, DiepIOWeb.Endpoint,
   #  keyfile: "priv/cert/selfsigned_key.pem",
   #  certfile: "priv/cert/selfsigned.pem"
   # ],
-  check_origin: true
+  check_origin: false
 
 # Do not print debug messages in production
 config :logger, level: :info
