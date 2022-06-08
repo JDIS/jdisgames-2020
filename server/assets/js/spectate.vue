@@ -16,7 +16,7 @@
                         <canvas id="minimap" style="border: 1px solid green;position:absolute;top:5px;left:5px"></canvas>
                     </div>
                 </div>
-                <div class="three columns" style="position: absolute; right: 0; background-color: rgba(255,255,255,0.7);padding: 0.5em;margin:0;">
+                <div class="three columns" style="position: absolute; right: -1em; background-color: rgba(255,255,255,0.7);padding: 0.5em;margin:0;">
                     <div v-if="focusedPlayer">
                         <h3 style="margin-bottom: 0;text-align: center">{{focusedPlayer.name.text}}</h3>
                         <div style="width:100%; height: 15px" :style="{'background': `${focusedPlayer.color}`}"></div>
@@ -52,7 +52,7 @@
 
                         </table>
                     </div>
-                    <div>
+                    <div style="max-height: 55.5vh; overflow-y:scroll">
                         <div class="flex">
                             <strong class="rank">#</strong>
                             <div class="player-name">Team</div>
