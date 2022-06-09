@@ -5,7 +5,7 @@ require('websocket-polyfill')
 
 const BASE_URL = "ws://127.0.0.1:4000/socket"
 
-const q = require('queue')({ autostart: true, concurrency: 1, timeout: 333 })
+const q = require('queue')({ autostart: true, concurrency: 1 })
 
 function getGameName(isRanked) {
   if (isRanked) {
