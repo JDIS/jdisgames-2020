@@ -31,12 +31,10 @@ class Socket:
         return self._channels[topic]
 
     async def send(self, message):
-        logging.info("Sending: {}".format(message.to_json()))
         await self._websocket.send(message.to_json())
 
     async def receive(self):
         message = await self._websocket.recv()
-        logging.info("Receiving: {}".format(message))
         message = Message.from_json(message)
         asyncio.ensure_future(self._dispatch(message))
         return message
