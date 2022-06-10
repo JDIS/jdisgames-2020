@@ -1,4 +1,15 @@
 defmodule Mix.Tasks.StressTest do
+  @moduledoc """
+  Runs a stress test on the whole system.
+
+  Starts the server as well as 30 parallel instances of a bot.
+
+  Which bot is started can be configured through the first and only parameter of
+  the command. Allowed values are:
+  - js: Starts the javascript bot (default)
+  - py: Starts the python bot
+  """
+
   use Mix.Task
 
   @bot_count 8
