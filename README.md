@@ -70,3 +70,7 @@ Une fois ces dépendances installées, assurez-vous d'avoir une base de données
 - **nom de la base de données** : diep_io_dev
 
 Le reste des instructions de développement sont disponibles dans le [fichier README du serveur](server/README.md).
+
+## Stress test
+
+La tâche mix `stress_test` est disponible pour stress tester l'application. Elle démarre le serveur et 30 bots et doit être interrompue avec `CTRL+C`.
