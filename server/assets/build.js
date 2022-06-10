@@ -2,6 +2,14 @@ const esbuild = require('esbuild');
 const esbuildVue = require('esbuild-plugin-vue-next');
 const { copy } = require('esbuild-plugin-copy');
 
+const shouldWatch = process.argv.includes('--watch')
+
+// Abort the watcher if stdin is closed to avoid zombie processes
+if (shouldWatch) {
+	process.stdin.on('end', () => process.exit(0))
+	process.stdin.resume()
+}
+
 esbuild.build({
 	entryPoints: {
 		'js/app': 'js/app.js',
@@ -15,6 +23,6 @@ esbuild.build({
 	sourcemap: 'linked',
 	outdir: '../priv/static',
 	plugins: [esbuildVue(), copy({ assets: { from: './static/**/*', to: '.'}, keepStructure: true })],
-	watch: process.argv.includes('--watch'),
+	watch: shouldWatch,
 	target: 'es2020'
 });
