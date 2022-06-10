@@ -4,8 +4,9 @@ const { Socket } = require("phoenix")
 require('websocket-polyfill')
 
 const BASE_URL = "ws://127.0.0.1:4000/socket"
+const MIN_TICKS_PER_SECOND = 3
 
-const q = require('queue')({ autostart: true, concurrency: 1 })
+const q = require('queue')({ autostart: true, concurrency: 1, timeout: 1000 / MIN_TICKS_PER_SECOND })
 
 function getGameName(isRanked) {
   if (isRanked) {
