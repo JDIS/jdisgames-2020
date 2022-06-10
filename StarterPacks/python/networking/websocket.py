@@ -36,6 +36,7 @@ class Socket:
     async def receive(self):
         message = await self._websocket.recv()
         message = Message.from_json(message)
+        logging.debug("Receiving: {}".format(message))
         asyncio.ensure_future(self._dispatch(message))
         return message
 
