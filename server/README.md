@@ -36,3 +36,13 @@ echo "Seeding database before starting..."
 
 DIEP_SECRET_KEY_BASE=$(cat secret_key.txt) bin/diep_io eval "DiepIORelease.seed"
 ```
+
+## Https
+
+### Certificat
+
+On va devoir générer un certificat en utilisant Let's Encrypt. On va ensuite devoir mettre le certificate bundle (le certificat + le CA chain) à `/etc/jdisgames2020/cert/cert.pem` et la clé privée à `/etc/jdisgames2020/cert/key.pem`.
+
+### URL
+
+Il va falloir configurer le host avec la variable d'environnement `DIEP_HOST`.
