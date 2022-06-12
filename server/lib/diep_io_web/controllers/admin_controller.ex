@@ -7,11 +7,16 @@ defmodule DiepIOWeb.AdminController do
     render(conn, "index.html")
   end
 
-  def start_game(conn, %{"ticks" => ticks, "game_name" => game_name} = _params) do
+  def start_game(conn, %{"ticks" => ticks, "game_name" => game_name} = params) do
+    game_params = %{
+      max_debris_count: params["max_debris_count"] || 400,
+      max_debris_generation_rate: params["max_debris_generation_rate"] || 0.15
+    }
+
     {:ok, pid} =
       ticks
       |> String.to_integer()
-      |> GameSupervisor.start_game(game_name)
+      |> GameSupervisor.start_game(game_params, game_name)
 
     finish_call(conn, "Started game \"#{game_name}\": #{inspect(pid)}")
   end

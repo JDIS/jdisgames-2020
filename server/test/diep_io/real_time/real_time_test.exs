@@ -9,6 +9,10 @@ defmodule RealTimeTest do
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
+  @game_params %{
+    max_debris_count: 400,
+    max_debris_generation_rate: 0.15
+  }
   @game_time 1000
   @game_name :what_a_name
 
@@ -78,6 +82,7 @@ defmodule RealTimeTest do
       name: @game_name,
       is_ranked: false,
       monitor_performance?: true,
+      game_params: @game_params,
       clock: Clock.new(tick_rate, @game_time)
     ]
   end

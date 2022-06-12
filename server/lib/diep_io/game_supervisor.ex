@@ -8,6 +8,7 @@ defmodule DiepIO.GameSupervisor do
 
   alias DiepIO.Core.Clock
   alias DiepIO.Gameloop
+  alias DiepIO.Core.GameState
 
   @main_game_name :main_game
   @secondary_game_name :secondary_game
@@ -16,13 +17,13 @@ defmodule DiepIO.GameSupervisor do
   @spec start_link([]) :: {:ok, pid()}
   def start_link([]), do: DynamicSupervisor.start_link(__MODULE__, [], name: __MODULE__)
 
-  @spec start_game(non_neg_integer(), String.t()) :: {:ok, pid()}
-  def start_game(game_time, "main_game") do
-    start_game(@main_game_name, true, game_time, 15, true)
+  @spec start_game(non_neg_integer(), GameState.game_params(), String.t()) :: {:ok, pid()}
+  def start_game(game_time, game_params, "main_game") do
+    start_game(@main_game_name, true, game_time, 15, true, game_params)
   end
 
-  def start_game(game_time, "secondary_game") do
-    start_game(@secondary_game_name, false, game_time, 15, false)
+  def start_game(game_time, game_params, "secondary_game") do
+    start_game(@secondary_game_name, false, game_time, 15, false, game_params)
   end
 
   @spec stop_game(String.t()) :: :ok
@@ -37,12 +38,13 @@ defmodule DiepIO.GameSupervisor do
   def init([]), do: DynamicSupervisor.init(strategy: :one_for_one)
 
   # Privates
-  defp start_game(name, is_ranked, game_time, tick_rate, monitor_performance?) do
+  defp start_game(name, is_ranked, game_time, tick_rate, monitor_performance?, game_params) do
     spec =
       {Gameloop,
        name: name,
        is_ranked: is_ranked,
        monitor_performance?: monitor_performance?,
+       game_params: game_params,
        clock: Clock.new(tick_rate, game_time)}
 
     DynamicSupervisor.start_child(__MODULE__, spec)
