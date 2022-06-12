@@ -18,8 +18,15 @@ services:
       DIEP_SECRET_KEY_BASE: mIuSqWDD1cx8VTPTpaZYVp2ItVk84OReX3PQpLojSkdXZ0Y05jeLkaJOnXKPvMn7
       DIEP_ADMIN_USERNAME: admin
       DIEP_ADMIN_PASSWORD: admin
+      #DIEP_HTTPS_KEYFILE: /app/cert/key.pem
+      #DIEP_HTTPS_CERTFILE: /app/cert/cert.pem
+      #DIEP_HOST: localhost
     ports:
       - "80:80"
       - "443:443"
     restart: on-failure
+    volumes:
+      - /etc/jdisgames2020/cert:/app/cert
 
+volumes:
+  https-cert:
