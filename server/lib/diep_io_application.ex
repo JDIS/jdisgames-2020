@@ -5,7 +5,8 @@ defmodule DiepIOApplication do
 
   use Application
 
-  alias DiepIO.{GameSupervisor, PerformanceMonitor, Repo}
+  alias DiepIO.{GameSupervisor, Repo}
+  alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIOWeb.{Endpoint, Presence}
 
   def start(_type, _args) do

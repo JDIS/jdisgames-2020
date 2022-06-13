@@ -11,7 +11,7 @@ defmodule DiepIO.Core.Tank do
   @default_projectile_damage 20
   @default_body_damage 20
   @default_hp_regen 0.4
-  @default_radius 25
+  @default_radius 35
 
   @upgrade_rates [
     max_hp: &Upgrade.max_hp/1,
@@ -135,7 +135,8 @@ defmodule DiepIO.Core.Tank do
 
   @spec add_experience(t(), integer) :: t()
   def add_experience(tank, amount) do
-    token_to_add = get_token_amount_from_experience(tank.experience + amount) - upgrade_tokenss_spent(tank)
+    token_to_add =
+      get_token_amount_from_experience(tank.experience + amount) - upgrade_tokens_spent(tank) - tank.upgrade_tokens
 
     tank
     |> add_to_value(:experience, amount)
@@ -166,10 +167,7 @@ defmodule DiepIO.Core.Tank do
     angle = Angle.radian(tank.position, tank.target)
     projectile = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage)
 
-    updated_tank =
-      tank
-      |> set_cooldown
-      |> set_cannon_angle(tank.target)
+    updated_tank = set_cooldown(tank)
 
     {updated_tank, projectile}
   end
@@ -186,6 +184,10 @@ defmodule DiepIO.Core.Tank do
 
   def decrease_cooldown(tank) do
     remove_from_value(tank, :cooldown, 1)
+  end
+
+  def set_cannon_angle(tank, nil) do
+    set_cannon_angle(tank, tank.position)
   end
 
   @spec set_cannon_angle(t(), Position.t()) :: t()
@@ -270,7 +272,7 @@ defmodule DiepIO.Core.Tank do
     |> func.()
   end
 
-  defp upgrade_tokenss_spent(tank) do
+  defp upgrade_tokens_spent(tank) do
     tank.upgrade_levels
     |> Map.values()
     |> Enum.sum()

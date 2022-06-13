@@ -1,3 +1,4 @@
+import { fabric } from "fabric";
 import {ANIMATION_DURATION, FADE_DURATION, linear, PROJECTILE_RADIUS} from "../modules/constants";
 
 

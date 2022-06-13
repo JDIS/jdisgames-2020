@@ -27,3 +27,12 @@ Pour exécuter tous les tests sauf les tests temps réel: `mix test`
 Pour exécuter uniquement les tests temps réel: `mix test --only RT`
 
 Pour exécuter tous les tests: `mix test --include RT`
+
+## Seeds
+To add seeded players, add this before starting the server in entrypoint.sh:
+
+```
+echo "Seeding database before starting..."
+
+DIEP_SECRET_KEY_BASE=$(cat secret_key.txt) bin/diep_io eval "DiepIORelease.seed"
+```

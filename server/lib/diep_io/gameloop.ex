@@ -5,7 +5,8 @@ defmodule DiepIO.Gameloop do
   """
 
   use GenServer
-  alias DiepIO.{ActionStorage, PerformanceMonitor, PubSub, ScoreRepository, UsersRepository}
+  alias DiepIO.{ActionStorage, PubSub, ScoreRepository, UsersRepository}
+  alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Clock, GameState}
   alias :erlang, as: Erlang
   require Logger
@@ -179,4 +180,6 @@ defmodule DiepIO.Gameloop do
     clock
     |> Clock.register(:client_tick, @client_tick_frequency)
   end
+
+  def client_tick_frequency, do: @client_tick_frequency
 end

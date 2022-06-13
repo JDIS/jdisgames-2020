@@ -1,3 +1,4 @@
+import { fabric } from 'fabric';
 import {
     FADE_DURATION,
     LARGE_DEBRIS_RADIUS,

@@ -93,6 +93,18 @@ defmodule GameStateTest do
     assert tank.position != updated_tank.position
   end
 
+  test "handle_tanks/2 change the cannon angle if given a target", %{game_state: game_state} do
+    tank = game_state |> Map.get(:tanks) |> Map.get(@user_id)
+
+    updated_tank =
+      game_state
+      |> GameState.handle_tanks([Action.new(@user_id, destination: Position.random(), target: Position.random())])
+      |> Map.get(:tanks)
+      |> Map.get(@user_id)
+
+    assert updated_tank.cannon_angle != tank.cannon_angle
+  end
+
   test "handle_debris/1 does not add debris if none is missing", %{game_state: game_state} do
     updated_state = GameState.handle_debris(game_state)
     assert Enum.count(game_state.debris) == Enum.count(updated_state.debris)

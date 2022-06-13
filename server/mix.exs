@@ -8,14 +8,15 @@ defmodule DiepIO.MixProject do
       elixir: "~> 1.13.0",
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [warnings_as_errors: true],
-      compilers: [:boundary, :phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:boundary, :phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
       boundary: boundary(),
       dialyzer: [
         plt_add_apps: [:ex_unit],
-        plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        ignore_warnings: "dialyzer.ignore-warnings"
       ]
     ]
   end
@@ -60,7 +61,6 @@ defmodule DiepIO.MixProject do
       {:postgrex, "== 0.16.2"},
       {:phoenix_html, "== 3.2.0"},
       {:phoenix_live_reload, "== 1.3.3", only: :dev},
-      {:gettext, "== 0.19.1"},
       {:jason, "== 1.3.0"},
       {:plug_cowboy, "== 2.5.2"},
       {:secure_random, "== 0.5.1"},

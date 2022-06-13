@@ -1,10 +1,6 @@
 ![pipeline status](https://github.com/JDIS/jdisgames-2020/workflows/Continuous%20Integration/badge.svg?branch=master)
 ![test-realtime status](https://github.com/JDIS/jdisgames-2020/workflows/Test%20real-time%20constraints/badge.svg?branch=master)
 
-[![coverage report](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/badges/master/coverage.svg)](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/commits/master)
-[![max iteration time](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/-/jobs/artifacts/master/raw/server/badges/max_iteration_time.svg?job=generate_badges)](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/commits/master)
-[![broadcast std dev](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/-/jobs/artifacts/master/raw/server/badges/broadcast_std_dev.svg?job=generate_badges)](https://depot.dinf.usherbrooke.ca/dinf/projets/h20/eq02-jdisgames/diep.io/commits/master)
-
 # JDIS Games 2020
 
 ## Démarrage
@@ -74,3 +70,7 @@ Une fois ces dépendances installées, assurez-vous d'avoir une base de données
 - **nom de la base de données** : diep_io_dev
 
 Le reste des instructions de développement sont disponibles dans le [fichier README du serveur](server/README.md).
+
+## Stress test
+
+La tâche mix `stress_test` est disponible pour stress tester l'application. Elle démarre le serveur et 30 bots et doit être interrompue avec `CTRL+C`.

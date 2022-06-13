@@ -1,3 +1,4 @@
+import { fabric } from 'fabric';
 import {ANIMATION_DURATION, linear, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR, TANK_RADIUS} from "../modules/constants";
 import {getColorFromId} from "../modules/utils";
 import {FabricText} from "./FabricText";
@@ -9,6 +10,8 @@ export class Tank {
     constructor(serverTank) {
         this.color = getColorFromId(serverTank.id)
         this.has_died = false
+        this.destination = serverTank.destination
+        this.target = serverTank.target
         this.fire_rate = serverTank.fire_rate
         this.hp_regen = serverTank.hp_regen
         this.upgrade_tokens = serverTank.upgrade_tokens
@@ -25,7 +28,10 @@ export class Tank {
         this.name = new FabricText(serverTank.name, serverTank.position[0], serverTank.position[1] + NAME_OFFSET)
         this.healthBar = new HealthBar(serverTank)
         this.score = serverTank.score
-        this.toCanvas = new fabric.Group([this.body, this.name.fabricObj, this.healthBar.toCanvas])
+        this.combatLevel = new FabricText("0", serverTank.position[0], serverTank.position[1])
+        this.toCanvas = new fabric.Group([this.body, this.name.fabricObj, this.healthBar.toCanvas, this.combatLevel.fabricObj])
+        this.destinationLine = this.createDestinationLine()
+        this.targetLine = this.createTargetLine()
     }
 
     left() {
@@ -35,7 +41,7 @@ export class Tank {
     top() {
         return this.toCanvas.top
     }
-    
+
     select() {
         this.body.item(0).stroke = SELECTED_TANK_OUTLINE_COLOR
         this.body.item(0).strokeWidth = 6
@@ -45,7 +51,7 @@ export class Tank {
         // Needed for a special case where changing lock to a tank in the same viewport as precedent selection.
         this.body.item(0).dirty = true // Invalidate caching
     }
-    
+
     unselect() {
         this.body.item(0).stroke = 'black'
         this.body.item(0).strokeWidth = 3
@@ -62,6 +68,8 @@ export class Tank {
     update(newServerTank, hitCallback) {
         this.score = newServerTank.score
         this.speed = newServerTank.speed
+        this.destination = newServerTank.destination
+        this.target = newServerTank.target
         this.hp_regen = newServerTank.hp_regen
         this.body_damage = newServerTank.body_damage
         this.upgrade_tokens = newServerTank.upgrade_tokens
@@ -69,11 +77,15 @@ export class Tank {
         this.projectile_damage = newServerTank.projectile_damage
         this.position = {x: newServerTank.position[0], y: newServerTank.position[1]}
         this.upgrade_levels = newServerTank.upgrade_levels
+        const combatLevel = Object.values(newServerTank.upgrade_levels).reduce((accumulator, value) => accumulator + value)
+        this.combatLevel.fabricObj.set('text', combatLevel.toString())
 
         if (newServerTank.current_hp < this.current_hp && newServerTank.max_hp === this.max_hp) {
-
             hitCallback(this)
         }
+
+        this.destinationLine.visible = false
+        this.targetLine.visible = false
 
         this.current_hp = newServerTank.current_hp
         this.max_hp = newServerTank.max_hp
@@ -113,6 +125,48 @@ export class Tank {
         this.has_died = newServerTank.has_died
     }
 
+    updateLines(canvas) {
+        canvas.remove(this.destinationLine)
+        canvas.remove(this.targetLine)
+        this.destinationLine = this.createDestinationLine()
+        this.targetLine = this.createTargetLine()
+        canvas.add(this.destinationLine)
+        canvas.add(this.targetLine)
+    }
+
+    createDestinationLine() {
+        let destinationX = this.position.x
+        let destinationY = this.position.y
+        if (this.destination) {
+            destinationX = this.destination[0];
+            destinationY = this.destination[1];
+        }
+        return new fabric.Line([this.toCanvas.left, this.toCanvas.top, destinationX, destinationY], {
+            stroke: this.color,
+            originX: 'left',
+            originY: 'top',
+            strokeWidth: 5,
+            visible: !(this.destination === undefined || this.destination === null)
+        })
+    }
+
+    createTargetLine() {
+        let targetX = this.position.x
+        let targetY = this.position.y
+        if (this.target) {
+            targetX = this.target[0];
+            targetY = this.target[1];
+        }
+        return new fabric.Line([this.toCanvas.left, this.toCanvas.top, targetX, targetY], {
+            stroke: this.color,
+            strokeDashArray: [10, 15],
+            strokeWidth: 5,
+            originX: 'left',
+            originY: 'top',
+            visible: !(this.target === undefined || this.target === null)
+        })
+    }
+
     createFabricObj(serverTank) {
         const tankCircle = new fabric.Circle({
             radius: TANK_RADIUS,
@@ -128,7 +182,7 @@ export class Tank {
             width: 15,
             height: 27,
             fill: 'black',
-            left: 30,
+            left: 40,
             centeredRotation: false,
             originX: 'center',
             originY: 'center',

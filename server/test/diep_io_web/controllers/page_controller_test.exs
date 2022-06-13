@@ -5,7 +5,7 @@ defmodule DiepIOWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, Routes.page_path(conn, :index))
-    assert html_response(conn, 200) =~ "<h1>JDIS Games 2020</h1>"
+    assert html_response(conn, 200) =~ "JDIS Games 2022"
   end
 
   test "GET /spectate", %{conn: conn} do

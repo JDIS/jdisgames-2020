@@ -32,7 +32,4 @@ defmodule DiepIOConfig do
 
   @spec admin_password() :: String.t()
   def admin_password, do: System.fetch_env!("DIEP_ADMIN_PASSWORD")
-
-  @spec custom_badges_location() :: String.t()
-  def custom_badges_location, do: System.get_env("DIEP_CUSTOM_BADGES_LOCATION", "./badges")
 end

@@ -12,6 +12,7 @@ defmodule DiepIO.GameSupervisor do
 
   @main_game_name :main_game
   @secondary_game_name :secondary_game
+  @default_tick_rate 15
 
   # Client
   @spec start_link([]) :: {:ok, pid()}
@@ -19,11 +20,11 @@ defmodule DiepIO.GameSupervisor do
 
   @spec start_game(non_neg_integer(), GameState.game_params(), String.t()) :: {:ok, pid()}
   def start_game(game_time, game_params, "main_game") do
-    start_game(@main_game_name, true, game_time, 15, true, game_params)
+    start_game(@main_game_name, true, game_time, @default_tick_rate, true, game_params)
   end
 
   def start_game(game_time, game_params, "secondary_game") do
-    start_game(@secondary_game_name, false, game_time, 15, false, game_params)
+    start_game(@secondary_game_name, false, game_time, @default_tick_rate, false, game_params)
   end
 
   @spec stop_game(String.t()) :: :ok
@@ -49,4 +50,6 @@ defmodule DiepIO.GameSupervisor do
 
     DynamicSupervisor.start_child(__MODULE__, spec)
   end
+
+  def default_tick_rate, do: @default_tick_rate
 end

@@ -5,7 +5,8 @@ defmodule RealTimeTest do
   @moduletag timeout: 335_000
 
   alias DiepIO.Core.{Action, Clock}
-  alias DiepIO.{ActionStorage, Gameloop, PerformanceMonitor, Repo, UsersRepository}
+  alias DiepIO.{ActionStorage, Gameloop, Repo, UsersRepository}
+  alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
@@ -15,9 +16,10 @@ defmodule RealTimeTest do
   }
   @game_time 1000
   @game_name :what_a_name
+  @number_of_users 200
 
   setup do
-    :ok = 1..40 |> Enum.each(fn i -> UsersRepository.create_user(%{name: "User#{i}"}) end)
+    :ok = 1..@number_of_users |> Enum.each(fn i -> UsersRepository.create_user(%{name: "User#{i}"}) end)
     users = Repo.all(User)
 
     {:ok, _pid} = start_supervised({Task, fn -> randomize_actions_infinite(users) end})
@@ -28,19 +30,15 @@ defmodule RealTimeTest do
   test "max game loop iteration time should be under 333ms" do
     start_and_wait_until_completion(get_gameloop_spec(1000))
 
-    {_average, _std_dev, max} = stats = PerformanceMonitor.get_gameloop_stats()
-    assert max <= 333
-
-    write_file("max_iteration_time", stats)
+    {:ok, stats} = PerformanceMonitor.get_gameloop_stats()
+    assert stats.max <= 333
   end
 
   test "standard deviation of time between state updates should be under 10ms" do
     start_and_wait_until_completion(get_gameloop_spec(15))
 
-    {_average, std_dev, _max} = stats = PerformanceMonitor.get_broadcast_stats()
-    assert std_dev <= 10
-
-    write_file("broadcast_std_dev", stats)
+    {:ok, stats} = PerformanceMonitor.get_broadcast_stats()
+    assert stats.std_dev <= 10
   end
 
   # Starts the gameloop and returns :ok when it end
@@ -67,14 +65,6 @@ defmodule RealTimeTest do
 
     Process.sleep(10)
     randomize_actions_infinite(users)
-  end
-
-  defp write_file(filename, {average, std_dev, max}) do
-    badges_location = Application.fetch_env!(:diep_io, :custom_badges_location)
-    File.mkdir(badges_location)
-    file_path = "#{badges_location}/#{filename}.json"
-    file_content = "{\"average\":#{average},\"std_dev\":#{std_dev},\"max\":#{max}}"
-    File.write!(file_path, file_content)
   end
 
   defp get_gameloop_spec(tick_rate) do
