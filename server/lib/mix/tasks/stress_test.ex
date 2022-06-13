@@ -48,7 +48,12 @@ defmodule Mix.Tasks.StressTest do
       Task.async(fn -> start_bot(user.secret_key, language) end)
     end
 
-    DiepIO.GameSupervisor.start_game(2000, "main_game")
+    game_params = %{
+      max_debris_count: 400,
+      max_debris_generation_rate: 0.15
+    }
+
+    DiepIO.GameSupervisor.start_game(2000, game_params, "main_game")
 
     receive do
       :never_gonna_receive_this ->
