@@ -7,8 +7,8 @@ defmodule DiepIO.GameSupervisor do
   use DynamicSupervisor
 
   alias DiepIO.Core.Clock
-  alias DiepIO.Gameloop
   alias DiepIO.Core.GameState
+  alias DiepIO.Gameloop
 
   @main_game_name :main_game
   @secondary_game_name :secondary_game
