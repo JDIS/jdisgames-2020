@@ -1,0 +1,55 @@
+import asyncio
+import logging
+
+import websockets
+
+from networking.message import Message
+from networking.channel import Channel
+
+logging.basicConfig(level=logging.INFO)
+
+
+class Socket:
+    def __init__(self, url):
+        self._url = url
+        self._websocket = None
+        self._channel_callbacks = {}
+
+    async def __aenter__(self):
+        await self.connect()
+        self._listen()
+        return self
+
+    async def __aexit__(self, _, __, ___):
+        await self.disconnect()
+
+    async def connect(self):
+        self._websocket = await websockets.connect(self._url)
+        logging.info(f"Connected to socket at {self._url}")
+
+    async def disconnect(self):
+        await self._websocket.close()
+
+    def channel(self, topic):
+        return Channel(topic, self)
+
+    def _register_channel(self, topic, callback):
+        self._channel_callbacks[topic] = callback
+
+    async def _receive(self):
+        message = await self._websocket.recv()
+        logging.debug("Receiving: {}".format(message))
+        message = Message.from_json(message)
+        asyncio.ensure_future(self._dispatch(message))
+        return message
+
+    def _listen(self):
+        async def async_listen():
+            while True:
+                await self._receive()
+
+        asyncio.get_running_loop().create_task(async_listen())
+
+    async def _dispatch(self, message):
+        if self._channel_callbacks.get(message.topic):
+            self._channel_callbacks[message.topic](message)
