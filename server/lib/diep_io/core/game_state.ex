@@ -9,8 +9,6 @@ defmodule DiepIO.Core.GameState do
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
-  @max_debris_count 400
-  @max_debris_generation_rate 0.15
   @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]
   @projectile_decay 1
   @experience_loss_rate 0.5
@@ -26,6 +24,8 @@ defmodule DiepIO.Core.GameState do
     :upgrade_rates,
     :game_id,
     :debris,
+    :max_debris_count,
+    :max_debris_generation_rate,
     :is_ranked,
     :projectiles,
     :monitor_performance?,
@@ -37,6 +37,8 @@ defmodule DiepIO.Core.GameState do
           name: atom(),
           tanks: %{integer() => Tank.t()},
           debris: [Debris.t()],
+          max_debris_count: integer(),
+          max_debris_generation_rate: float(),
           map_width: integer(),
           map_height: integer(),
           upgrade_rates: %{
@@ -55,12 +57,19 @@ defmodule DiepIO.Core.GameState do
           should_stop?: boolean()
         }
 
-  @spec new(atom(), [User.t()], integer(), boolean(), boolean(), Clock.t()) :: t()
-  def new(name, users, game_id, is_ranked, monitor_performance?, clock) do
+  @type game_params :: %{
+          max_debris_count: integer(),
+          max_debris_generation_rate: float()
+        }
+
+  @spec new(atom(), [User.t()], integer(), boolean(), boolean(), Clock.t(), game_params()) :: t()
+  def new(name, users, game_id, is_ranked, monitor_performance?, clock, game_params) do
     %__MODULE__{
       name: name,
       tanks: initialize_tanks(users),
-      debris: initialize_debris(),
+      debris: initialize_debris(game_params.max_debris_count),
+      max_debris_count: game_params.max_debris_count,
+      max_debris_generation_rate: game_params.max_debris_generation_rate,
       map_width: GameMap.width(),
       map_height: GameMap.height(),
       upgrade_rates: Upgrade.rates(),
@@ -411,7 +420,7 @@ defmodule DiepIO.Core.GameState do
   end
 
   defp generate_debris(game_state) do
-    case @max_debris_count - Enum.count(game_state.debris) do
+    case game_state.max_debris_count - Enum.count(game_state.debris) do
       full when full <= 0 ->
         game_state
 
@@ -420,7 +429,7 @@ defmodule DiepIO.Core.GameState do
 
         debris_count =
           case rand do
-            hit when hit < @max_debris_generation_rate -> max(round(rand * missing_count), 1)
+            hit when hit < game_state.max_debris_generation_rate -> max(round(rand * missing_count), 1)
             _ -> 0
           end
 
@@ -440,9 +449,7 @@ defmodule DiepIO.Core.GameState do
   defp initialize_tanks(users),
     do: users |> Map.new(fn user -> {user.id, Tank.new(user.id, user.name)} end)
 
-  defp initialize_debris, do: create_debris(@max_debris_count)
+  defp initialize_debris(max_debris_count), do: create_debris(max_debris_count)
 
   def experience_loss_rate, do: @experience_loss_rate
-
-  def max_debris_count, do: @max_debris_count
 end

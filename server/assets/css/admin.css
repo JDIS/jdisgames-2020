@@ -9,7 +9,7 @@
     justify-content: center;
 }
 
-#game-settings-container > .game-settings-wrapper:not(:first-child) {
+#game-settings-container>.game-settings-wrapper:not(:first-child) {
     margin-left: 20px;
 }
 
@@ -21,18 +21,19 @@
     padding: 10px;
 }
 
-.game-time-input {
+.label-input-wrapper input {
     max-width: 100px;
     margin-bottom: 0;
     margin-left: 5px;
 }
 
-.game-time-label {
+.label-input-wrapper label {
     margin-bottom: 0;
 }
 
 .label-input-wrapper {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
 }
