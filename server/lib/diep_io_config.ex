@@ -20,16 +20,18 @@ defmodule DiepIOConfig do
   @spec secret_key_base() :: String.t()
   def secret_key_base, do: System.fetch_env!("DIEP_SECRET_KEY_BASE")
 
-  @spec port() :: integer()
-  def port do
-    "DIEP_PORT"
-    |> System.get_env("4000")
-    |> String.to_integer()
-  end
-
   @spec admin_username() :: String.t()
   def admin_username, do: System.fetch_env!("DIEP_ADMIN_USERNAME")
 
   @spec admin_password() :: String.t()
   def admin_password, do: System.fetch_env!("DIEP_ADMIN_PASSWORD")
+
+  @spec https_keyfile() :: String.t()
+  def https_keyfile, do: System.get_env("DIEP_HTTPS_KEYFILE", "./priv/cert/selfsigned_key.pem")
+
+  @spec https_certfile() :: String.t()
+  def https_certfile, do: System.get_env("DIEP_HTTPS_CERTFILE", "./priv/cert/selfsigned.pem")
+
+  @spec host() :: String.t()
+  def host, do: System.get_env("DIEP_HOST", "localhost")
 end

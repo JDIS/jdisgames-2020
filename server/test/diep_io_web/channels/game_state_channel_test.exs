@@ -18,7 +18,12 @@ defmodule DiepIOWeb.GameStateChannelTest do
   end
 
   test "new_state broadcasts to game_state", %{game_name: game_name} do
-    state = GameState.new(game_name, [], 1, false, false, Clock.new(1, 1))
+    game_params = %{
+      max_debris_count: 400,
+      max_debris_generation_rate: 0.15
+    }
+
+    state = GameState.new(game_name, [], 1, false, false, Clock.new(1, 1), game_params)
     PubSub.broadcast!("new_state:#{game_name}", {:new_state, state})
     assert_broadcast("new_state", ^state)
   end

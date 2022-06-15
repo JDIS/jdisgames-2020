@@ -18,11 +18,20 @@ config :diep_io, DiepIO.Repo, url: DiepIOConfig.database_url()
 if config_env() == :prod do
   config :diep_io, DiepIOWeb.Endpoint,
     server: true,
+    url: [host: DiepIOConfig.host(), port: 443],
     cache_static_manifest: "priv/static/cache_manifest.json",
     http: [
       ip: {0, 0, 0, 0},
-      port: DiepIOConfig.port()
+      port: 80
     ],
+    https: [
+      ip: {0, 0, 0, 0},
+      port: 443,
+      cipher_suite: :strong,
+      keyfile: DiepIOConfig.https_keyfile(),
+      certfile: DiepIOConfig.https_certfile()
+    ],
+    check_origin: true,
     secret_key_base: DiepIOConfig.secret_key_base()
 end
 

@@ -40,9 +40,6 @@ npm-debug.log
 # Sobelow
 .sobelow
 
-# https certs
-/priv/cert/
-
 # IDE files
 .elixir_ls
 *.iml 

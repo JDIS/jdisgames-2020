@@ -22,12 +22,14 @@ defmodule DiepIO.Gameloop do
           name: atom(),
           is_ranked: boolean(),
           monitor_performance?: boolean(),
+          game_params: GameState.game_params(),
           clock: Clock.t()
         ) :: {:ok, pid()}
   def start_link(
         name: name,
         is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
+        game_params: game_params,
         clock: clock
       ) do
     GenServer.start(
@@ -36,6 +38,7 @@ defmodule DiepIO.Gameloop do
         name: name,
         is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
+        game_params: game_params,
         clock: clock
       ],
       name: name
@@ -55,10 +58,11 @@ defmodule DiepIO.Gameloop do
         name: name,
         is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
+        game_params: game_params,
         clock: clock
       ) do
     :ok = ActionStorage.init(name)
-    init_game_state(name, is_ranked, monitor_performance?, clock)
+    init_game_state(name, is_ranked, monitor_performance?, game_params, clock)
   end
 
   @impl true
@@ -118,7 +122,7 @@ defmodule DiepIO.Gameloop do
   end
 
   # Privates
-  defp init_game_state(name, is_ranked, monitor_performance?, clock) do
+  defp init_game_state(name, is_ranked, monitor_performance?, game_params, clock) do
     game_id = System.unique_integer()
     users = UsersRepository.list_users()
     clock = register_clock_events(clock)
@@ -127,7 +131,7 @@ defmodule DiepIO.Gameloop do
 
     Logger.info("Initialized gameloop #{game_id} with #{length(users)} users")
     send(self(), :loop)
-    {:ok, GameState.new(name, users, game_id, is_ranked, monitor_performance?, clock)}
+    {:ok, GameState.new(name, users, game_id, is_ranked, monitor_performance?, clock, game_params)}
   end
 
   defp handle_reset_game(%{should_stop?: true} = state) do
@@ -142,6 +146,10 @@ defmodule DiepIO.Gameloop do
         state.name,
         state.is_ranked,
         state.monitor_performance?,
+        %{
+          max_debris_count: state.max_debris_count,
+          max_debris_generation_rate: state.max_debris_generation_rate
+        },
         Clock.restart(state.clock)
       )
 

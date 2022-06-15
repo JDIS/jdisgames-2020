@@ -15,7 +15,8 @@ defmodule DiepIO.MixProject do
       boundary: boundary(),
       dialyzer: [
         plt_add_apps: [:ex_unit],
-        plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+        ignore_warnings: "dialyzer.ignore-warnings"
       ]
     ]
   end
