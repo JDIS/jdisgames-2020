@@ -1,12 +1,12 @@
 defmodule DiepIO.Core.Upgrade do
   @moduledoc false
 
-  @speed_rate 1.15
-  @max_hp_rate 1.15
-  @projectile_damage_rate 1.15
-  @body_damage_rate 1.15
+  @speed_rate 1.3
+  @max_hp_rate 1.3
+  @projectile_damage_rate 1.3
+  @body_damage_rate 1.3
   @fire_rate_rate 0.85
-  @hp_regen_rate 1.15
+  @hp_regen_rate 1.3
 
   def rates do
     %{

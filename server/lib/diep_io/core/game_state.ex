@@ -11,7 +11,7 @@ defmodule DiepIO.Core.GameState do
 
   @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]
   @projectile_decay 1
-  @experience_loss_rate 0.5
+  @experience_loss_rate 0.9
   @experience_score_ratio_on_kill 0.2
   @minimum_score_on_kill 100
 

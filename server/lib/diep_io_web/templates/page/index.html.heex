@@ -120,7 +120,7 @@
     <tr>
       <td>💣 Projectile damage</td>
       <td>Le nombre de HP qu'un projectile enlève à une entité (débris ou tank) qu'il touche.</td>
-      <td><strong><%= DiepIO.Core.Tank.default_projectile_damage() %></strong></td>
+      <td><strong><%= DiepIO.Core.Tank.default_projectile_damage() %> HP</strong></td>
     </tr>
     <tr>
       <td>🕒 Fire rate</td>
@@ -136,9 +136,10 @@
       <td>👊 Body damage</td>
       <td>
         Lors d'une collision, le nombre de dégâts infligés à l'adversaire (débris ou tank), pour chaque <em>tick</em>
-        où il y a collision.
+        où il y a collision. Également, une collision avec un débris inflicte au tank
+        <strong><%= DiepIO.Core.Debris.default_body_damage() %></strong> dommage par <em>tick</em> où il y a collision.
       </td>
-      <td><strong><%= DiepIO.Core.Tank.default_body_damage() %></strong></td>
+      <td><strong><%= DiepIO.Core.Tank.default_body_damage() %> HP</strong></td>
     </tr>
     <tr>
       <td>💞 HP regen</td>

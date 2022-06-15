@@ -5,7 +5,7 @@ defmodule DiepIO.Core.Debris do
 
   @default_size :small
   @default_hp_map %{small: 20, medium: 50, large: 100}
-  @points_map %{small: 25, medium: 50, large: 100}
+  @points_map %{small: 15, medium: 50, large: 100}
   @radius_map %{small: 25, medium: 30, large: 35}
   @default_speed 1
   @default_body_damage 10
