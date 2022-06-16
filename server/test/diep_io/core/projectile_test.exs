@@ -5,6 +5,7 @@ defmodule ProjectileTest do
 
   @owner_id 1
   @damage 10
+  @time_to_live 30
 
   setup do
     [projectile: create_projectile()]
@@ -18,12 +19,11 @@ defmodule ProjectileTest do
              damage: @damage,
              position: {_, _},
              angle: _,
-             time_to_live: time_to_live
+             time_to_live: _
            } = projectile
 
     assert radius == Projectile.default_radius()
     assert speed == Projectile.default_speed()
-    assert time_to_live == Projectile.default_time_to_live()
   end
 
   test "new/5 assigns opts values" do
@@ -46,6 +46,6 @@ defmodule ProjectileTest do
   end
 
   defp create_projectile(opts \\ []) do
-    Projectile.new(@owner_id, Position.new(), Position.new(), @damage, opts)
+    Projectile.new(@owner_id, Position.new(), Position.new(), @damage, @time_to_live, opts)
   end
 end

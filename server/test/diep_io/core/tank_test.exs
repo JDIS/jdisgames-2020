@@ -147,6 +147,15 @@ defmodule TankTest do
     assert projectile.position == tank.position
   end
 
+  test "shoot/1 creates a projectile with the proper time to live", %{tank: tank} do
+    tank =
+      tank |> Tank.set_target(Position.random()) |> Tank.add_upgrade_tokens(1) |> Tank.buy_projectile_range_upgrade()
+
+    {_, projectile} = Tank.shoot(tank)
+
+    assert projectile.time_to_live > Tank.default_projectile_range()
+  end
+
   test "shoot/1 does not shoot on cooldown", %{tank: tank} do
     tank =
       tank
@@ -219,6 +228,15 @@ defmodule TankTest do
       |> Tank.buy_hp_regen_upgrade()
 
     assert upgraded_tank.hp_regen > tank.hp_regen
+  end
+
+  test "buy_projectile_range_upgrade/1 inscreases the tank's projectile_range", %{tank: tank} do
+    upgraded_tank =
+      tank
+      |> Tank.add_upgrade_tokens(1)
+      |> Tank.buy_projectile_range_upgrade()
+
+    assert upgraded_tank.projectile_range > tank.projectile_range
   end
 
   test "mark_as_dead/1 sets the has_died attribute to true", %{tank: tank} do

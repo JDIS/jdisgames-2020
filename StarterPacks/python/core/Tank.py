@@ -28,6 +28,7 @@ class Tank:
     cooldown: int
     experience: int
     cannon_angle: float
+    projectile_range: int
     """ degrees """
 
     upgrade_tokens: int

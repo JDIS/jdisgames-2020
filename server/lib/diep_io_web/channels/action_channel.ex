@@ -64,6 +64,7 @@ defmodule DiepIOWeb.ActionChannel do
       "max_hp" -> :max_hp
       "body_damage" -> :body_damage
       "hp_regen" -> :hp_regen
+      "projectile_range" -> :projectile_range
       _ -> nil
     end
   end

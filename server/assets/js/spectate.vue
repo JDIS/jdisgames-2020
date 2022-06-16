@@ -47,6 +47,10 @@
                                 <td><strong>{{focusedPlayer.hp_regen}}</strong> (LVL {{ focusedPlayer.upgrade_levels.hp_regen }})</td>
                             </tr>
                             <tr>
+                                <td title="Projectile range.">🚀 Projectile range </td>
+                                <td><strong>{{focusedPlayer.projectile_range}}</strong> (LVL {{ focusedPlayer.upgrade_levels.projectile_range }})</td>
+                            </tr>
+                            <tr>
                                 <td>🆙 Upgrade tokens available </td>
                                 <td><strong>{{focusedPlayer.upgrade_tokens}}</strong></td>
                             </tr>

@@ -4,7 +4,8 @@ const upgrades = {
 	projectileDamage: 'projectile_damage',
 	maxHp: 'max_hp',
 	bodyDamage: 'body_damage',
-	hpRegen: 'hp_regen'
+	hpRegen: 'hp_regen',
+	projectileRange: 'projectile_range'
 }
 
 module.exports = upgrades

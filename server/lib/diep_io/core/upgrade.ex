@@ -7,6 +7,7 @@ defmodule DiepIO.Core.Upgrade do
   @body_damage_rate 1.15
   @fire_rate_rate 0.85
   @hp_regen_rate 1.15
+  @projectile_range_rate 1.1
 
   def rates do
     %{
@@ -15,7 +16,8 @@ defmodule DiepIO.Core.Upgrade do
       projectile_damage: @projectile_damage_rate,
       body_damage: @body_damage_rate,
       fire_rate: @fire_rate_rate,
-      hp_regen: @hp_regen_rate
+      hp_regen: @hp_regen_rate,
+      projectile_range: @projectile_range_rate
     }
   end
 
@@ -36,4 +38,7 @@ defmodule DiepIO.Core.Upgrade do
 
   @spec hp_regen(number) :: number
   def hp_regen(value), do: Float.round(value * @hp_regen_rate, 2)
+
+  @spec projectile_range(number) :: number
+  def projectile_range(value), do: round(value * @projectile_range_rate)
 end

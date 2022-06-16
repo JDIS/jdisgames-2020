@@ -196,6 +196,7 @@ defmodule DiepIO.Core.GameState do
         :max_hp -> &Tank.buy_max_hp_upgrade/1
         :body_damage -> &Tank.buy_body_damage_upgrade/1
         :hp_regen -> &Tank.buy_hp_regen_upgrade/1
+        :projectile_range -> &Tank.buy_projectile_range_upgrade/1
       end
 
     tank
