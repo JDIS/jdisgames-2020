@@ -48,8 +48,9 @@ class Socket:
             while True:
                 await self._receive()
 
-        asyncio.get_running_loop().create_task(async_listen())
+        asyncio.ensure_future(async_listen())
 
     async def _dispatch(self, message):
-        if self._channel_callbacks.get(message.topic):
-            self._channel_callbacks[message.topic](message)
+        handler = self._channel_callbacks.get(message.topic)
+        if handler is not None:
+            handler(message)

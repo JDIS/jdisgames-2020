@@ -27,5 +27,6 @@ class Push:
     def _handle_reply(self, message: Message):
         status = message.payload["status"]
         response = message.payload["response"]
-        if self._status_callbacks.get(status):
-            self._status_callbacks[status](response)
+        handler = self._status_callbacks.get(status)
+        if handler is not None:
+            handler(response)

@@ -23,12 +23,12 @@ class Channel:
         pass
 
     async def join(self):
-        join_message = JoinMessage(self._topic)
-        response_future = asyncio.Future()
+        join_message = JoinMessage(self._topic, self._create_ref())
+        response_event = asyncio.Event()
 
         def handle_join_success(_):
             logging.info(f"Connected to channel {self._topic}")
-            response_future.set_result(None)
+            response_event.set()
 
         def handle_join_error(response):
             logging.error(
@@ -37,11 +37,12 @@ class Channel:
 
         self._socket._register_channel(self._topic, self._handle_message)
 
-        (await self.push(join_message.event, join_message.payload)).receive(
+        join_push = await self.push(join_message.event, join_message.payload)
+        join_push.receive(
             "ok", handle_join_success
         ).receive("error", handle_join_error)
 
-        return response_future
+        return await response_event.wait()
 
     def on(self, event, callback):
         self._callbacks[event] = callback
@@ -66,4 +67,4 @@ class Channel:
             self._callbacks[message.event](message.payload)
 
     def _create_ref(self):
-        return self._ref_counter.__next__()
+        return next(self._ref_counter)

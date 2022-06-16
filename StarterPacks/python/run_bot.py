@@ -35,8 +35,10 @@ async def start(secret_key, loop, is_ranked):
                     def on_state_update(state):
                         parsed_state = dacite.from_dict(
                             GameState, state, Config(check_types=False))
-                        if queue.qsize() > 0:
+                        try:
                             queue.get_nowait()
+                        except:
+                            pass
                         queue.put_nowait(parsed_state)
 
                     def on_receive_id(response):
@@ -48,7 +50,8 @@ async def start(secret_key, loop, is_ranked):
 
                         game_state_channel.on("new_state", on_state_update)
 
-                    (await action_channel.push("get_id", {})).receive(
+                    id_push = await action_channel.push("get_id", {})
+                    id_push.receive(
                         "ok", on_receive_id)
 
                     loop.create_task(tick(queue, action_channel))
