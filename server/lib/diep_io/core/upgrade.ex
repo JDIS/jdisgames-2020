@@ -9,6 +9,17 @@ defmodule DiepIO.Core.Upgrade do
   @hp_regen_rate 1.15
   @projectile_range_rate 1.1
 
+  @type upgrade_rates :: %{
+          speed: float(),
+          max_hp: float(),
+          projectile_damage: float(),
+          body_damage: float(),
+          fire_rate: float(),
+          hp_regen: float(),
+          projectile_range: float()
+        }
+
+  @spec rates :: upgrade_rates()
   def rates do
     %{
       speed: @speed_rate,

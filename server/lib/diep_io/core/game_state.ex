@@ -41,14 +41,7 @@ defmodule DiepIO.Core.GameState do
           max_debris_generation_rate: float(),
           map_width: integer(),
           map_height: integer(),
-          upgrade_rates: %{
-            :body_damage => float(),
-            :fire_rate => float(),
-            :max_hp => float(),
-            :projectile_damage => float(),
-            :speed => float(),
-            :hp_regen => float()
-          },
+          upgrade_rates: Upgrade.upgrade_rates(),
           game_id: integer(),
           is_ranked: boolean(),
           projectiles: [Projectile.t()],
