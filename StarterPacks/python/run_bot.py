@@ -10,7 +10,7 @@ from dacite import Config
 
 from bot import MyBot
 from core import GameState
-from networking import Channel, Message, Socket
+from networking import Socket
 
 BASE_URL = "ws://127.0.0.1:4000/socket"
 
@@ -23,49 +23,42 @@ async def start(secret_key, loop, is_ranked):
     bot_url = f"{BASE_URL}/bot/websocket?secret={secret_key}"
     spectate_url = f"{BASE_URL}/spectate/websocket"
 
-    async with Socket().connect(bot_url) as bot_connection:
-        async with Socket().connect(spectate_url) as spectate_connection:
+    game_name = get_game_name(is_ranked)
 
-            queue: Queue = Queue(maxsize=1)
+    async with Socket(bot_url) as bot_socket:
+        async with Socket(spectate_url) as spectate_socket:
+            async with bot_socket.channel(f"action:{game_name}") as action_channel:
+                async with spectate_socket.channel(f"game_state:{game_name}") as game_state_channel:
 
-            async def on_state_update(state):
-                global bot
+                    queue: Queue = Queue(maxsize=1)
 
-                parsed_state = dacite.from_dict(
-                    GameState, state, Config(check_types=False))
-                if queue.qsize() > 0:
-                    queue.get_nowait()
-                queue.put_nowait(parsed_state)
+                    def on_state_update(state):
+                        parsed_state = dacite.from_dict(
+                            GameState, state, Config(check_types=False))
+                        try:
+                            queue.get_nowait()
+                        except:
+                            pass
+                        queue.put_nowait(parsed_state)
 
-            game_name = get_game_name(is_ranked)
+                    def on_receive_id(response):
+                        global bot
 
-            action_channel: Channel = await bot_connection.channel(f"action:{game_name}")
-            game_state_channel = await spectate_connection.channel(f"game_state:{game_name}")
+                        id = response["id"]
 
-            game_state_channel.on("new_state", on_state_update)
+                        bot = MyBot(id)
 
-            # Receive channel join confirmation
-            response = await bot_connection.receive()
-            if response.payload['status'] != 'ok':
-                print(f"Couldn't connect to game \"{game_name}\": {response.payload['response']['error']}")
-                quit()
+                        game_state_channel.on("new_state", on_state_update)
 
-            await bot_connection.send(Message("get_id", f"action:{game_name}", {}))
+                    id_push = await action_channel.push("get_id", {})
+                    id_push.receive(
+                        "ok", on_receive_id)
 
-            # Receive id
-            response = await bot_connection.receive()
-
-            global bot
-            bot = MyBot(response.payload["response"]["id"])
-
-            # start the tick task
-            task = loop.create_task(tick(queue, bot_connection, game_name))
-
-            # Start listening for game state updates
-            await spectate_connection.listen()
+                    loop.create_task(tick(queue, action_channel))
+                    await asyncio.Event().wait()
 
 
-async def tick(queue: Queue, bot_connection, game_name: str):
+async def tick(queue: Queue, action_channel):
     """
     Task that infinitely send bot actions to the server with the latest
     game_state available.
@@ -82,7 +75,7 @@ async def tick(queue: Queue, bot_connection, game_name: str):
             traceback.print_exc()
             continue
         payload = dataclasses.asdict(tick)
-        await bot_connection.send(Message("new", f"action:{game_name}", payload))
+        await action_channel.push("new", payload)
 
 
 def loop(secret, is_ranked):
@@ -109,5 +102,4 @@ if __name__ == '__main__':
         "-r", "--is_ranked", help="Whether the bot should connect to the ranked game (True) or the practice one (False). Defaults to True", type=str2bool, const=True, default=True, nargs='?')
     args = parser.parse_args()
 
-    asyncio.get_event_loop().run_until_complete(
-        start(args.secret, asyncio.get_event_loop(), args.is_ranked))
+    loop(args.secret, args.is_ranked)
