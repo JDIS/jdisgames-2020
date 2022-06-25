@@ -81,9 +81,9 @@ defmodule TankTest do
   test "add_exprience/2 does not give spent tokens back", %{tank: tank} do
     upgraded_tank =
       tank
-      |> Tank.add_experience(10)
+      |> Tank.add_experience(2)
       |> Tank.buy_max_hp_upgrade()
-      |> Tank.add_experience(5)
+      |> Tank.add_experience(2)
 
     assert upgraded_tank.upgrade_tokens == 0
   end
