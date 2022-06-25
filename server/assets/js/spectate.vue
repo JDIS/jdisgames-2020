@@ -1,24 +1,23 @@
 <template>
     <div>
         <div class="container">
+            <div class="flex">
+                <label style="display: inline-block"> Auto-spectate <input style="margin: 0" type="checkbox" v-model="autoSpectate" /></label>
+                <label style="display: inline-block"> Full screen <input style="margin: 0" type="checkbox" v-model="fullScreen" /></label>
+                <label style="display: inline-block"> Performance mode <input style="margin: 0" type="checkbox" v-model="performanceMode" /></label>
+                <progress id="progress" :value="progress * 100" max="100"></progress>
+                <span title="Nombre de débris sur la carte">🔺 {{ debrisCount }} 🔻</span>
+            </div>
             <div class="row">
                 <div :class="{nine: !fullScreen, twelve: fullScreen}" class="columns">
-                    <div class="flex">
-                        <label style="display: inline-block"> Auto-spectate <input style="margin: 0" type="checkbox" v-model="autoSpectate" /></label>
-                        <label style="display: inline-block"> Full screen <input style="margin: 0" type="checkbox" v-model="fullScreen" /></label>
-                        <label style="display: inline-block"> Performance mode <input style="margin: 0" type="checkbox" v-model="performanceMode" /></label>
-                        <progress id="progress" :value="progress * 100" max="100"></progress>
-                        <span title="Nombre de débris sur la carte">🔺 {{ debrisCount }} 🔻</span>
-                    </div>
                     <div id="invisible"></div>
                     <div id="canvas-container">
                         <canvas id="mon-canvas" style="border: 1px solid black;width:100%;margin: auto;position:absolute;top:0;"></canvas>
                         <canvas id="minimap" style="border: 1px solid green;position:absolute;top:5px;left:5px"></canvas>
                     </div>
                 </div>
-                <div class="three columns" v-show="!fullScreen">
+                <div class="three columns" style="position: absolute; right: -1em; background-color: rgba(255,255,255,0.7);padding: 0.5em;margin:0;">
                     <div v-if="focusedPlayer">
-
                         <h3 style="margin-bottom: 0;text-align: center">{{focusedPlayer.name.text}}</h3>
                         <div style="width:100%; height: 15px" :style="{'background': `${focusedPlayer.color}`}"></div>
                         <table>
@@ -53,7 +52,7 @@
 
                         </table>
                     </div>
-                    <div>
+                    <div style="max-height: 55.5vh; overflow-y:scroll">
                         <div class="flex">
                             <strong class="rank">#</strong>
                             <div class="player-name">Team</div>
@@ -89,7 +88,7 @@
         data() {
             return {
                 zoom: 0.45,
-                fullScreen: false,
+                fullScreen: true,
                 focusedPlayer: null,
                 mainCanvas: null,
                 minimap: null,

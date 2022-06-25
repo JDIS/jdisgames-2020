@@ -1,8 +1,8 @@
 defmodule DiepIO.Core.GameMap do
   @moduledoc false
 
-  @width 10_000
-  @height 10_000
+  @width 5_000
+  @height 5_000
 
   @spec width() :: integer()
   def width, do: @width

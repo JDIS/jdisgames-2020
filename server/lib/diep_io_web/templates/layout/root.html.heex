@@ -11,7 +11,7 @@
     </script>
   </head>
   <body>
-    <header>
+    <header style="background: #EEEEEE; box-shadow: 0 0em 0.5em 0.2em;">
       <section class="container" style="justify-content:space-between;">
         <nav role="navigation">
           <ul>
@@ -21,9 +21,12 @@
             <li><a href="/scoreboard">Scoreboard</a></li>
           </ul>
         </nav>
-        <a href="/" style="flex-grow: 5;">
-          <img src="/images/jdis.svg" , alt="Logo JDIS" style="width: 4em;" />
-        </a>
+        <span style="flex-grow: 5;display:flex;flex-direction:row;">
+          <a href="/" style="display:flex;">
+            <h2 style="color: black;margin-top:0.4em;">Games 2022</h2>
+            <img src="/images/jdis.svg" , alt="Logo JDIS" style="height: 4em;" />
+          </a>
+        </span>
       </section>
     </header>
     <%= @inner_content %>

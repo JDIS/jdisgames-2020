@@ -10,7 +10,7 @@ defmodule DiepIO.Core.Tank do
   @default_fire_rate 25
   @default_projectile_damage 20
   @default_body_damage 20
-  @default_hp_regen 0.4
+  @default_hp_regen 0.3
   @default_radius 35
 
   @upgrade_rates [
@@ -282,7 +282,7 @@ defmodule DiepIO.Core.Tank do
 
   defp get_token_amount_from_experience(exp) do
     exp
-    |> Math.pow(0.25)
+    |> Math.pow(0.40)
     |> Kernel.floor()
   end
 end
