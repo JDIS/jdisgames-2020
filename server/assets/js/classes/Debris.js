@@ -4,7 +4,8 @@ import {
     LARGE_DEBRIS_RADIUS,
     linear,
     MEDIUM_DEBRIS_RADIUS,
-    SMALL_DEBRIS_RADIUS
+    SMALL_DEBRIS_RADIUS,
+    GAME_RATIO,
 } from "../modules/constants";
 import {regularPolygonPoints} from "../modules/utils";
 
@@ -12,7 +13,7 @@ import {regularPolygonPoints} from "../modules/utils";
 export class Debris {
 
     constructor(serverDebris) {
-        this.position = {x: serverDebris.position[0], y: serverDebris.position[1]}
+        this.position = {x: serverDebris.position[0] * GAME_RATIO, y: serverDebris.position[1] * GAME_RATIO}
         this.id = serverDebris.id
         this.fabricObj = this.createFabricObj(serverDebris.size)
         this.setAttributes(serverDebris)
@@ -42,7 +43,7 @@ export class Debris {
             onChange: null
         })
     }
-    
+
     createFabricObj(size) {
         let fabricObj;
         switch (size) {
@@ -69,7 +70,7 @@ export class Debris {
             height: SMALL_DEBRIS_RADIUS,
             angle: parseInt(this.id % BigInt(360)),
             stroke: 'black',
-            strokeWidth: 3,
+            strokeWidth: 3 * GAME_RATIO,
             fill: 'grey'
         })
     }
@@ -79,7 +80,7 @@ export class Debris {
         return new fabric.Polygon(regularPolygonPoints(3, MEDIUM_DEBRIS_RADIUS), {
             angle: parseInt(this.id % BigInt(360)),
             stroke: 'green',
-            strokeWidth: 3,
+            strokeWidth: 3 * GAME_RATIO,
             fill: "rgb(200, 255, 100)"
         })
     }
@@ -89,7 +90,7 @@ export class Debris {
         return new fabric.Polygon(regularPolygonPoints(5, LARGE_DEBRIS_RADIUS), {
             angle: parseInt(this.id % BigInt(360)),
             stroke: 'rgb(100, 0, 0)',
-            strokeWidth: 3,
+            strokeWidth: 3 * GAME_RATIO,
             fill: "rgb(255, 100, 100)"
         })
     }

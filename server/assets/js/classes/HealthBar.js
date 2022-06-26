@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import {ANIMATION_DURATION, HEALTH_OFFSET, linear} from "../modules/constants";
+import {ANIMATION_DURATION, HEALTH_OFFSET, linear, GAME_RATIO} from "../modules/constants";
 
 const FACTOR = 0.8;
 
@@ -44,7 +44,7 @@ export class HealthBar {
     createBackground() {
         return new fabric.Rect({
             width: this.healthBarWidth(),
-            height: 10,
+            height: 10 * GAME_RATIO,
             fill: 'rgb(150,150,150)',
             originX: 'center',
             originY: 'center'
@@ -55,15 +55,15 @@ export class HealthBar {
         return new fabric.Group([this.background, this.healthBar], {
             originX: 'center',
             originY: 'center',
-            left: serverTank.position[0],
-            top: serverTank.position[1] + HEALTH_OFFSET
+            left: serverTank.position[0] * GAME_RATIO,
+            top: (serverTank.position[1] * GAME_RATIO) + HEALTH_OFFSET
         });
     }
 
     createHealthBar() {
         return new fabric.Rect({
             width: (this.current_health / this.max_health) * this.healthBarWidth(),
-            height: 10,
+            height: 10 * GAME_RATIO,
             fill: this.getColor(),
             originX: 'center',
             originY: 'center'
@@ -71,6 +71,6 @@ export class HealthBar {
     }
 
     healthBarWidth() {
-        return FACTOR * this.max_health
+        return FACTOR * this.max_health * GAME_RATIO
     }
 }

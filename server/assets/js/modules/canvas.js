@@ -3,7 +3,7 @@
  */
 
 import { fabric } from 'fabric';
-import {GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_WIDTH} from "./constants.js"
+import {GRID_COLOR, GRID_SIZE, GRID_STROKE, MAP_HEIGHT, MAP_WIDTH, MINIMAP_HEIGHT, MINIMAP_WIDTH, GAME_RATIO} from "./constants.js"
 
 /**
  * Canvas elements to be drawn on the main canvas
@@ -86,7 +86,7 @@ export function createMinimap() {
         left: 0,
         top: 0,
         stroke: 'black',
-        strokeWidth: 50,
+        strokeWidth: 50 * GAME_RATIO,
         fill: null,
         objectCaching: false
     })
@@ -98,7 +98,7 @@ export function createGrid() {
     const thinGrid = []
     const thickGrid = []
     for (let i = 0; i <= MAP_HEIGHT; i += GRID_SIZE) {
-        if (i % 1000 === 0) {
+        if (i % (1000 * GAME_RATIO) === 0) {
             thickGrid.push(new fabric.Line([0, i, MAP_WIDTH, i], {
                 stroke: GRID_COLOR,
                 strokeWidth: i === 0 || i === MAP_HEIGHT ? GRID_STROKE * 20 : GRID_STROKE * 5,
@@ -111,7 +111,7 @@ export function createGrid() {
         }
     }
     for (let i = 0; i <= MAP_WIDTH; i += GRID_SIZE) {
-        if (i % 1000 === 0) {
+        if (i % (1000 * GAME_RATIO) === 0) {
             thickGrid.push(new fabric.Line([i, 0, i, MAP_HEIGHT], {
                 stroke: GRID_COLOR,
                 strokeWidth: i === 0 || i === MAP_WIDTH ? GRID_STROKE * 20 : GRID_STROKE * 5,

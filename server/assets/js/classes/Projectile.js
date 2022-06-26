@@ -1,5 +1,5 @@
 import { fabric } from "fabric";
-import {ANIMATION_DURATION, FADE_DURATION, linear, PROJECTILE_RADIUS} from "../modules/constants";
+import {ANIMATION_DURATION, FADE_DURATION, linear, PROJECTILE_RADIUS, GAME_RATIO} from "../modules/constants";
 
 
 export class Projectile {
@@ -12,12 +12,12 @@ export class Projectile {
     }
 
     update(newServerProjectile) {
-        this.fabricObj.animate('left', newServerProjectile.position[0], {
+        this.fabricObj.animate('left', newServerProjectile.position[0] * GAME_RATIO, {
             onChange: null,
             duration: ANIMATION_DURATION,
             easing: linear
         })
-        this.fabricObj.animate('top', newServerProjectile.position[1], {
+        this.fabricObj.animate('top', newServerProjectile.position[1] * GAME_RATIO, {
             onChange: null,
             duration: ANIMATION_DURATION,
             easing: linear
@@ -32,13 +32,13 @@ export class Projectile {
             onChange: null
         })
     }
-    
+
     createFabricObj() {
         return new fabric.Circle({
             radius: PROJECTILE_RADIUS,
             fill: this.owner.color,
             stroke: 'black',
-            strokeWidth: 3,
+            strokeWidth: 3 * GAME_RATIO,
             left: this.position.x,
             top: this.position.y,
             originX: 'center',
