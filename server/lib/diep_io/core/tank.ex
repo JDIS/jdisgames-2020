@@ -12,7 +12,7 @@ defmodule DiepIO.Core.Tank do
   @default_body_damage 20
   @default_hp_regen 0.4
   @default_radius 35
-  @default_projectile_range 30
+  @default_initial_projectile_time_to_live 30
 
   @upgrade_rates [
     max_hp: &Upgrade.max_hp/1,
@@ -21,7 +21,7 @@ defmodule DiepIO.Core.Tank do
     projectile_damage: &Upgrade.projectile_damage/1,
     body_damage: &Upgrade.body_damage/1,
     hp_regen: &Upgrade.hp_regen/1,
-    projectile_range: &Upgrade.projectile_range/1
+    projectile_time_to_live: &Upgrade.projectile_time_to_live/1
   ]
 
   @derive Jason.Encoder
@@ -52,7 +52,7 @@ defmodule DiepIO.Core.Tank do
     :projectile_damage,
     :body_damage,
     :hp_regen,
-    :projectile_range,
+    :projectile_time_to_live,
     has_died: false,
     cooldown: 0,
     experience: 0,
@@ -65,7 +65,7 @@ defmodule DiepIO.Core.Tank do
       projectile_damage: 0,
       body_damage: 0,
       hp_regen: 0,
-      projectile_range: 0
+      projectile_time_to_live: 0
     }
   ]
 
@@ -87,7 +87,7 @@ defmodule DiepIO.Core.Tank do
           body_damage: integer,
           cannon_angle: number(),
           has_died: boolean,
-          projectile_range: integer
+          projectile_time_to_live: integer
         }
 
   defimpl Entity do
@@ -118,7 +118,7 @@ defmodule DiepIO.Core.Tank do
       projectile_damage: @default_projectile_damage,
       body_damage: @default_body_damage,
       hp_regen: @default_hp_regen,
-      projectile_range: @default_projectile_range
+      projectile_time_to_live: @default_initial_projectile_time_to_live
     }
   end
 
@@ -171,7 +171,7 @@ defmodule DiepIO.Core.Tank do
   @spec shoot(t()) :: {t(), Projectile.t() | nil}
   def shoot(%__MODULE__{cooldown: cooldown} = tank) when cooldown <= 0 do
     angle = Angle.radian(tank.position, tank.target)
-    projectile = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_range)
+    projectile = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_time_to_live)
 
     updated_tank = set_cooldown(tank)
 
@@ -226,8 +226,8 @@ defmodule DiepIO.Core.Tank do
   @spec buy_hp_regen_upgrade(t()) :: t()
   def buy_hp_regen_upgrade(tank), do: buy_upgrade(tank, :hp_regen)
 
-  @spec buy_projectile_range_upgrade(t()) :: t()
-  def buy_projectile_range_upgrade(tank), do: buy_upgrade(tank, :projectile_range)
+  @spec buy_projectile_time_to_live_upgrade(t()) :: t()
+  def buy_projectile_time_to_live_upgrade(tank), do: buy_upgrade(tank, :projectile_time_to_live)
 
   @spec default_hp() :: integer
   def default_hp, do: @default_hp
@@ -250,8 +250,8 @@ defmodule DiepIO.Core.Tank do
   @spec default_hp_regen() :: number
   def default_hp_regen, do: @default_hp_regen
 
-  @spec default_projectile_range() :: integer
-  def default_projectile_range, do: @default_projectile_range
+  @spec default_initial_projectile_time_to_live() :: integer
+  def default_initial_projectile_time_to_live, do: @default_initial_projectile_time_to_live
 
   defp buy_upgrade(%__MODULE__{upgrade_tokens: upgrade_tokens} = tank, _stat)
        when upgrade_tokens <= 0 do
