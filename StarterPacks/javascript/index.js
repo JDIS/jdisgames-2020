@@ -3,7 +3,7 @@ const Bot = require('./Bot')
 const { Socket } = require("phoenix")
 require('websocket-polyfill')
 
-const BASE_URL = "ws://127.0.0.1:4000/socket"
+const DEFAULT_BASE_URL = "ws://127.0.0.1:4000/socket"
 const MIN_TICKS_PER_SECOND = 3
 
 const q = require('queue')({ autostart: true, concurrency: 1, timeout: 1000 / MIN_TICKS_PER_SECOND })
@@ -32,9 +32,9 @@ function handleChannelPayload(rawPayload, callback) {
   return callback({ join_ref, ref, topic, event, payload })
 }
 
-async function initializeChannel(socketEndpoint, socketOptions, channelTopic) {
+async function initializeChannel(socketEndpoint, socketOptions, channelTopic, backendUrl) {
   return new Promise((resolve) => {
-    const url = `${BASE_URL}/${socketEndpoint}`
+    const url = `${backendUrl}/${socketEndpoint}`
     const socket = new Socket(url, socketOptions)
     socket.onError(handleError)
     socket.connect()
@@ -52,18 +52,18 @@ async function initializeChannel(socketEndpoint, socketOptions, channelTopic) {
   })
 }
 
-async function initializeActionChannel(secret, isRanked) {
-  return await initializeChannel('bot', { params: { secret }}, `action:${getGameName(isRanked)}`)
+async function initializeActionChannel(secret, isRanked, backendUrl) {
+  return await initializeChannel('bot', { params: { secret }}, `action:${getGameName(isRanked)}`, backendUrl)
 }
 
-async function initializeGameStateChannel(isRanked) {
-  return await initializeChannel('spectate', { decode: handleChannelPayload }, `game_state:${getGameName(isRanked)}`)
+async function initializeGameStateChannel(isRanked, backendUrl) {
+  return await initializeChannel('spectate', { decode: handleChannelPayload }, `game_state:${getGameName(isRanked)}`, backendUrl)
 }
 
-async function start({ secret, isRanked }) {
+async function start({ secret, isRanked, backendUrl }) {
   const [actionChannel, gameStateChannel] = await Promise.all([
-    initializeActionChannel(secret, isRanked),
-    initializeGameStateChannel(isRanked)
+    initializeActionChannel(secret, isRanked, backendUrl),
+    initializeGameStateChannel(isRanked, backendUrl)
   ])
 
   actionChannel.push("get_id").receive('ok', ({ id }) => {
@@ -84,9 +84,10 @@ async function start({ secret, isRanked }) {
 program
   .requiredOption('-s, --secret <secret>', 'The secret which authenticates your bot')
   .option('-r, --is_ranked', 'Whether the bot should connect to the ranked game (true) or the practice one (false)', true)
+  .option('-u, --backend_url', 'The url of the backend server', DEFAULT_BASE_URL)
 
 program.parse()
 
 const options = program.opts()
 
-start({ secret: options.secret, isRanked: options.is_ranked })
+start({ secret: options.secret, isRanked: options.is_ranked, backendUrl: options.backend_url })

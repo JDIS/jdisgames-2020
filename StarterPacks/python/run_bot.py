@@ -12,16 +12,16 @@ from bot import MyBot
 from core import GameState
 from networking import Socket
 
-BASE_URL = "ws://127.0.0.1:4000/socket"
+DEFAULT_BASE_URL = "ws://127.0.0.1:4000/socket"
 
 
 def get_game_name(is_ranked):
     return "main_game" if is_ranked else "secondary_game"
 
 
-async def start(secret_key, loop, is_ranked):
-    bot_url = f"{BASE_URL}/bot/websocket?secret={secret_key}"
-    spectate_url = f"{BASE_URL}/spectate/websocket"
+async def start(secret_key, loop, is_ranked, backend_url):
+    bot_url = f"{backend_url}/bot/websocket?secret={secret_key}"
+    spectate_url = f"{backend_url}/spectate/websocket"
 
     game_name = get_game_name(is_ranked)
 
@@ -78,9 +78,9 @@ async def tick(queue: Queue, action_channel):
         await action_channel.push("new", payload)
 
 
-def loop(secret, is_ranked):
+def loop(secret, is_ranked, backend_url):
     asyncio.get_event_loop().run_until_complete(
-        start(secret, asyncio.get_event_loop(), is_ranked))
+        start(secret, asyncio.get_event_loop(), is_ranked, backend_url))
 
 
 def str2bool(v):
@@ -100,6 +100,7 @@ if __name__ == '__main__':
         "-s", "--secret", help="The secret which authenticates your bot", required=True)
     parser.add_argument(
         "-r", "--is_ranked", help="Whether the bot should connect to the ranked game (True) or the practice one (False). Defaults to True", type=str2bool, const=True, default=True, nargs='?')
+    parser.add_argument("-u", "--backend_url", help="The url of the backend server", const=True, default=DEFAULT_BASE_URL, nargs="?")
     args = parser.parse_args()
 
-    loop(args.secret, args.is_ranked)
+    loop(args.secret, args.is_ranked, args.backend_url)
