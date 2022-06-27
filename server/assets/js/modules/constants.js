@@ -5,8 +5,8 @@ export const PROJECTILE_RADIUS = 15;
 export const TANK_RADIUS = 35
 
 export const GRID_SIZE = 250
-export const MAP_WIDTH = 10000
-export const MAP_HEIGHT = 10000
+export const MAP_WIDTH = 5000
+export const MAP_HEIGHT = 5000
 export const MINIMAP_WIDTH = 300
 export const MINIMAP_HEIGHT = MINIMAP_WIDTH * MAP_WIDTH / MAP_HEIGHT
 export const MAX_ZOOM = 4
