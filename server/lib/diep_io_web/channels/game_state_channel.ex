@@ -13,7 +13,7 @@ defmodule DiepIOWeb.GameStateChannel do
 
   @impl true
   def handle_info({:new_state, %GameState{} = new_state}, socket) do
-    broadcast(socket, "new_state", new_state)
+    push(socket, "new_state", new_state)
 
     {:noreply, socket}
   end
