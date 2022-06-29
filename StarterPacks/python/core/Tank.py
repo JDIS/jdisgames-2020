@@ -29,6 +29,7 @@ class Tank:
     experience: int
     cannon_angle: float
     projectile_time_to_live: int
+    projectile_speed: int
     """ degrees """
 
     upgrade_tokens: int

@@ -190,6 +190,7 @@ defmodule DiepIO.Core.GameState do
         :body_damage -> &Tank.buy_body_damage_upgrade/1
         :hp_regen -> &Tank.buy_hp_regen_upgrade/1
         :projectile_time_to_live -> &Tank.buy_projectile_time_to_live_upgrade/1
+        :projectile_speed -> &Tank.buy_projectile_speed_upgrade/1
       end
 
     tank

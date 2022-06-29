@@ -4,10 +4,9 @@ defmodule DiepIO.Core.Projectile do
   alias DiepIO.Core.{Entity, Position}
 
   @default_radius 15
-  @default_speed 20
 
   @derive Jason.Encoder
-  @enforce_keys [:id, :owner_id, :radius, :speed, :damage, :position, :angle]
+  @enforce_keys [:id, :owner_id, :radius, :speed, :damage, :position, :angle, :time_to_live]
   defstruct [:id, :owner_id, :radius, :speed, :damage, :position, :angle, :time_to_live]
 
   @type t :: %__MODULE__{
@@ -34,14 +33,14 @@ defmodule DiepIO.Core.Projectile do
     def get_body_damage(projectile), do: projectile.damage
   end
 
-  @spec new(integer, Position.t(), float, integer, Enum.t()) :: t()
-  def new(owner_id, from, angle, damage, time_to_live, opts \\ []) do
+  @spec new(integer, Position.t(), float, integer, integer, Enum.t()) :: t()
+  def new(owner_id, from, angle, damage, time_to_live, speed, opts \\ []) do
     struct(
       %__MODULE__{
         id: System.unique_integer() |> to_string(),
         owner_id: owner_id,
         radius: @default_radius,
-        speed: @default_speed,
+        speed: speed,
         damage: damage,
         position: from,
         angle: angle,
@@ -72,7 +71,4 @@ defmodule DiepIO.Core.Projectile do
 
   @spec default_radius() :: integer
   def default_radius, do: @default_radius
-
-  @spec default_speed() :: integer
-  def default_speed, do: @default_speed
 end

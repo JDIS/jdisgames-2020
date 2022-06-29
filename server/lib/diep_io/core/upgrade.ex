@@ -8,6 +8,7 @@ defmodule DiepIO.Core.Upgrade do
   @fire_rate_rate 0.85
   @hp_regen_rate 1.3
   @projectile_time_to_live_rate 1.1
+  @projectile_speed_rate 1.1
 
   @type upgrade_rates :: %{
           speed: float(),
@@ -16,7 +17,8 @@ defmodule DiepIO.Core.Upgrade do
           body_damage: float(),
           fire_rate: float(),
           hp_regen: float(),
-          projectile_time_to_live: float()
+          projectile_time_to_live: float(),
+          projectile_speed: float()
         }
 
   @spec rates :: upgrade_rates()
@@ -28,7 +30,8 @@ defmodule DiepIO.Core.Upgrade do
       body_damage: @body_damage_rate,
       fire_rate: @fire_rate_rate,
       hp_regen: @hp_regen_rate,
-      projectile_time_to_live: @projectile_time_to_live_rate
+      projectile_time_to_live: @projectile_time_to_live_rate,
+      projectile_speed: @projectile_speed_rate
     }
   end
 
@@ -52,4 +55,7 @@ defmodule DiepIO.Core.Upgrade do
 
   @spec projectile_time_to_live(number) :: number
   def projectile_time_to_live(value), do: round(value * @projectile_time_to_live_rate)
+
+  @spec projectile_speed(number) :: number
+  def projectile_speed(value), do: round(value * @projectile_speed_rate)
 end

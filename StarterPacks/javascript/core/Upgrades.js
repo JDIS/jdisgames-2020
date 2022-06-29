@@ -6,6 +6,7 @@ const upgrades = {
   bodyDamage: "body_damage",
   hpRegen: "hp_regen",
   projectileTimeToLive: "projectile_time_to_live",
+  projectileSpeed: "projectile_speed"
 };
 
 module.exports = upgrades;

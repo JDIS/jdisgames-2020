@@ -21,12 +21,14 @@ class MyBot:
 
     def random_upgrade(self) -> Upgrade:
         return random.choice([
-            Upgrade.SPEED_UPGRADE,
-            Upgrade.FIRE_RATE_UPGRADE,
-            Upgrade.PROJECTILE_DAMAGE,
-            Upgrade.MAX_HP_UPGRADE,
-            Upgrade.BODY_DAMAGE_UPGRADE,
-            Upgrade.HP_REGEN
+            # Upgrade.SPEED_UPGRADE,
+            # Upgrade.FIRE_RATE_UPGRADE,
+            # Upgrade.PROJECTILE_DAMAGE,
+            # Upgrade.MAX_HP_UPGRADE,
+            # Upgrade.BODY_DAMAGE_UPGRADE,
+            # Upgrade.HP_REGEN,
+            # Upgrade.PROJECTILE_TIME_TO_LIVE,
+            Upgrade.PROJECTILE_SPEED
         ])
 
     def destination(self, debris: Debris):

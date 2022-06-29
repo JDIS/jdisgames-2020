@@ -159,6 +159,18 @@ defmodule TankTest do
     assert projectile.time_to_live > Tank.default_initial_projectile_time_to_live()
   end
 
+  test "shoot/1 creates a projectile with the proper speed", %{tank: tank} do
+    tank =
+      tank
+      |> Tank.set_target(Position.random())
+      |> Tank.add_upgrade_tokens(1)
+      |> Tank.buy_projectile_speed_upgrade()
+
+    {_, projectile} = Tank.shoot(tank)
+
+    assert projectile.speed > Tank.default_projectile_speed()
+  end
+
   test "shoot/1 does not shoot on cooldown", %{tank: tank} do
     tank =
       tank
@@ -240,6 +252,15 @@ defmodule TankTest do
       |> Tank.buy_projectile_time_to_live_upgrade()
 
     assert upgraded_tank.projectile_time_to_live > tank.projectile_time_to_live
+  end
+
+  test "buy_projectile_speed_upgrade/1 inscreases the tank's projectile_speed", %{tank: tank} do
+    upgraded_tank =
+      tank
+      |> Tank.add_upgrade_tokens(1)
+      |> Tank.buy_projectile_speedg_upgrade()
+
+    assert upgraded_tank.projectile_speed > tank.projectile_speed
   end
 
   test "mark_as_dead/1 sets the has_died attribute to true", %{tank: tank} do

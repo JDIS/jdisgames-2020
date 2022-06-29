@@ -65,6 +65,7 @@ defmodule DiepIOWeb.ActionChannel do
       "body_damage" -> :body_damage
       "hp_regen" -> :hp_regen
       "projectile_time_to_live" -> :projectile_time_to_live
+      "projectile_speed" -> :projectile_speed
       _ -> nil
     end
   end
