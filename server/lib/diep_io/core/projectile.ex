@@ -5,7 +5,6 @@ defmodule DiepIO.Core.Projectile do
 
   @default_radius 15
   @default_speed 20
-  @default_time_to_live 30
 
   @derive Jason.Encoder
   @enforce_keys [:id, :owner_id, :radius, :speed, :damage, :position, :angle]
@@ -36,7 +35,7 @@ defmodule DiepIO.Core.Projectile do
   end
 
   @spec new(integer, Position.t(), float, integer, Enum.t()) :: t()
-  def new(owner_id, from, angle, damage, opts \\ []) do
+  def new(owner_id, from, angle, damage, time_to_live, opts \\ []) do
     struct(
       %__MODULE__{
         id: System.unique_integer() |> to_string(),
@@ -46,7 +45,7 @@ defmodule DiepIO.Core.Projectile do
         damage: damage,
         position: from,
         angle: angle,
-        time_to_live: @default_time_to_live
+        time_to_live: time_to_live
       },
       opts
     )
@@ -76,7 +75,4 @@ defmodule DiepIO.Core.Projectile do
 
   @spec default_speed() :: integer
   def default_speed, do: @default_speed
-
-  @spec default_time_to_live() :: integer
-  def default_time_to_live, do: @default_time_to_live
 end

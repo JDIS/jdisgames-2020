@@ -46,6 +46,10 @@
                                 <td><strong>{{focusedPlayer.hp_regen}}</strong> (LVL {{ focusedPlayer.upgrade_levels.hp_regen }})</td>
                             </tr>
                             <tr>
+                              <td title="Projectile time to live.">🚀 Projectile time to live</td>
+                              <td><strong>{{ focusedPlayer.projectile_time_to_live }}</strong> (LVL {{ focusedPlayer.upgrade_levels.projectile_time_to_live }})</td>
+                            </tr>
+                            <tr>
                                 <td>🆙 Upgrade tokens available </td>
                                 <td><strong>{{focusedPlayer.upgrade_tokens}}</strong></td>
                             </tr>

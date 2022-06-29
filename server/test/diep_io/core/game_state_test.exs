@@ -158,7 +158,7 @@ defmodule GameStateTest do
   end
 
   test "handle_projectiles/1 removes projectiles without hp", %{game_state: game_state} do
-    projectile = Projectile.new(@user_id, Position.random(), Position.random(), 0, time_to_live: 0)
+    projectile = Projectile.new(@user_id, Position.random(), Position.random(), 0, 0)
 
     updated_game_state =
       game_state
@@ -436,7 +436,7 @@ defmodule GameStateTest do
     tank1 = Map.fetch!(game_state.tanks, user1.id)
     tank2 = Map.fetch!(game_state.tanks, user2.id)
 
-    projectile = Projectile.new(user2.id, Entity.get_position(tank1), 0, tank2.projectile_damage)
+    projectile = Projectile.new(user2.id, Entity.get_position(tank1), 0, tank2.projectile_damage, 30)
 
     game_state = %{game_state | projectiles: [projectile]}
 
@@ -459,7 +459,7 @@ defmodule GameStateTest do
 
   defp setup_projectile_debris_collision(debris_size \\ :large) do
     user = %User{name: @user_name, id: @user_id}
-    projectile = Projectile.new(user.id, {0, 0}, 0, 20)
+    projectile = Projectile.new(user.id, {0, 0}, 0, 20, 30)
     game_state = GameState.new("game_name", [user], 0, false, false, @clock, @game_params)
 
     debris = Debris.new(debris_size)

@@ -41,14 +41,7 @@ defmodule DiepIO.Core.GameState do
           max_debris_generation_rate: float(),
           map_width: integer(),
           map_height: integer(),
-          upgrade_rates: %{
-            :body_damage => float(),
-            :fire_rate => float(),
-            :max_hp => float(),
-            :projectile_damage => float(),
-            :speed => float(),
-            :hp_regen => float()
-          },
+          upgrade_rates: Upgrade.upgrade_rates(),
           game_id: integer(),
           is_ranked: boolean(),
           projectiles: [Projectile.t()],
@@ -196,6 +189,7 @@ defmodule DiepIO.Core.GameState do
         :max_hp -> &Tank.buy_max_hp_upgrade/1
         :body_damage -> &Tank.buy_body_damage_upgrade/1
         :hp_regen -> &Tank.buy_hp_regen_upgrade/1
+        :projectile_time_to_live -> &Tank.buy_projectile_time_to_live_upgrade/1
       end
 
     tank
