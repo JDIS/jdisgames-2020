@@ -1,4 +1,5 @@
 import { fabric } from 'fabric';
+import { GAME_RATIO } from '../modules/constants';
 
 export class FabricText {
 
@@ -12,7 +13,7 @@ export class FabricText {
         return new fabric.Text(this.text, {
             left: x,
             top: y,
-            fontSize: 35,
+            fontSize: 35 * GAME_RATIO,
             fontFamily: 'Sans-Serif',
             originX: 'center',
             originY: 'center'

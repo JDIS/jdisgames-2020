@@ -3,13 +3,12 @@
         <div class="container">
             <div class="flex">
                 <label style="display: inline-block"> Auto-spectate <input style="margin: 0" type="checkbox" v-model="autoSpectate" /></label>
-                <label style="display: inline-block"> Full screen <input style="margin: 0" type="checkbox" v-model="fullScreen" /></label>
                 <label style="display: inline-block"> Performance mode <input style="margin: 0" type="checkbox" v-model="performanceMode" /></label>
                 <progress id="progress" :value="progress * 100" max="100"></progress>
                 <span title="Nombre de débris sur la carte">🔺 {{ debrisCount }} 🔻</span>
             </div>
             <div class="row">
-                <div :class="{nine: !fullScreen, twelve: fullScreen}" class="columns">
+                <div class="columns twelve">
                     <div id="invisible"></div>
                     <div id="canvas-container">
                         <canvas id="mon-canvas" style="border: 1px solid black;width:100%;margin: auto;position:absolute;top:0;"></canvas>
@@ -92,7 +91,6 @@
         data() {
             return {
                 zoom: 0.45,
-                fullScreen: true,
                 focusedPlayer: null,
                 mainCanvas: null,
                 minimap: null,
@@ -104,7 +102,8 @@
                 lastUpdateTimestamp: Date.now(),
                 tankHitSound: null,
                 performanceMode: false,
-                i: 0
+                i: 0,
+                lastPosition: [0, 0]
             }
         },
         then: Date.now(),
@@ -137,9 +136,6 @@
                 } else {
                     this.mainCanvas.hoverCursor = 'move'
                 }
-            },
-            fullScreen() {
-                window.setTimeout(this.resizeCanvas, 100)
             }
         },
         mounted() {
@@ -201,7 +197,6 @@
              * Capped at 30 fps
              **/
             doFrame() {
-                window.requestAnimationFrame(this.doFrame)
 
                 const now = Date.now()
                 this.$options.then = now
@@ -210,7 +205,7 @@
                 }
                 this.i++
                 if (!this.performanceMode) {
-                    this.centerPan()
+                        this.centerPan()
                 } else if(this.i % 60 === 0) {
                     this.centerPan()
                 }
@@ -221,6 +216,7 @@
                 } else if(this.i % 2 === 0) {
                     this.renderMinimap()
                 }
+                window.requestAnimationFrame(this.doFrame)
             },
             drawAndRemoveProjectiles(updatedProjectiles) {
                 const newProjectileIds = new Set()
@@ -301,12 +297,16 @@
                 //this.centerPan()
             },
             centerPan() {
-                if (this.lockCamera && this.focusedPlayer) {
-                    this.mainCanvas.absolutePan(
-                        new fabric.Point(
-                            this.focusedPlayer.left() * this.zoom - (this.mainCanvas.getWidth() / 2),
-                            this.focusedPlayer.top() * this.zoom - (this.mainCanvas.getHeight() / 2))
-                    )
+                if (this.focusedPlayer) {
+                    const currentPosition = [this.focusedPlayer.left() * this.zoom - (this.mainCanvas.getWidth() / 2), this.focusedPlayer.top() * this.zoom - (this.mainCanvas.getHeight() / 2)]
+                    if (this.lockCamera && currentPosition[0].toFixed(1) !== this.lastPosition[0].toFixed(1) && currentPosition[1].toFixed(1) !== this.lastPosition[1].toFixed(1)) {
+                        this.lastPosition = currentPosition
+                        this.mainCanvas.absolutePan(
+                            new fabric.Point(
+                                this.lastPosition[0],
+                                this.lastPosition[1])
+                        )
+                    }
                 }
             },
             initGrid() {
@@ -349,7 +349,7 @@
              * Play a hit sound if the hit tank is the focused tank.
              */
             playTankHitSound(tank) {
-                if (tank === this.focusedPlayer) {
+                if (tank === this.focusedPlayer && !this.performanceMode) {
                     const clone = this.tankHitSound.cloneNode()
                     clone.play()
                 }

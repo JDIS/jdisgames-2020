@@ -1,5 +1,5 @@
 import { fabric } from 'fabric';
-import {ANIMATION_DURATION, linear, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR, TANK_RADIUS} from "../modules/constants";
+import {ANIMATION_DURATION, linear, NAME_OFFSET, SELECTED_TANK_OUTLINE_COLOR, TANK_RADIUS, GAME_RATIO} from "../modules/constants";
 import {getColorFromId} from "../modules/utils";
 import {FabricText} from "./FabricText";
 import {HealthBar} from "./HealthBar";
@@ -21,15 +21,15 @@ export class Tank {
         this.body_damage = serverTank.body_damage
         this.current_hp = serverTank.current_hp
         this.upgrade_levels = serverTank.upgrade_levels
-        this.position = {x: serverTank.position[0], y: serverTank.position[1]}
+        this.position = {x: serverTank.position[0] * GAME_RATIO, y: serverTank.position[1] * GAME_RATIO}
         this.id = serverTank.id
         this.cannon_angle = serverTank.cannon_angle
         this.projectile_time_to_live = serverTank.projectile_time_to_live
         this.body = this.createFabricObj(serverTank)
-        this.name = new FabricText(serverTank.name, serverTank.position[0], serverTank.position[1] + NAME_OFFSET)
+        this.name = new FabricText(serverTank.name, serverTank.position[0] * GAME_RATIO, (serverTank.position[1] * GAME_RATIO) + NAME_OFFSET)
         this.healthBar = new HealthBar(serverTank)
         this.score = serverTank.score
-        this.combatLevel = new FabricText("0", serverTank.position[0], serverTank.position[1])
+        this.combatLevel = new FabricText("0", (-5 * GAME_RATIO) + serverTank.position[0] * GAME_RATIO,  (2 * GAME_RATIO) + serverTank.position[1] * GAME_RATIO)
         this.toCanvas = new fabric.Group([this.body, this.name.fabricObj, this.healthBar.toCanvas, this.combatLevel.fabricObj])
         this.destinationLine = this.createDestinationLine()
         this.targetLine = this.createTargetLine()
@@ -45,9 +45,9 @@ export class Tank {
 
     select() {
         this.body.item(0).stroke = SELECTED_TANK_OUTLINE_COLOR
-        this.body.item(0).strokeWidth = 6
+        this.body.item(0).strokeWidth = 6 * GAME_RATIO
         this.body.item(1).stroke = SELECTED_TANK_OUTLINE_COLOR
-        this.body.item(1).strokeWidth = 6
+        this.body.item(1).strokeWidth = 6 * GAME_RATIO
         // Invalidate caching.
         // Needed for a special case where changing lock to a tank in the same viewport as precedent selection.
         this.body.item(0).dirty = true // Invalidate caching
@@ -55,9 +55,9 @@ export class Tank {
 
     unselect() {
         this.body.item(0).stroke = 'black'
-        this.body.item(0).strokeWidth = 3
+        this.body.item(0).strokeWidth = 3 * GAME_RATIO
         this.body.item(1).stroke = 'black'
-        this.body.item(1).strokeWidth = 3
+        this.body.item(1).strokeWidth = 3 * GAME_RATIO
         this.body.item(0).dirty = true // Invalidate caching
     }
 
@@ -76,7 +76,7 @@ export class Tank {
         this.upgrade_tokens = newServerTank.upgrade_tokens
         this.fire_rate = newServerTank.fire_rate
         this.projectile_damage = newServerTank.projectile_damage
-        this.position = {x: newServerTank.position[0], y: newServerTank.position[1]}
+        this.position = {x: newServerTank.position[0] * GAME_RATIO, y: newServerTank.position[1] * GAME_RATIO}
         this.upgrade_levels = newServerTank.upgrade_levels
         this.projectile_time_to_live = newServerTank.projectile_time_to_live
         const combatLevel = Object.values(newServerTank.upgrade_levels).reduce((accumulator, value) => accumulator + value)
@@ -140,14 +140,14 @@ export class Tank {
         let destinationX = this.position.x
         let destinationY = this.position.y
         if (this.destination) {
-            destinationX = this.destination[0];
-            destinationY = this.destination[1];
+            destinationX = this.destination[0] * GAME_RATIO;
+            destinationY = this.destination[1] * GAME_RATIO;
         }
         return new fabric.Line([this.toCanvas.left, this.toCanvas.top, destinationX, destinationY], {
             stroke: this.color,
             originX: 'left',
             originY: 'top',
-            strokeWidth: 5,
+            strokeWidth: 5 * GAME_RATIO,
             visible: !(this.destination === undefined || this.destination === null)
         })
     }
@@ -156,13 +156,13 @@ export class Tank {
         let targetX = this.position.x
         let targetY = this.position.y
         if (this.target) {
-            targetX = this.target[0];
-            targetY = this.target[1];
+            targetX = this.target[0] * GAME_RATIO;
+            targetY = this.target[1] * GAME_RATIO;
         }
         return new fabric.Line([this.toCanvas.left, this.toCanvas.top, targetX, targetY], {
             stroke: this.color,
-            strokeDashArray: [10, 15],
-            strokeWidth: 5,
+            strokeDashArray: [10 * GAME_RATIO, 15 * GAME_RATIO],
+            strokeWidth: 5 * GAME_RATIO,
             originX: 'left',
             originY: 'top',
             visible: !(this.target === undefined || this.target === null)
@@ -174,17 +174,17 @@ export class Tank {
             radius: TANK_RADIUS,
             fill: this.color,
             stroke: 'black',
-            strokeWidth: 3,
+            strokeWidth: 3 * GAME_RATIO,
             originX: 'center',
             originY: 'center',
             objectCaching: true
 
         })
         const tankRect = new fabric.Rect({
-            width: 15,
-            height: 27,
+            width: 15 * GAME_RATIO,
+            height: 27 * GAME_RATIO,
             fill: 'black',
-            left: 40,
+            left: 40 * GAME_RATIO,
             centeredRotation: false,
             originX: 'center',
             originY: 'center',
