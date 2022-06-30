@@ -23,7 +23,7 @@ defmodule GameStateTest do
   @game_id 123
   @clock Clock.new(@tick_rate, @max_ticks)
   @game_params %{
-    max_debris_count: 400,
+    max_debris_count: 0,
     max_debris_generation_rate: 0.15
   }
 
@@ -42,7 +42,21 @@ defmodule GameStateTest do
     ]
   end
 
-  test "new/1 creates a default GameState", %{game_state: game_state} do
+  test "new/1 creates a default GameState" do
+    game_state =
+      GameState.new(
+        @game_name,
+        [%User{name: @user_name, id: @user_id}],
+        @game_id,
+        false,
+        false,
+        @clock,
+        %{
+          max_debris_count: 10,
+          max_debris_generation_rate: 0.15
+        }
+      )
+
     assert %GameState{
              tanks: %{@user_id => %Tank{}},
              debris: debris,
