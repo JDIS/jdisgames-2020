@@ -24,7 +24,8 @@ defmodule GameStateTest do
   @clock Clock.new(@tick_rate, @max_ticks)
   @game_params %{
     max_debris_count: 0,
-    max_debris_generation_rate: 0.15
+    max_debris_generation_rate: 0.15,
+    score_multiplier: 1
   }
 
   setup do
@@ -53,7 +54,8 @@ defmodule GameStateTest do
         @clock,
         %{
           max_debris_count: 10,
-          max_debris_generation_rate: 0.15
+          max_debris_generation_rate: 0.15,
+          score_multiplier: 1
         }
       )
 
@@ -363,6 +365,15 @@ defmodule GameStateTest do
     assert game_state.tanks[@user_id].score != game_state.tanks[@user_id + 1].score
   end
 
+  test "handle_collision/1 gives points according to the score multiplier" do
+    game_state =
+      setup_tank_tank_collision(%{@game_params | score_multiplier: 2})
+      |> update_single_tank(@user_id, fn tank -> Map.replace!(tank, :body_damage, tank.max_hp) end)
+      |> GameState.handle_collisions()
+
+    assert game_state.tanks[@user_id].score == 200
+  end
+
   test "handle_tank_death/1 respawns dead tanks", %{game_state: game_state} do
     tank =
       game_state
@@ -433,11 +444,11 @@ defmodule GameStateTest do
     %{game_state | projectiles: Enum.map(game_state.projectiles, func)}
   end
 
-  defp setup_tank_tank_collision do
+  defp setup_tank_tank_collision(game_params \\ @game_params) do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
 
-    GameState.new("game_name", [user1, user2], 0, false, false, @clock, @game_params)
+    GameState.new("game_name", [user1, user2], 0, false, false, @clock, game_params)
     |> move_tanks_to_origin()
   end
 

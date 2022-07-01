@@ -17,7 +17,8 @@ defmodule GameloopTest do
 
     game_params = %{
       max_debris_count: 400,
-      max_debris_generation_rate: 0.15
+      max_debris_generation_rate: 0.15,
+      score_multiplier: 1
     }
 
     {:ok,
