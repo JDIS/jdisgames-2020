@@ -50,7 +50,8 @@ defmodule Mix.Tasks.StressTest do
 
     game_params = %{
       max_debris_count: 400,
-      max_debris_generation_rate: 0.15
+      max_debris_generation_rate: 0.15,
+      score_multiplier: 1.0
     }
 
     DiepIO.GameSupervisor.start_game(2000, game_params, "main_game")

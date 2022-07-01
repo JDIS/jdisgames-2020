@@ -148,7 +148,8 @@ defmodule DiepIO.Gameloop do
         state.monitor_performance?,
         %{
           max_debris_count: state.max_debris_count,
-          max_debris_generation_rate: state.max_debris_generation_rate
+          max_debris_generation_rate: state.max_debris_generation_rate,
+          score_multiplier: state.score_multiplier
         },
         Clock.restart(state.clock)
       )
@@ -164,12 +165,11 @@ defmodule DiepIO.Gameloop do
   end
 
   defp save_scores(%{is_ranked: true} = state) do
-    scores =
-      Enum.map(state.tanks, fn {tank_id, tank} ->
-        %{user_id: tank_id, score: tank.score, game_id: state.game_id}
-      end)
-
-    Enum.each(scores, fn score -> ScoreRepository.add_score(score) end)
+    state.tanks
+    |> Enum.map(fn {tank_id, tank} ->
+      %{user_id: tank_id, score: tank.score, game_id: state.game_id}
+    end)
+    |> Enum.each(fn score -> ScoreRepository.add_score(score) end)
 
     :ok
   end

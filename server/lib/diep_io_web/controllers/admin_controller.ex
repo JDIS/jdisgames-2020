@@ -10,7 +10,8 @@ defmodule DiepIOWeb.AdminController do
   def start_game(conn, %{"ticks" => ticks, "game_name" => game_name} = params) do
     game_params = %{
       max_debris_count: parse_integer(params["max_debris_count"]) || 400,
-      max_debris_generation_rate: parse_float(params["max_debris_generation_rate"]) || 0.15
+      max_debris_generation_rate: parse_float(params["max_debris_generation_rate"]) || 0.15,
+      score_multiplier: parse_float(params["score_multiplier"]) || 1
     }
 
     {:ok, pid} =
@@ -44,7 +45,7 @@ defmodule DiepIOWeb.AdminController do
 
   defp parse_float(num) do
     case Float.parse(num) do
-      {float, ""} when 0 <= float and float <= 1 -> float
+      {float, ""} -> float
     end
   end
 end

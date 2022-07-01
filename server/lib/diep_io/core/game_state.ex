@@ -30,6 +30,7 @@ defmodule DiepIO.Core.GameState do
     :projectiles,
     :monitor_performance?,
     :clock,
+    :score_multiplier,
     should_stop?: false
   ]
 
@@ -47,12 +48,14 @@ defmodule DiepIO.Core.GameState do
           projectiles: [Projectile.t()],
           monitor_performance?: boolean(),
           clock: Clock.t(),
+          score_multiplier: float(),
           should_stop?: boolean()
         }
 
   @type game_params :: %{
           max_debris_count: integer(),
-          max_debris_generation_rate: float()
+          max_debris_generation_rate: float(),
+          score_multiplier: float()
         }
 
   @spec new(atom(), [User.t()], integer(), boolean(), boolean(), Clock.t(), game_params()) :: t()
@@ -70,7 +73,8 @@ defmodule DiepIO.Core.GameState do
       is_ranked: is_ranked,
       projectiles: [],
       monitor_performance?: monitor_performance?,
-      clock: clock
+      clock: clock,
+      score_multiplier: game_params.score_multiplier
     }
   end
 
@@ -269,7 +273,7 @@ defmodule DiepIO.Core.GameState do
         damaged_tank = Tank.hit(tanks[tank.id], Entity.get_body_damage(other_tank))
 
         tanks
-        |> award_score_and_xp_if_dead(other_tank, damaged_tank)
+        |> award_score_and_xp_if_dead(other_tank, damaged_tank, game_state.score_multiplier)
         |> Map.replace!(tank.id, damaged_tank)
       end)
 
@@ -290,7 +294,7 @@ defmodule DiepIO.Core.GameState do
         damaged_tank = Tank.hit(tanks[tank.id], projectile_damage)
 
         tanks
-        |> award_score_and_xp_if_dead(projectile, damaged_tank)
+        |> award_score_and_xp_if_dead(projectile, damaged_tank, game_state.score_multiplier)
         |> Map.replace!(tank.id, damaged_tank)
       end)
 
@@ -342,39 +346,41 @@ defmodule DiepIO.Core.GameState do
       Enum.reduce(collisions, game_state.tanks, fn {entity, deb}, tanks ->
         case Enum.find(debris_dead, nil, fn debris -> debris.id == deb.id end) do
           nil -> tanks
-          single_debris -> award_score_and_xp(entity, single_debris, tanks)
+          single_debris -> award_score_and_xp(entity, single_debris, tanks, game_state.score_multiplier)
         end
       end)
 
     %{game_state | debris: debris_alive, tanks: updated_tanks}
   end
 
-  defp award_score_and_xp_if_dead(tanks, attacker, %Tank{} = damaged_tank) do
+  defp award_score_and_xp_if_dead(tanks, attacker, %Tank{} = damaged_tank, score_multiplier) do
     case Tank.is_dead?(damaged_tank) do
       false -> tanks
-      true -> award_score_and_xp(attacker, damaged_tank, tanks)
+      true -> award_score_and_xp(attacker, damaged_tank, tanks, score_multiplier)
     end
   end
 
-  defp award_score_and_xp(%Projectile{} = projectile, dead_entity, tanks) do
+  defp award_score_and_xp(%Projectile{} = projectile, dead_entity, tanks, score_multiplier) do
     tanks
     |> Map.get(projectile.owner_id)
-    |> award_score_and_xp(dead_entity, tanks)
+    |> award_score_and_xp(dead_entity, tanks, score_multiplier)
   end
 
-  defp award_score_and_xp(%Tank{} = tank, %Debris{} = debris, tanks) do
+  defp award_score_and_xp(%Tank{} = tank, %Debris{} = debris, tanks, score_multiplier) do
     amount = Debris.get_points(debris)
-    award_score_and_xp(tank, amount, tanks)
+    award_score_and_xp(tank, amount, tanks, score_multiplier)
   end
 
-  defp award_score_and_xp(%Tank{} = tank, %Tank{} = dead_tank, tanks) do
+  defp award_score_and_xp(%Tank{} = tank, %Tank{} = dead_tank, tanks, score_multiplier) do
     amount = calculate_score_and_xp_gain(dead_tank)
-    award_score_and_xp(tank, amount, tanks)
+    award_score_and_xp(tank, amount, tanks, score_multiplier)
   end
 
-  defp award_score_and_xp(%Tank{} = tank, amount, tanks) when is_integer(amount) do
+  defp award_score_and_xp(%Tank{} = tank, amount, tanks, score_multiplier) when is_integer(amount) do
+    score = trunc(amount * score_multiplier)
+
     tanks
-    |> Map.update!(tank.id, &Tank.increase_score(&1, amount))
+    |> Map.update!(tank.id, &Tank.increase_score(&1, score))
     |> Map.update!(tank.id, &Tank.add_experience(&1, amount))
   end
 

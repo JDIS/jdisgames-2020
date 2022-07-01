@@ -20,7 +20,8 @@ defmodule DiepIOWeb.GameStateChannelTest do
   test "new_state pushes to game_state", %{game_name: game_name} do
     game_params = %{
       max_debris_count: 400,
-      max_debris_generation_rate: 0.15
+      max_debris_generation_rate: 0.15,
+      score_multiplier: 1
     }
 
     state = GameState.new(game_name, [], 1, false, false, Clock.new(1, 1), game_params)
