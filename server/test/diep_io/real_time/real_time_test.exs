@@ -12,7 +12,8 @@ defmodule RealTimeTest do
 
   @game_params %{
     max_debris_count: 400,
-    max_debris_generation_rate: 0.15
+    max_debris_generation_rate: 0.15,
+    score_multiplier: 1.0
   }
   @game_time 1000
   @game_name :what_a_name
