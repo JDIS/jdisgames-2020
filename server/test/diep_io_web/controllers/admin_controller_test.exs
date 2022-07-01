@@ -3,6 +3,8 @@ defmodule DiepIOWeb.AdminControllerTest do
 
   use DiepIOWeb.ConnCase, async: false
 
+  alias DiepIO.GameParamsRepository
+
   setup do
     %{game_name: "main_game"}
   end
@@ -14,6 +16,29 @@ defmodule DiepIOWeb.AdminControllerTest do
       |> get(Routes.admin_path(conn, :index))
 
     assert html_response(conn, 200) =~ "<div id=\"admin\">"
+  end
+
+  test "GET /admin/start saves the game parameters", %{conn: conn, game_name: game_name} do
+    conn
+    |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
+    |> get(
+      Routes.admin_path(conn, :start_game,
+        ticks: "15",
+        game_name: game_name,
+        max_debris_count: 10,
+        max_debris_generation_rate: 0.5,
+        score_multiplier: 2.0
+      )
+    )
+
+    game_params = GameParamsRepository.get_game_params(game_name)
+
+    assert game_params.number_of_ticks == 15
+    assert game_params.max_debris_count == 10
+    assert game_params.max_debris_generation_rate == 0.5
+    assert game_params.score_multiplier == 2.0
+
+    Process.sleep(1000)
   end
 
   test "GET /admin/start starts the required game and /admin/kill kills it", %{

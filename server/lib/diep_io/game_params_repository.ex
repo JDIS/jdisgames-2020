@@ -34,7 +34,7 @@ defmodule DiepIO.GameParamsRepository do
       :max_debris_generation_rate,
       :score_multiplier
     ])
-    |> Repo.insert(on_conflict: :replace_all, conflict_target: :game_name)
+    |> Repo.insert!(on_conflict: :replace_all, conflict_target: :game_name)
 
     :ok
   end

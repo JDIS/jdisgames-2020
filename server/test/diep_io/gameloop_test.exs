@@ -1,40 +1,53 @@
 defmodule GameloopTest do
   use DiepIO.DataCase, async: false
 
-  alias DiepIO.{ActionStorage, Gameloop, ScoreRepository, UsersRepository}
+  alias DiepIO.{ActionStorage, Gameloop, ScoreRepository, UsersRepository, GameParamsRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Action, Clock, GameState}
   alias DiepIOSchemas.Score
   alias :ets, as: Ets
 
   setup do
-    tank_id = 1
-    game_time = 10
-    game_name = :test_game
-    tick_rate = 3
-    monitor_performance? = false
-    clock = Clock.new(tick_rate, game_time)
-
     game_params = %{
       max_debris_count: 400,
       max_debris_generation_rate: 0.15,
-      score_multiplier: 1
+      score_multiplier: 1,
+      number_of_ticks: 10
     }
 
-    {:ok,
-     tank_id: tank_id,
-     game_name: game_name,
-     tick_rate: tick_rate,
-     monitor_performance?: monitor_performance?,
-     game_params: game_params,
-     clock: clock}
+    tank_id = 1
+    game_name = :test_game
+    tick_rate = 3
+    monitor_performance? = false
+    clock = Clock.new(tick_rate, game_params.number_of_ticks)
+
+    :ok =
+      GameParamsRepository.save_game_params(
+        Atom.to_string(game_name),
+        10,
+        game_params.max_debris_count,
+        game_params.max_debris_generation_rate,
+        game_params.score_multiplier
+      )
+
+    {
+      :ok,
+      tank_id: tank_id,
+      game_name: game_name,
+      tick_rate: tick_rate,
+      monitor_performance?: monitor_performance?,
+      game_params: game_params,
+      clock: clock,
+      tick_rate: tick_rate
+    }
   end
 
   test "A gameloop loop with a valid destination moves the desired tank", %{
     tank_id: tank_id,
     game_name: game_name,
     game_params: game_params,
-    clock: clock
+    clock: clock,
+    tick_rate: tick_rate
   } do
     start_supervised!(
       {Gameloop,
@@ -42,8 +55,7 @@ defmodule GameloopTest do
          name: game_name,
          is_ranked: false,
          monitor_performance?: false,
-         game_params: game_params,
-         clock: clock
+         tick_rate: tick_rate
        ]}
     )
 
@@ -59,8 +71,7 @@ defmodule GameloopTest do
     test "initialize Gameloop properly", %{
       game_name: game_name,
       monitor_performance?: monitor_performance?,
-      game_params: game_params,
-      clock: clock
+      tick_rate: tick_rate
     } do
       is_ranked = false
 
@@ -72,8 +83,7 @@ defmodule GameloopTest do
                  name: game_name,
                  is_ranked: is_ranked,
                  monitor_performance?: monitor_performance?,
-                 game_params: game_params,
-                 clock: clock
+                 tick_rate: tick_rate
                )
 
       assert is_reference(Ets.whereis(game_name))
@@ -109,22 +119,18 @@ defmodule GameloopTest do
       assert_received :reset_game
     end
 
-    test ":loop does not broadcast every time", %{game_name: game_name, game_params: game_params} do
-      max_tick = 10
-      client_frequency = 5
-      clock = Clock.new(:infinity, max_tick) |> Clock.register(:client_tick, client_frequency)
-
+    @tag timeout: 10000
+    test ":loop does not broadcast every time", %{game_name: game_name, tick_rate: tick_rate, game_params: game_params} do
       :ok =
         start_and_wait_until_completion(
           name: game_name,
           is_ranked: false,
           monitor_performance?: true,
-          game_params: game_params,
-          clock: clock
+          tick_rate: tick_rate
         )
 
       client_update_count = length(PerformanceMonitor.get_broadcast_delays())
-      assert client_update_count + 1 == max_tick / client_frequency
+      assert client_update_count + 1 == game_params.number_of_ticks / 5
     end
 
     test ":reset_game saves the scores when is_is_ranked true", %{

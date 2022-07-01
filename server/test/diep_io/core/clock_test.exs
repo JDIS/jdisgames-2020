@@ -46,6 +46,12 @@ defmodule ClockTest do
     assert Clock.restart(clock) == %{clock | current_tick: 0}
   end
 
+  test "restart/1 with max ticks changes the clock's max ticks" do
+    clock = Clock.new(5, 69)
+
+    assert Clock.restart(clock, clock.max_tick + 10).max_tick == clock.max_tick + 10
+  end
+
   test "done?/1 returns true if the max_tick is reached" do
     Clock.new(5, 69, current_tick: 70)
     |> Clock.done?()

@@ -59,7 +59,6 @@ defmodule DiepIO.Gameloop do
         tick_rate: tick_rate
       ) do
     :ok = ActionStorage.init(name)
-
     game_params = fetch_game_params(name)
     clock = Clock.new(tick_rate, game_params.number_of_ticks)
 
