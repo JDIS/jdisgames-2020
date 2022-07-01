@@ -56,8 +56,8 @@ defmodule DiepIO.Core.Clock do
   end
 
   @spec restart(t()) :: t()
-  def restart(clock) do
-    %{clock | current_tick: 0}
+  def restart(clock, max_ticks \\ nil) do
+    %{clock | current_tick: 0, max_tick: max_ticks || clock.max_tick}
   end
 
   @spec done?(t()) :: boolean

@@ -2,22 +2,16 @@ defmodule DiepIOWeb.AdminController do
   use DiepIOWeb, :controller
 
   alias DiepIO.GameSupervisor
+  alias DiepIO.GameParamsRepository
 
   def index(conn, _params) do
     render(conn, "index.html")
   end
 
-  def start_game(conn, %{"ticks" => ticks, "game_name" => game_name} = params) do
-    game_params = %{
-      max_debris_count: parse_integer(params["max_debris_count"]) || 400,
-      max_debris_generation_rate: parse_float(params["max_debris_generation_rate"]) || 0.15,
-      score_multiplier: parse_float(params["score_multiplier"]) || 1
-    }
+  def start_game(conn, %{"game_name" => game_name} = params) do
+    update_game_params(params)
 
-    {:ok, pid} =
-      ticks
-      |> String.to_integer()
-      |> GameSupervisor.start_game(game_params, game_name)
+    {:ok, pid} = GameSupervisor.start_game(game_name)
 
     finish_call(conn, "Started game \"#{game_name}\": #{inspect(pid)}")
   end
@@ -47,5 +41,21 @@ defmodule DiepIOWeb.AdminController do
     case Float.parse(num) do
       {float, ""} -> float
     end
+  end
+
+  defp update_game_params(params) do
+    game_name = params["game_name"]
+    number_of_ticks = String.to_integer(params["ticks"])
+    max_debris_count = parse_integer(params["max_debris_count"]) || 400
+    max_debris_generation_rate = parse_float(params["max_debris_generation_rate"]) || 0.15
+    score_multiplier = parse_float(params["score_multiplier"]) || 1.0
+
+    GameParamsRepository.save_game_params(
+      game_name,
+      number_of_ticks,
+      max_debris_count,
+      max_debris_generation_rate,
+      score_multiplier
+    )
   end
 end

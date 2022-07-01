@@ -7,6 +7,7 @@ defmodule DiepIO.Core.GameState do
   alias DiepIO.Collisions
   alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
   alias DiepIOSchemas.User
+  alias DiepIOSchemas.GameParams
   alias :rand, as: Rand
 
   @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]
@@ -52,13 +53,7 @@ defmodule DiepIO.Core.GameState do
           should_stop?: boolean()
         }
 
-  @type game_params :: %{
-          max_debris_count: integer(),
-          max_debris_generation_rate: float(),
-          score_multiplier: float()
-        }
-
-  @spec new(atom(), [User.t()], integer(), boolean(), boolean(), Clock.t(), game_params()) :: t()
+  @spec new(atom(), [User.t()], integer(), boolean(), boolean(), Clock.t(), GameParams.t()) :: t()
   def new(name, users, game_id, is_ranked, monitor_performance?, clock, game_params) do
     %__MODULE__{
       name: name,
