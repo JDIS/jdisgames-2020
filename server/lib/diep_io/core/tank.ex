@@ -36,7 +36,8 @@ defmodule DiepIO.Core.Tank do
     :projectile_damage,
     :hp_regen,
     :score,
-    :has_died
+    :has_died,
+    :has_triple_gun
   ]
   defstruct [
     :id,
@@ -66,7 +67,8 @@ defmodule DiepIO.Core.Tank do
       body_damage: 0,
       hp_regen: 0,
       projectile_time_to_live: 0
-    }
+    },
+    has_triple_gun: false
   ]
 
   @type t :: %__MODULE__{
@@ -87,7 +89,8 @@ defmodule DiepIO.Core.Tank do
           body_damage: integer,
           cannon_angle: number(),
           has_died: boolean,
-          projectile_time_to_live: integer
+          projectile_time_to_live: integer,
+          has_triple_gun: boolean
         }
 
   defimpl Entity do
@@ -118,7 +121,8 @@ defmodule DiepIO.Core.Tank do
       projectile_damage: @default_projectile_damage,
       body_damage: @default_body_damage,
       hp_regen: @default_hp_regen,
-      projectile_time_to_live: @default_initial_projectile_time_to_live
+      projectile_time_to_live: @default_initial_projectile_time_to_live,
+      has_triple_gun: false
     }
   end
 
@@ -168,17 +172,26 @@ defmodule DiepIO.Core.Tank do
     add_to_value(tank, :score, amount)
   end
 
-  @spec shoot(t()) :: {t(), Projectile.t() | nil}
+  @spec shoot(t()) :: {t(), list(Projectile.t() | nil)}
   def shoot(%__MODULE__{cooldown: cooldown} = tank) when cooldown <= 0 do
     angle = Angle.radian(tank.position, tank.target)
-    projectile = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_time_to_live)
+    projectile1 = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_time_to_live)
+
+    projectiles = case tank.has_triple_gun do
+      false -> [projectile1]
+
+      true ->
+        projectile2 = Projectile.new(tank.id, tank.position, angle - 1, tank.projectile_damage, tank.projectile_time_to_live)
+        projectile3 = Projectile.new(tank.id, tank.position, angle + 1, tank.projectile_damage, tank.projectile_time_to_live)
+        [projectile1, projectile2, projectile3]
+    end
 
     updated_tank = set_cooldown(tank)
 
-    {updated_tank, projectile}
+    {updated_tank, projectiles}
   end
 
-  def shoot(tank), do: {tank, nil}
+  def shoot(tank), do: {tank, [nil]}
 
   @spec set_cooldown(t()) :: t()
   def set_cooldown(tank) do
@@ -263,6 +276,10 @@ defmodule DiepIO.Core.Tank do
     |> remove_from_value(:upgrade_tokens, 1)
     |> set_value(stat, calculate_new_stat_value(tank, stat))
     |> increase_stat_level(stat)
+  end
+
+  def add_triple_gun(tank) do
+    set_value(tank, :has_triple_gun, true)
   end
 
   defp add_to_value(tank, field, amount),

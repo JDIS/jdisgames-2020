@@ -8,7 +8,10 @@ defmodule TankTest do
   @tank_id 1
 
   setup do
-    [tank: Tank.new(@tank_id, @tank_name)]
+    [
+      tank: Tank.new(@tank_id, @tank_name),
+      tank_with_triple_gun: Tank.new(@tank_id, @tank_name) |> Tank.add_triple_gun()
+    ]
   end
 
   test "new/1 creates a tank", %{tank: tank} do
@@ -140,7 +143,7 @@ defmodule TankTest do
       tank
       |> Tank.set_target(Position.random())
 
-    {updated_tank, projectile} = Tank.shoot(tank)
+    {updated_tank, [projectile]} = Tank.shoot(tank)
 
     assert updated_tank.cooldown != tank.cooldown
     assert projectile.damage == tank.projectile_damage
@@ -154,9 +157,19 @@ defmodule TankTest do
       |> Tank.add_upgrade_tokens(1)
       |> Tank.buy_projectile_time_to_live_upgrade()
 
-    {_, projectile} = Tank.shoot(tank)
+    {_, [projectile]} = Tank.shoot(tank)
 
     assert projectile.time_to_live > Tank.default_initial_projectile_time_to_live()
+  end
+
+  test "shoot/1 creates three projectiles if the tank has the upgrade", %{tank_with_triple_gun: tank} do
+    tank =
+      tank
+      |> Tank.set_target(Position.random())
+
+    {_, projectiles} = Tank.shoot(tank)
+
+    assert length(projectiles) == 3
   end
 
   test "shoot/1 does not shoot on cooldown", %{tank: tank} do
@@ -164,7 +177,7 @@ defmodule TankTest do
       tank
       |> Tank.set_target(Position.random())
 
-    assert {_, nil} =
+    assert {_, [nil]} =
              tank
              |> Tank.set_cooldown()
              |> Tank.shoot()
