@@ -5,7 +5,7 @@ defmodule DiepIO.Gameloop do
   """
 
   use GenServer
-  alias DiepIO.{ActionStorage, PubSub, ScoreRepository, UsersRepository, GameParamsRepository}
+  alias DiepIO.{ActionStorage, GameParamsRepository, PubSub, ScoreRepository, UsersRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Clock, GameState}
   alias DiepIOSchemas.GameParams

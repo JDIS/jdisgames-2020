@@ -6,8 +6,8 @@ defmodule DiepIO.Core.GameState do
 
   alias DiepIO.Collisions
   alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
-  alias DiepIOSchemas.User
   alias DiepIOSchemas.GameParams
+  alias DiepIOSchemas.User
   alias :rand, as: Rand
 
   @debris_size_probability [:small, :small, :small, :small, :medium, :medium, :large]

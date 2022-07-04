@@ -1,7 +1,7 @@
 defmodule GameloopTest do
   use DiepIO.DataCase, async: false
 
-  alias DiepIO.{ActionStorage, Gameloop, ScoreRepository, UsersRepository, GameParamsRepository}
+  alias DiepIO.{ActionStorage, Gameloop, GameParamsRepository, ScoreRepository, UsersRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Action, Clock, GameState}
   alias DiepIOSchemas.Score
@@ -119,7 +119,6 @@ defmodule GameloopTest do
       assert_received :reset_game
     end
 
-    @tag timeout: 10000
     test ":loop does not broadcast every time", %{game_name: game_name, tick_rate: tick_rate, game_params: game_params} do
       :ok =
         start_and_wait_until_completion(
