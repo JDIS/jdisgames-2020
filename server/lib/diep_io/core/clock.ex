@@ -8,7 +8,7 @@ defmodule DiepIO.Core.Clock do
     clock_rate: The number of ticks in a second
     max_tick: The max number of ticks
     current_tick: The current clock tick
-    events: A map of event_name => event_frequency
+    events: A map of event_name => event_frequency (in ticks)
     corrections: A list of corrections the clock needs to consider when calculating the time until the next tick
   """
 

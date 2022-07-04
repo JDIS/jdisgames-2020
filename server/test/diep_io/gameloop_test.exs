@@ -17,14 +17,14 @@ defmodule GameloopTest do
 
     tank_id = 1
     game_name = :test_game
-    tick_rate = 3
+    tick_rate = 5
     monitor_performance? = false
     clock = Clock.new(tick_rate, game_params.number_of_ticks)
 
     :ok =
       GameParamsRepository.save_game_params(
         Atom.to_string(game_name),
-        10,
+        game_params.number_of_ticks,
         game_params.max_debris_count,
         game_params.max_debris_generation_rate,
         game_params.score_multiplier
@@ -129,7 +129,7 @@ defmodule GameloopTest do
         )
 
       client_update_count = length(PerformanceMonitor.get_broadcast_delays())
-      assert client_update_count + 1 == game_params.number_of_ticks / 5
+      assert client_update_count + 1 == div(game_params.number_of_ticks, 5)
     end
 
     test ":reset_game saves the scores when is_is_ranked true", %{
@@ -198,7 +198,7 @@ defmodule GameloopTest do
     end
   end
 
-  # Starts the gameloop and returns :ok when it end
+  # Starts the gameloop and returns :ok when it ends
   defp start_and_wait_until_completion(opts) do
     {:ok, pid} = Gameloop.start_link(opts)
 
