@@ -85,6 +85,7 @@
     import {Tank} from "./classes/Tank";
     import {Debris} from "./classes/Debris";
     import {Projectile} from "./classes/Projectile";
+    import {HotZone} from "./classes/HotZone";
 
     export default {
         name: 'Spectate',
@@ -186,6 +187,10 @@
                     tank.toCanvas.bringToFront()
                     this.elements.tanks[id] = tank
                 })
+
+                const hotZone = new HotZone(gameState.hot_zone)
+                this.mainCanvas.add(hotZone.toCanvas)
+                this.minimap.add(fabric.util.object.clone(hotZone.toCanvas))
 
                 this.autoSpectate = true
                 this.mainCanvas.renderAll()
