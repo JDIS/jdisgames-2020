@@ -172,7 +172,7 @@ defmodule DiepIO.Core.Tank do
     add_to_value(tank, :score, amount)
   end
 
-  @spec shoot(t()) :: {t(), list(Projectile.t() | nil)}
+  @spec shoot(t()) :: {t(), [Projectile.t() | nil]}
   def shoot(%__MODULE__{cooldown: cooldown} = tank) when cooldown <= 0 do
     angle = Angle.radian(tank.position, tank.target)
     projectile1 = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_time_to_live)
