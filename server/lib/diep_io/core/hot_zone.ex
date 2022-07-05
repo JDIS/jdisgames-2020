@@ -7,11 +7,12 @@ defmodule DiepIO.Core.HotZone do
   @default_radius 500
 
   @derive Jason.Encoder
-  @enforce_keys [:position]
-  defstruct [:position]
+  @enforce_keys [:position, :radius]
+  defstruct [:position, :radius]
 
   @type t :: %__MODULE__{
-          position: Position.t()
+          position: Position.t(),
+          radius: integer()
         }
 
   defimpl Entity do
@@ -29,7 +30,7 @@ defmodule DiepIO.Core.HotZone do
 
   @spec new(Position.t()) :: t()
   def new(position) do
-    %__MODULE__{position: position}
+    %__MODULE__{position: position, radius: default_radius()}
   end
 
   @spec default_radius() :: integer()

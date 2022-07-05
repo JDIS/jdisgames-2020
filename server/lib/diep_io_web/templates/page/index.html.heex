@@ -39,6 +39,7 @@
   <p>L'équipe qui obtient le plus de points à la fin de la compétition gagnera.</p>
 
   <h3>🔢 Comment obtenir des points et de l'expérience (XP) 🔢</h3>
+  <h4>💥 Détruire des choses 💥</h4>
   <p>Chaque destruction donne des points et de l'XP. 1 point = 1 XP.</p>
   <table>
     <tr>
@@ -84,6 +85,21 @@
       <td><strong>Variable (minimum <%= DiepIO.Core.Tank.default_hp() %> HP)</strong></td>
     </tr>
   </table>
+
+  <h4>🔥 La zone chaude 🔥</h4>
+  <div style="display: flex; align-items: center;">
+  <div>
+  <p>
+    La zone chaude au milieu de la carte accorde des points supplémentaires lorsqu'un joueur s'y trouve,
+    mais seulement s'il y est seul. Le joueur se trouvant seul dans cette zone recevra
+    <strong><%= DiepIO.Core.GameState.hot_zone_points_per_tick() %> points par tick</strong>. À noter que cette zone
+    n'augmentera <strong>pas</strong> votre expérience, seulement votre score.
+  </p>
+  <p>La zone chaude a un rayon de <%= DiepIO.Core.HotZone.default_radius() %> unités.</p>
+  </div>
+  <img style="display: block; width: 200px;" src="/images/hot_zone.png" alt="Zone chaude" />
+  </div>
+
   <h3>❌ Le multiplicateur de points ❌</h3>
   <p>
     Pendant chaque partie, les points accumulés sont multipliés par un chiffre. Durant la journée, ce chiffre va augmenter, faisant en sorte que les points accumulés en fin de journée vaudront pour plus que ceux accumulés au début de la journée.
