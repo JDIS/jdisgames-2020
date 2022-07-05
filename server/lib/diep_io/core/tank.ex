@@ -178,9 +178,7 @@ defmodule DiepIO.Core.Tank do
     projectile1 = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_time_to_live)
 
     projectiles =
-      if !tank.has_triple_gun do
-        [projectile1]
-      else
+      if tank.has_triple_gun do
         projectile2 =
           Projectile.new(tank.id, tank.position, angle - 1, tank.projectile_damage, tank.projectile_time_to_live)
 
@@ -188,6 +186,8 @@ defmodule DiepIO.Core.Tank do
           Projectile.new(tank.id, tank.position, angle + 1, tank.projectile_damage, tank.projectile_time_to_live)
 
         [projectile1, projectile2, projectile3]
+      else
+        [projectile1]
       end
 
     updated_tank = set_cooldown(tank)
