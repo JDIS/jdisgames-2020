@@ -473,14 +473,14 @@ defmodule GameStateTest do
     |> move_tanks_to_origin()
   end
 
-  defp setup_tank_in_hot_zone() do
+  defp setup_tank_in_hot_zone do
     user1 = %User{name: @user_name, id: @user_id}
 
     GameState.new("game_name", [user1], 0, false, false, @clock, @game_params)
     |> move_tanks_to_center()
   end
 
-  defp setup_two_tanks_in_hot_zone() do
+  defp setup_two_tanks_in_hot_zone do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
 
