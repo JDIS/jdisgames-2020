@@ -9,8 +9,7 @@ defmodule TankTest do
 
   setup do
     [
-      tank: Tank.new(@tank_id, @tank_name),
-      tank_with_triple_gun: Tank.new(@tank_id, @tank_name) |> Tank.add_triple_gun()
+      tank: Tank.new(@tank_id, @tank_name)
     ]
   end
 
@@ -162,9 +161,10 @@ defmodule TankTest do
     assert projectile.time_to_live > Tank.default_initial_projectile_time_to_live()
   end
 
-  test "shoot/1 creates three projectiles if the tank has the upgrade", %{tank_with_triple_gun: tank} do
+  test "shoot/1 creates three projectiles if the tank has the upgrade", %{} do
     tank =
-      tank
+      Tank.new(@tank_id, @tank_name)
+      |> Tank.add_triple_gun()
       |> Tank.set_target(Position.random())
 
     {_, projectiles} = Tank.shoot(tank)
@@ -177,7 +177,7 @@ defmodule TankTest do
       tank
       |> Tank.set_target(Position.random())
 
-    assert {_, [nil]} =
+    assert {_, []} =
              tank
              |> Tank.set_cooldown()
              |> Tank.shoot()

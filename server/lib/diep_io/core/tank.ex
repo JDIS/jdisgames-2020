@@ -177,21 +177,25 @@ defmodule DiepIO.Core.Tank do
     angle = Angle.radian(tank.position, tank.target)
     projectile1 = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_time_to_live)
 
-    projectiles = case tank.has_triple_gun do
-      false -> [projectile1]
+    projectiles =
+      if tank.has_triple_gun do
+        [projectile1]
+      else
+        projectile2 =
+          Projectile.new(tank.id, tank.position, angle - 1, tank.projectile_damage, tank.projectile_time_to_live)
 
-      true ->
-        projectile2 = Projectile.new(tank.id, tank.position, angle - 1, tank.projectile_damage, tank.projectile_time_to_live)
-        projectile3 = Projectile.new(tank.id, tank.position, angle + 1, tank.projectile_damage, tank.projectile_time_to_live)
+        projectile3 =
+          Projectile.new(tank.id, tank.position, angle + 1, tank.projectile_damage, tank.projectile_time_to_live)
+
         [projectile1, projectile2, projectile3]
-    end
+      end
 
     updated_tank = set_cooldown(tank)
 
     {updated_tank, projectiles}
   end
 
-  def shoot(tank), do: {tank, [nil]}
+  def shoot(tank), do: {tank, []}
 
   @spec set_cooldown(t()) :: t()
   def set_cooldown(tank) do
