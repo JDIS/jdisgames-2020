@@ -178,7 +178,7 @@ defmodule DiepIO.Core.Tank do
     projectile1 = Projectile.new(tank.id, tank.position, angle, tank.projectile_damage, tank.projectile_time_to_live)
 
     projectiles =
-      if tank.has_triple_gun do
+      if !tank.has_triple_gun do
         [projectile1]
       else
         projectile2 =
