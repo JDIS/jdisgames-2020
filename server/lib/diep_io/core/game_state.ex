@@ -251,15 +251,12 @@ defmodule DiepIO.Core.GameState do
       tank
       |> Tank.shoot()
 
-    case Enum.at(new_projectiles, 0) == nil do
-      true ->
-        game_state
-
-      # If at least one projectile was shot
-      false ->
-        game_state
-        |> Map.update!(:projectiles, fn projectiles -> new_projectiles ++ projectiles end)
-        |> Map.update!(:tanks, fn tanks -> Map.put(tanks, new_tank.id, new_tank) end)
+    if Enum.empty?(new_projectiles) do
+      game_state
+    else
+      game_state
+      |> Map.update!(:projectiles, fn projectiles -> new_projectiles ++ projectiles end)
+      |> Map.update!(:tanks, fn tanks -> Map.put(tanks, new_tank.id, new_tank) end)
     end
   end
 
