@@ -8,7 +8,7 @@ defmodule DiepIO.Core.Clock do
     clock_rate: The number of ticks in a second
     max_tick: The max number of ticks
     current_tick: The current clock tick
-    events: A map of event_name => event_frequency
+    events: A map of event_name => event_frequency (in ticks)
     corrections: A list of corrections the clock needs to consider when calculating the time until the next tick
   """
 
@@ -56,8 +56,8 @@ defmodule DiepIO.Core.Clock do
   end
 
   @spec restart(t()) :: t()
-  def restart(clock) do
-    %{clock | current_tick: 0}
+  def restart(clock, max_ticks \\ nil) do
+    %{clock | current_tick: 0, max_tick: max_ticks || clock.max_tick}
   end
 
   @spec done?(t()) :: boolean

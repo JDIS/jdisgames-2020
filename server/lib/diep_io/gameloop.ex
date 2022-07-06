@@ -5,9 +5,10 @@ defmodule DiepIO.Gameloop do
   """
 
   use GenServer
-  alias DiepIO.{ActionStorage, PubSub, ScoreRepository, UsersRepository}
+  alias DiepIO.{ActionStorage, GameParamsRepository, PubSub, ScoreRepository, UsersRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Clock, GameState}
+  alias DiepIOSchemas.GameParams
   alias :erlang, as: Erlang
   require Logger
 
@@ -22,15 +23,13 @@ defmodule DiepIO.Gameloop do
           name: atom(),
           is_ranked: boolean(),
           monitor_performance?: boolean(),
-          game_params: GameState.game_params(),
-          clock: Clock.t()
+          tick_rate: integer()
         ) :: {:ok, pid()}
   def start_link(
         name: name,
         is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
-        game_params: game_params,
-        clock: clock
+        tick_rate: tick_rate
       ) do
     GenServer.start(
       __MODULE__,
@@ -38,8 +37,7 @@ defmodule DiepIO.Gameloop do
         name: name,
         is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
-        game_params: game_params,
-        clock: clock
+        tick_rate: tick_rate
       ],
       name: name
     )
@@ -58,10 +56,12 @@ defmodule DiepIO.Gameloop do
         name: name,
         is_ranked: is_ranked,
         monitor_performance?: monitor_performance?,
-        game_params: game_params,
-        clock: clock
+        tick_rate: tick_rate
       ) do
     :ok = ActionStorage.init(name)
+    game_params = fetch_game_params(name)
+    clock = Clock.new(tick_rate, game_params.number_of_ticks)
+
     init_game_state(name, is_ranked, monitor_performance?, game_params, clock)
   end
 
@@ -121,6 +121,8 @@ defmodule DiepIO.Gameloop do
     {:noreply, Map.put(updated_state, :last_time, begin_time)}
   end
 
+  def client_tick_frequency, do: @client_tick_frequency
+
   # Privates
   defp init_game_state(name, is_ranked, monitor_performance?, game_params, clock) do
     game_id = System.unique_integer()
@@ -140,18 +142,15 @@ defmodule DiepIO.Gameloop do
 
   defp handle_reset_game(%{should_stop?: false} = state) do
     :ok = ActionStorage.reset(state.name)
+    game_params = fetch_game_params(state.name)
 
     {:ok, new_state} =
       init_game_state(
         state.name,
         state.is_ranked,
         state.monitor_performance?,
-        %{
-          max_debris_count: state.max_debris_count,
-          max_debris_generation_rate: state.max_debris_generation_rate,
-          score_multiplier: state.score_multiplier
-        },
-        Clock.restart(state.clock)
+        game_params,
+        Clock.restart(state.clock, game_params.number_of_ticks)
       )
 
     {:noreply, new_state}
@@ -181,5 +180,13 @@ defmodule DiepIO.Gameloop do
     |> Clock.register(:client_tick, @client_tick_frequency)
   end
 
-  def client_tick_frequency, do: @client_tick_frequency
+  defp fetch_game_params(name) when is_atom(name) do
+    name
+    |> Atom.to_string()
+    |> fetch_game_params()
+  end
+
+  defp fetch_game_params(name) do
+    GameParamsRepository.get_game_params(name) || GameParams.default_params()
+  end
 end
