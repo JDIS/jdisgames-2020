@@ -6,6 +6,7 @@ from core.Debris import Debris
 from core.Projectile import Projectile
 from core.Tank import Tank
 from core.Upgrades import UpgradeRates
+from core.HotZone import HotZone
 
 
 @dataclass()
@@ -28,3 +29,5 @@ class GameState:
     True if it is the ranked game (the one where points count). You can use this to introduce
     changes in the code but only test them in the unranked game.
     """
+
+    hot_zone: HotZone

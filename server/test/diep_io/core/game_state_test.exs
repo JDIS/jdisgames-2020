@@ -356,7 +356,7 @@ defmodule GameStateTest do
     assert get_tank(updated_game_state, tank.id).score > get_tank(game_state, tank.id).score
   end
 
-  test "handle_collision/1 gives points to tanks that destroyed another tank by colliding" do
+  test "handle_collisions/1 gives points to tanks that destroyed another tank by colliding" do
     game_state =
       setup_tank_tank_collision()
       |> update_single_tank(@user_id, fn tank -> Map.replace!(tank, :body_damage, tank.max_hp) end)
@@ -365,13 +365,30 @@ defmodule GameStateTest do
     assert game_state.tanks[@user_id].score != game_state.tanks[@user_id + 1].score
   end
 
-  test "handle_collision/1 gives points according to the score multiplier" do
+  test "handle_collisions/1 gives points according to the score multiplier" do
     game_state =
       setup_tank_tank_collision(%{@game_params | score_multiplier: 2})
       |> update_single_tank(@user_id, fn tank -> Map.replace!(tank, :body_damage, tank.max_hp) end)
       |> GameState.handle_collisions()
 
     assert game_state.tanks[@user_id].score == 200
+  end
+
+  test "handle_collisions/1 gives points to the tank in the hot zone" do
+    game_state =
+      setup_tank_in_hot_zone()
+      |> GameState.handle_collisions()
+
+    assert game_state.tanks[@user_id].score == 10
+  end
+
+  test "handle_collisions/1 does not give points in 2 tanks are in the hot zone" do
+    game_state =
+      setup_two_tanks_in_hot_zone()
+      |> GameState.handle_collisions()
+
+    assert game_state.tanks[@user_id].score == 0
+    assert game_state.tanks[@user_id + 1].score == 0
   end
 
   test "handle_tank_death/1 respawns dead tanks", %{game_state: game_state} do
@@ -426,6 +443,10 @@ defmodule GameStateTest do
     update_all_tanks(game_state, fn {id, tank} -> {id, Tank.move(tank, {0, 0})} end)
   end
 
+  defp move_tanks_to_center(game_state) do
+    update_all_tanks(game_state, fn {id, tank} -> {id, Tank.move(tank, GameMap.center())} end)
+  end
+
   defp move_tanks_out_of_collision(game_state) do
     update_all_tanks(game_state, fn {id, tank} ->
       {id, Tank.move(tank, {0, id * Entity.get_radius(tank) * 2})}
@@ -450,6 +471,30 @@ defmodule GameStateTest do
 
     GameState.new("game_name", [user1, user2], 0, false, false, @clock, game_params)
     |> move_tanks_to_origin()
+  end
+
+  defp setup_tank_in_hot_zone do
+    user1 = %User{name: @user_name, id: @user_id}
+
+    GameState.new("game_name", [user1], 0, false, false, @clock, @game_params)
+    |> move_tanks_to_center()
+  end
+
+  defp setup_two_tanks_in_hot_zone do
+    user1 = %User{name: @user_name, id: @user_id}
+    user2 = %User{name: @user_name <> "2", id: @user_id + 1}
+
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, @game_params)
+
+    tanks =
+      game_state.tanks
+      |> Map.update!(@user_id, fn tank -> Tank.move(tank, GameMap.center()) end)
+      |> Map.update!(@user_id + 1, fn tank ->
+        position = Position.add(GameMap.center(), Position.new(100, 0))
+        Tank.move(tank, position)
+      end)
+
+    %{game_state | tanks: tanks}
   end
 
   defp setup_tank_projectile_collision do

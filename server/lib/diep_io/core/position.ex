@@ -35,6 +35,9 @@ defmodule DiepIO.Core.Position do
     Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
   end
 
+  @spec add(t(), t()) :: t()
+  def add({a_x, a_y}, {b_x, b_y}), do: new(a_x + b_x, a_y + b_y)
+
   defimpl Encoder, for: Tuple do
     def encode(data, options) when is_tuple(data) do
       data

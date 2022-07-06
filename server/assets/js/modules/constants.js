@@ -5,6 +5,7 @@ export const MEDIUM_DEBRIS_RADIUS = 30 * GAME_RATIO;
 export const SMALL_DEBRIS_RADIUS = 25 * GAME_RATIO;
 export const PROJECTILE_RADIUS = 15 * GAME_RATIO;
 export const TANK_RADIUS = 35 * GAME_RATIO
+export const HOT_ZONE_RADIUS = 500 * GAME_RATIO
 
 export const GRID_SIZE = 250 * GAME_RATIO
 export const MAP_WIDTH = 5000 * GAME_RATIO
@@ -25,6 +26,8 @@ export const ANIMATION_DURATION = 1000 / 3
 export const FADE_DURATION = 150
 export const COLORS = ['#F60000', '#FF8C00', '#CCBB00', '#4DE94C', '#3783FF', '#4815AA', '#234E85', '#6E7C74', '#C7B763', '#D09D48', '#CA6220', '#C63501', '#777777', '#ABCDEF', '#DCBA98']
 export const DEBRIS_TYPE = [1, 2]
+export const HOT_ZONE_FILL_COLOR = 'rgba(150, 50, 150, 0.5)'
+export const HOT_ZONE_OUTLINE_COLOR = 'rgb(150, 50, 150)'
 export function linear(t, b, c, d) {
     return b + (t / d) * c
 }

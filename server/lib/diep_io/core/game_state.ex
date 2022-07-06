@@ -5,7 +5,7 @@ defmodule DiepIO.Core.GameState do
   """
 
   alias DiepIO.Collisions
-  alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, Position, Projectile, Tank, Upgrade}
+  alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, HotZone, Position, Projectile, Tank, Upgrade}
   alias DiepIOSchemas.GameParams
   alias DiepIOSchemas.User
   alias :rand, as: Rand
@@ -15,6 +15,7 @@ defmodule DiepIO.Core.GameState do
   @experience_loss_rate 0.9
   @experience_score_ratio_on_kill 0.2
   @minimum_score_on_kill 100
+  @hot_zone_points_per_tick 10
 
   @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
   defstruct [
@@ -32,6 +33,7 @@ defmodule DiepIO.Core.GameState do
     :monitor_performance?,
     :clock,
     :score_multiplier,
+    :hot_zone,
     should_stop?: false
   ]
 
@@ -50,6 +52,7 @@ defmodule DiepIO.Core.GameState do
           monitor_performance?: boolean(),
           clock: Clock.t(),
           score_multiplier: float(),
+          hot_zone: HotZone.t(),
           should_stop?: boolean()
         }
 
@@ -69,7 +72,8 @@ defmodule DiepIO.Core.GameState do
       projectiles: [],
       monitor_performance?: monitor_performance?,
       clock: clock,
-      score_multiplier: game_params.score_multiplier
+      score_multiplier: game_params.score_multiplier,
+      hot_zone: HotZone.new(GameMap.center())
     }
   end
 
@@ -131,6 +135,7 @@ defmodule DiepIO.Core.GameState do
     |> handle_tank_projectile_collisions()
     |> handle_tank_debris_collision()
     |> handle_projectile_debris_collision()
+    |> handle_tank_hot_zone_collisions()
   end
 
   @spec handle_tank_death(t()) :: t()
@@ -331,6 +336,24 @@ defmodule DiepIO.Core.GameState do
     %{updated_state | projectiles: projectiles}
   end
 
+  defp handle_tank_hot_zone_collisions(game_state) do
+    tanks_in_zone =
+      [game_state.hot_zone]
+      |> Collisions.calculate_collisions(Map.values(game_state.tanks))
+      |> Enum.map(fn {_, tank} -> tank end)
+
+    updated_tanks =
+      case tanks_in_zone do
+        [tank_in_zone] ->
+          Map.update!(game_state.tanks, tank_in_zone.id, &Tank.increase_score(&1, hot_zone_points_per_tick()))
+
+        _ ->
+          game_state.tanks
+      end
+
+    %{game_state | tanks: updated_tanks}
+  end
+
   defp handle_debris_collisions(game_state, collisions) do
     {debris_alive, debris_dead} =
       game_state.debris
@@ -386,6 +409,8 @@ defmodule DiepIO.Core.GameState do
   def minimum_score_on_kill, do: @minimum_score_on_kill
 
   def experience_score_ratio_on_kill, do: @experience_score_ratio_on_kill
+
+  def hot_zone_points_per_tick, do: @hot_zone_points_per_tick
 
   defp handle_projectiles_collision(projectiles, collided_projectiles) do
     projectiles
