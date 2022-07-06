@@ -7,7 +7,7 @@ defmodule DiepIO.Core.HotZone do
   @default_radius 500
 
   @derive Jason.Encoder
-  @enforce_keys [:position, :radius]
+  @enforce_keys [:position]
   defstruct [:position, radius: @default_radius]
 
   @type t :: %__MODULE__{
