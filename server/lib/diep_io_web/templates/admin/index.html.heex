@@ -1,4 +1,16 @@
 <div id="admin"></div>
 
+<%= for {elementId, params} <- [{"mainGameParams", @main_game_params}, {"secondaryGameParams", @secondary_game_params}],
+				params != nil do %>
+  <div
+    id={elementId}
+    data-number-of-ticks={params.number_of_ticks}
+    data-max-debris-count={params.max_debris_count}
+    data-max-debris-generation-rate={params.max_debris_generation_rate}
+    data-score-multiplier={params.score_multiplier}
+    style="display: none;"
+  />
+<% end %>
+
 <script src={Routes.static_path(@conn, "/js/admin.js")}>
 </script>

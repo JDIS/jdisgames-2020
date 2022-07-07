@@ -9,13 +9,37 @@ defmodule DiepIOWeb.AdminControllerTest do
     %{game_name: "main_game"}
   end
 
-  test "GET /admin", %{conn: conn} do
+  test "GET /admin render the app container", %{conn: conn} do
     conn =
       conn
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
       |> get(Routes.admin_path(conn, :index))
 
     assert html_response(conn, 200) =~ "<div id=\"admin\">"
+  end
+
+  test "GET /admin renders the game params data attributes for the main game", %{conn: conn} do
+    GameParamsRepository.save_game_params("main_game", 100, 200, 0.5, 2.5)
+
+    conn =
+      conn
+      |> authorize_conn()
+      |> get(Routes.admin_path(conn, :index))
+
+    assert html_response(conn, 200) =~
+             "<div id=\"mainGameParams\" data-number-of-ticks=\"100\" data-max-debris-count=\"200\" data-max-debris-generation-rate=\"0.5\" data-score-multiplier=\"2.5\""
+  end
+
+  test "GET /admin renders the game params data attributes for the secondary game", %{conn: conn} do
+    GameParamsRepository.save_game_params("secondary_game", 100, 200, 0.5, 2.5)
+
+    conn =
+      conn
+      |> authorize_conn()
+      |> get(Routes.admin_path(conn, :index))
+
+    assert html_response(conn, 200) =~
+             "<div id=\"secondaryGameParams\" data-number-of-ticks=\"100\" data-max-debris-count=\"200\" data-max-debris-generation-rate=\"0.5\" data-score-multiplier=\"2.5\""
   end
 
   test "GET /admin/start saves the game parameters", %{conn: conn, game_name: game_name} do
@@ -100,4 +124,6 @@ defmodule DiepIOWeb.AdminControllerTest do
     |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
     |> get(Routes.admin_path(conn, :kill_game, game_name: game_name))
   end
+
+  defp authorize_conn(conn), do: put_req_header(conn, "authorization", "Basic " <> Base.encode64("admin:admin"))
 end
