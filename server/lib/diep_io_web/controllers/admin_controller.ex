@@ -5,7 +5,10 @@ defmodule DiepIOWeb.AdminController do
   alias DiepIO.GameSupervisor
 
   def index(conn, _params) do
-    render(conn, "index.html")
+    main_game_params = GameParamsRepository.get_game_params("main_game")
+    secondary_game_params = GameParamsRepository.get_game_params("secondary_game")
+
+    render(conn, "index.html", main_game_params: main_game_params, secondary_game_params: secondary_game_params)
   end
 
   def start_game(conn, %{"game_name" => game_name} = params) do

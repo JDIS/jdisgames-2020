@@ -30,13 +30,13 @@ export default {
   name: "GameSettings",
   data() {
     return {
-      debris_count: 400,
-      debris_generation_rate: 0.15,
-      ticks: 2000,
-      score_multiplier: 1
+      debris_count: this.$props.params.maxDebrisCount,
+      debris_generation_rate: this.$props.params.maxDebrisGenerationRate,
+      ticks: this.$props.params.numberOfTicks,
+      score_multiplier: this.$props.params.scoreMultiplier
     };
   },
-  props: ["game_title", "game_name"],
+  props: ["game_title", "game_name", "params"],
   watch: {},
   computed: {},
   mounted() {},
