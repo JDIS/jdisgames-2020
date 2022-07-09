@@ -43,6 +43,7 @@ defmodule DiepIOWeb.Router do
     get("/start", AdminController, :start_game)
     get("/stop", AdminController, :stop_game)
     get("/kill", AdminController, :kill_game)
+    get("/save", AdminController, :save_params)
   end
 
   scope "/team-registration", DiepIOWeb do

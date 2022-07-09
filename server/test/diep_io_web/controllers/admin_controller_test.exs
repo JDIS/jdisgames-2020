@@ -6,6 +6,8 @@ defmodule DiepIOWeb.AdminControllerTest do
   alias DiepIO.GameParamsRepository
 
   setup do
+    GameParamsRepository.save_game_params("main_game", 1, 200, 0.5, 2.5)
+
     %{game_name: "main_game"}
   end
 
@@ -42,11 +44,11 @@ defmodule DiepIOWeb.AdminControllerTest do
              "<div id=\"secondaryGameParams\" data-number-of-ticks=\"100\" data-max-debris-count=\"200\" data-max-debris-generation-rate=\"0.5\" data-score-multiplier=\"2.5\""
   end
 
-  test "GET /admin/start saves the game parameters", %{conn: conn, game_name: game_name} do
+  test "GET /admin/save saves the game parameters", %{conn: conn, game_name: game_name} do
     conn
     |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
     |> get(
-      Routes.admin_path(conn, :start_game,
+      Routes.admin_path(conn, :save_params,
         ticks: "15",
         game_name: game_name,
         max_debris_count: 10,
@@ -61,8 +63,6 @@ defmodule DiepIOWeb.AdminControllerTest do
     assert game_params.max_debris_count == 10
     assert game_params.max_debris_generation_rate == 0.5
     assert game_params.score_multiplier == 2.0
-
-    call_kill(conn, game_name)
   end
 
   test "GET /admin/start starts the required game and /admin/kill kills it", %{

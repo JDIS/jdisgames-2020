@@ -11,12 +11,16 @@ defmodule DiepIOWeb.AdminController do
     render(conn, "index.html", main_game_params: main_game_params, secondary_game_params: secondary_game_params)
   end
 
-  def start_game(conn, %{"game_name" => game_name} = params) do
-    update_game_params(params)
-
+  def start_game(conn, %{"game_name" => game_name}) do
     {:ok, pid} = GameSupervisor.start_game(game_name)
 
     finish_call(conn, "Started game \"#{game_name}\": #{inspect(pid)}")
+  end
+
+  def save_params(conn, params) do
+    update_game_params(params)
+
+    finish_call(conn, "Saved parameters for game \"#{params["game_name"]}\"")
   end
 
   def stop_game(conn, %{"game_name" => game_name} = _params) do

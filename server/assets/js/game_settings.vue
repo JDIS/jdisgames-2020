@@ -18,6 +18,7 @@
         <label for="main-game-score-multiplier">Score multiplier:</label>
         <input id="main-game-score-multiplier" type="number" v-model="score_multiplier" min="1" step="0.01" />
       </div>
+      <button @click="saveParams()">Save</button>
       <button @click="startGame()">Start</button>
       <button @click="stopGame()">Stop</button>
       <button @click="killGame()">Kill</button>
@@ -41,13 +42,20 @@ export default {
   computed: {},
   mounted() {},
   methods: {
-    startGame() {
+    saveParams() {
       const params = {
         ticks: this.ticks,
         max_debris_count: this.debris_count,
         max_debris_generation_rate: this.debris_generation_rate,
         game_name: this.$props.game_name,
         score_multiplier: this.score_multiplier
+      };
+      const searchParams = new URLSearchParams(params);
+      window.location = `/admin/save?${searchParams.toString()}`;
+    },
+    startGame() {
+      const params = {
+        game_name: this.$props.game_name,
       };
       const searchParams = new URLSearchParams(params);
       window.location = `/admin/start?${searchParams.toString()}`;
