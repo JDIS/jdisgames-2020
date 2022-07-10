@@ -41,6 +41,7 @@ class MyBot:
         return sorted(state.debris, key=lambda debris: self.distance_from(debris))[0]
 
     def tick(self, state: GameState) -> Action:
+        # Program your bot here
         self.tank = state.tanks[f"{self.id}"]
         nearest_debris: Debris = self.find_nearest_debris(state)
         return Action(

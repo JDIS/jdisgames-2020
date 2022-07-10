@@ -47,7 +47,7 @@ Une fois la partie démarrée, vous pouvez vous rendre dans les pages de visuali
 
 ### Connection d'un agent au serveur
 
-L'agent inclus dans le projet est écrit en Python. Voir [ici](https://www.python.org/downloads/) pour le télécharger si nécessaire. L'agent a été testé avec les versions 3.7 et 3.8.
+L'agent inclus dans le projet est écrit en Python. Voir [ici](https://www.python.org/downloads/) pour le télécharger si nécessaire. L'agent a été testé avec les versions 3.7 à 3.10.
 
 Pour démarrer l'agent, rendez-vous dans le dossier `StarterPacks/python` puis exécutez la commande suivante :
 
