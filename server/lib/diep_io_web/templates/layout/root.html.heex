@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="height: 100%;">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -10,7 +10,7 @@
     <script phx-tract-static type="text/javascript" src={Routes.static_path(@conn, "/js/app.js")}>
     </script>
   </head>
-  <body>
+  <body style="height: 100%; display: flex; flex-direction: column;">
     <header style="background: #EEEEEE; box-shadow: 0 0em 0.5em 0.2em;">
       <section class="container" style="justify-content:space-between;">
         <nav role="navigation">
@@ -30,9 +30,9 @@
       </section>
     </header>
     <%= @inner_content %>
-    <footer>
+    <footer style="margin-top: auto;">
       <hr />
-      <span style="float:right">
+      <span style="float: right; margin-bottom: 1rem; margin-right: 1rem;">
         Fait avec ❤️ par <a href="https://twitter.com/Blond11516">Étienne Lévesque</a>,
         <a href="https://twitter.com/res260">Émilio Gonzalez</a>,
         <a href="https://github.com/zelarpmaster">Guillaume Jean</a>,
