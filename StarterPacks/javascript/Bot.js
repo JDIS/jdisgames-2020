@@ -28,6 +28,7 @@ class Bot {
   }
 
   tick(state) {
+    // Program your bot here
     this.tank = state.tanks[this.id]
     const nearestDebris = this.findNearestDebris(state)
 
