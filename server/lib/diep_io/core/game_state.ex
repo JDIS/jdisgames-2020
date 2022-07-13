@@ -45,6 +45,7 @@ defmodule DiepIO.Core.GameState do
           max_debris_generation_rate: float(),
           map_width: integer(),
           map_height: integer(),
+          # Not used internally, but required to be sent to the clients
           upgrade_rates: Upgrade.upgrade_rates(),
           game_id: integer(),
           is_ranked: boolean(),

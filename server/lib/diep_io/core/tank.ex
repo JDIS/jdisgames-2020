@@ -14,16 +14,6 @@ defmodule DiepIO.Core.Tank do
   @default_radius 35
   @default_initial_projectile_time_to_live 30
 
-  @upgrade_rates [
-    max_hp: &Upgrade.max_hp/1,
-    speed: &Upgrade.speed/1,
-    fire_rate: &Upgrade.fire_rate/1,
-    projectile_damage: &Upgrade.projectile_damage/1,
-    body_damage: &Upgrade.body_damage/1,
-    hp_regen: &Upgrade.hp_regen/1,
-    projectile_time_to_live: &Upgrade.projectile_time_to_live/1
-  ]
-
   @derive Jason.Encoder
   @enforce_keys [
     :id,
@@ -299,10 +289,8 @@ defmodule DiepIO.Core.Tank do
   end
 
   defp calculate_new_stat_value(tank, stat) do
-    func = Keyword.get(@upgrade_rates, stat, & &1)
-
-    Map.get(tank, stat, 0)
-    |> func.()
+    current_stat_value = Map.fetch!(tank, stat)
+    Upgrade.upgrade_stat(stat, current_stat_value)
   end
 
   defp upgrade_tokens_spent(tank) do
