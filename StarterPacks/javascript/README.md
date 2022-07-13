@@ -31,7 +31,7 @@ Pour programmer l'agent intelligent, le seul endroit où vous devez écrire du c
 
 ## Fonctionnement de l'agent
 
-Une fois l'agent et sa partie correspendante démarrés, la fonction `tick` sera automatiquement appelée à intervalles réguliers. Elle recevra en paramètre l'état complet de la partie à ce moment.
+Une fois l'agent et sa partie correspondante démarrés, la fonction `tick` sera automatiquement appelée à intervalles réguliers. Elle recevra en paramètre l'état complet de la partie à ce moment.
 
 La fonction `tick` doit retourner un objet d'action, qui indiquera ce que votre agent doit faire.
 
