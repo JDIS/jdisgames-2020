@@ -20,7 +20,7 @@ npm start -- -s <SECRET TOKEN>
 
 Assurez-vous de remplacer `<SECRET TOKEN>` avec la clé secrète qui vous a été fournie lors de votre inscription.
 
-Par défaut, le bot se connectera à la partie classée. Il est possible de se connecter à la partie d'entrainement avec l'option `-r False`:
+Par défaut, le bot se connectera à la partie classée. Il est possible de se connecter à la partie d'entrainement avec l'option `-r false`:
 ```bash
 npm start -- -s <SECRET TOKEN> -r false
 ```
