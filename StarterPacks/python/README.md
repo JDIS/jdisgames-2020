@@ -45,4 +45,4 @@ La fonction tick sera appelée 3 fois par seconde. Cela signifie qu'elle devra r
 
 Par exemple, si votre agent prend 350ms pour calculer une action, 1 mise à jour sur deux sera sautée. Si votre agent prend 900ms pour calculer une action, 2 mises à jour sur 3 seront sautées (vous n'aurez accès qu'à 1 mise à jour par seconde).
 
-__Cela signifie qu'il est de votre responsabilité de surveiller la performance et surtout l'absence de boucles infinies dans votre implémentation__. En cas de problèmes de performance de votre agent, rien ne vous l'indiquera. Vous devrez bâtir vor propres mécanismes de surveillance, par exemple via de la journalisation.
+__Cela signifie qu'il est de votre responsabilité de surveiller la performance et surtout l'absence de boucles infinies dans votre implémentation__. En cas de problèmes de performance de votre agent, rien ne vous l'indiquera. Vous devrez bâtir vos propres mécanismes de surveillance, par exemple via de la journalisation.
