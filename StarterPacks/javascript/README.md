@@ -27,7 +27,7 @@ npm start -- -s <SECRET TOKEN> -r false
 
 ## Programmer l'agent
 
-Pour programmer l'agent intelligent, le seul endroit où vous devez écrire du code est la fonction [`tick` dans Bot.js](./Bot.js). Vous pouvez créer de nouvelles méthodes, classes et fichiers à votre convenance, mais une modification de tout autre fichier inclut dans le projet risque fortement de causer des problèmes qui empêcheront le bon fonctionnement de votre agent.
+Pour programmer l'agent intelligent, le seul endroit où vous devez écrire du code est la fonction [`tick` dans Bot.js](./Bot.js). Vous pouvez créer de nouvelles méthodes, classes et fichiers à votre convenance, mais une modification de tout autre fichier inclus dans le projet risque fortement de causer des problèmes qui empêcheront le bon fonctionnement de votre agent.
 
 ## Fonctionnement de l'agent
 
