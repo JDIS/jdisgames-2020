@@ -221,9 +221,11 @@ defmodule TankTest do
 
   test "buy_fire_rate_upgrade does not decrease fire_rate below 0", %{tank: tank} do
     upgraded_tank =
-      %{tank | fire_rate: 0}
-      |> Tank.add_upgrade_tokens(1)
-      |> Tank.buy_fire_rate_upgrade()
+      Enum.reduce(0..100//1, tank, fn _, tank ->
+        tank
+        |> Tank.add_upgrade_tokens(1)
+        |> Tank.buy_fire_rate_upgrade()
+      end)
 
     assert upgraded_tank.fire_rate == 0
   end

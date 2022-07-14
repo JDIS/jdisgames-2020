@@ -2,13 +2,13 @@ defmodule DiepIO.Core.Upgrade do
   @moduledoc false
 
   @upgrade_descriptions %{
-    speed: {:integer, 1.3},
-    max_hp: {:integer, 1.3},
-    projectile_damage: {:integer, 1.3},
-    body_damage: {:integer, 1.3},
-    fire_rate: {:float, 0.85},
-    hp_regen: {:float, 1.3},
-    projectile_time_to_live: {:integer, 1.1}
+    speed: {:integer, 0.3},
+    max_hp: {:integer, 0.3},
+    projectile_damage: {:integer, 0.3},
+    body_damage: {:integer, 0.3},
+    fire_rate: {:float, -0.15},
+    hp_regen: {:float, 0.3},
+    projectile_time_to_live: {:integer, 0.1}
   }
 
   @type upgradable_stat ::
@@ -23,12 +23,21 @@ defmodule DiepIO.Core.Upgrade do
           projectile_time_to_live: float()
         }
 
-  @spec upgrade_stat(upgradable_stat(), number()) :: number()
-  def upgrade_stat(stat, current_value) do
-    case @upgrade_descriptions[stat] do
-      {:integer, upgrade_rate} -> Kernel.floor(current_value * upgrade_rate)
-      {:float, upgrade_rate} -> Float.round(current_value * upgrade_rate, 2)
-    end
+  @spec calculate_stat_value(upgradable_stat(), number(), integer()) :: number()
+  def calculate_stat_value(stat, base_value, level) do
+    {stat_type, upgrade_rate} = @upgrade_descriptions[stat]
+
+    cast_value =
+      case stat_type do
+        :integer -> &floor/1
+        :float -> &Float.round(&1, 2)
+      end
+
+    raw_value = base_value + base_value * upgrade_rate * level
+
+    raw_value
+    |> max(0.0)
+    |> cast_value.()
   end
 
   @spec rates() :: upgrade_rates()
