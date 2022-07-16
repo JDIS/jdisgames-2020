@@ -49,7 +49,7 @@ defmodule Mix.Tasks.StressTest do
     end
 
     game_name = "main_game"
-    DiepIO.GameParamsRepository.save_game_params(game_name, 2000, 400, 0.15, 1)
+    DiepIO.GameParamsRepository.save_game_params(game_name, 2000, 400, 0.15, 1.0)
 
     DiepIO.GameSupervisor.start_game(game_name)
 
