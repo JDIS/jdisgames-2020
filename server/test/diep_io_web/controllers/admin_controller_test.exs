@@ -5,6 +5,7 @@ defmodule DiepIOWeb.AdminControllerTest do
 
   alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
+  alias DiepIO.UpgradeParams
 
   setup do
     GameParamsRepository.save_game_params("main_game", %GameParams{
@@ -13,13 +14,13 @@ defmodule DiepIOWeb.AdminControllerTest do
       max_debris_generation_rate: 0.5,
       score_multiplier: 2.5,
       upgrade_params: %{
-        speed: %{base_value: 10, upgrade_rate: 0.5},
-        max_hp: %{base_value: 10, upgrade_rate: 0.5},
-        projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
-        body_damage: %{base_value: 10, upgrade_rate: 0.5},
-        fire_rate: %{base_value: 10, upgrade_rate: 0.5},
-        hp_regen: %{base_value: 10, upgrade_rate: 0.5},
-        projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+        speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
       }
     })
 
@@ -42,13 +43,13 @@ defmodule DiepIOWeb.AdminControllerTest do
       max_debris_generation_rate: 0.5,
       score_multiplier: 2.5,
       upgrade_params: %{
-        speed: %{base_value: 10, upgrade_rate: 0.5},
-        max_hp: %{base_value: 10, upgrade_rate: 0.5},
-        projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
-        body_damage: %{base_value: 10, upgrade_rate: 0.5},
-        fire_rate: %{base_value: 10, upgrade_rate: 0.5},
-        hp_regen: %{base_value: 10, upgrade_rate: 0.5},
-        projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+        speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
       }
     })
 
@@ -68,13 +69,13 @@ defmodule DiepIOWeb.AdminControllerTest do
       max_debris_generation_rate: 0.5,
       score_multiplier: 2.5,
       upgrade_params: %{
-        speed: %{base_value: 10, upgrade_rate: 0.5},
-        max_hp: %{base_value: 10, upgrade_rate: 0.5},
-        projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
-        body_damage: %{base_value: 10, upgrade_rate: 0.5},
-        fire_rate: %{base_value: 10, upgrade_rate: 0.5},
-        hp_regen: %{base_value: 10, upgrade_rate: 0.5},
-        projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+        speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+        projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
       }
     })
 

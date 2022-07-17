@@ -1,7 +1,6 @@
 defmodule DiepIOWeb.AdminController do
   use DiepIOWeb, :controller
 
-  alias DiepIO.Core.Upgrade
   alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
   alias DiepIO.GameSupervisor
@@ -66,14 +65,5 @@ defmodule DiepIOWeb.AdminController do
       score_multiplier: score_multiplier,
       upgrade_params: GameParams.default_params().upgrade_params
     })
-  end
-
-    GameParamsRepository.save_game_params(
-      game_name,
-      number_of_ticks,
-      max_debris_count,
-      max_debris_generation_rate,
-      score_multiplier
-    )
   end
 end

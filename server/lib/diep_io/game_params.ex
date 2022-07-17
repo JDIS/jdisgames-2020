@@ -1,4 +1,6 @@
 defmodule DiepIO.GameParams do
+  @moduledoc false
+
   alias DiepIO.UpgradeParams
 
   @type t :: %__MODULE__{

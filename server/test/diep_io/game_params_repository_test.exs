@@ -28,13 +28,13 @@ defmodule DiepIO.GameParamsRepositoryTest do
           max_debris_generation_rate: expected_game_params.max_debris_generation_rate,
           score_multiplier: expected_game_params.score_multiplier,
           upgrade_params: %{
-            speed: %{base_value: 10, upgrade_rate: 0.5},
-            max_hp: %{base_value: 10, upgrade_rate: 0.5},
-            projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
-            body_damage: %{base_value: 10, upgrade_rate: 0.5},
-            fire_rate: %{base_value: 10, upgrade_rate: 0.5},
-            hp_regen: %{base_value: 10, upgrade_rate: 0.5},
-            projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+            speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
           }
         }
       )
@@ -49,8 +49,8 @@ defmodule DiepIO.GameParamsRepositoryTest do
     end
   end
 
-  @spec game_params_fixture() :: GameParams.t()
-  defp game_params_fixture() do
+  @spec game_params_fixture :: GameParams.t()
+  defp game_params_fixture do
     %GameParams{
       max_debris_count: 10,
       max_debris_generation_rate: 0.5,

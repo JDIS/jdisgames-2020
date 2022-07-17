@@ -1,4 +1,6 @@
 defmodule DiepIOSchemas.UpgradeParamsSchema do
+  @moduledoc false
+
   use Ecto.Schema
 
   @type t :: %__MODULE__{

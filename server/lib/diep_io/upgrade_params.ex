@@ -1,4 +1,6 @@
 defmodule DiepIO.UpgradeParams do
+  @moduledoc false
+
   @type t :: %__MODULE__{
           upgrade_rate: float(),
           base_value: number()

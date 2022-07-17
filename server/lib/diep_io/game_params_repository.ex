@@ -71,7 +71,7 @@ defmodule DiepIO.GameParamsRepository do
         max_debris_count: game_params.max_debris_count,
         max_debris_generation_rate: game_params.max_debris_generation_rate,
         score_multiplier: game_params.score_multiplier,
-        upgrade_params: game_params.upgrade_params
+        upgrade_params: Map.new(game_params.upgrade_params, fn {stat, params} -> {stat, Map.from_struct(params)} end)
       },
       [:game_name, :number_of_ticks, :max_debris_count, :max_debris_generation_rate, :score_multiplier]
     )
