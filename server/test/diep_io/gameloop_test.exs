@@ -26,7 +26,7 @@ defmodule GameloopTest do
     :ok =
       GameParamsRepository.save_game_params(
         Atom.to_string(game_name),
-        %GameParams{
+        GameParams.new(%{
           number_of_ticks: game_params.number_of_ticks,
           max_debris_count: game_params.max_debris_count,
           max_debris_generation_rate: game_params.max_debris_generation_rate,
@@ -40,7 +40,7 @@ defmodule GameloopTest do
             hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
             projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
           }
-        }
+        })
       )
 
     {

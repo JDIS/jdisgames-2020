@@ -58,12 +58,15 @@ defmodule DiepIOWeb.AdminController do
     max_debris_generation_rate = parse_float(params["max_debris_generation_rate"]) || 0.15
     score_multiplier = parse_float(params["score_multiplier"]) || 1.0
 
-    GameParamsRepository.save_game_params(game_name, %GameParams{
-      number_of_ticks: number_of_ticks,
-      max_debris_count: max_debris_count,
-      max_debris_generation_rate: max_debris_generation_rate,
-      score_multiplier: score_multiplier,
-      upgrade_params: GameParams.default_params().upgrade_params
-    })
+    GameParamsRepository.save_game_params(
+      game_name,
+      GameParams.new(%{
+        number_of_ticks: number_of_ticks,
+        max_debris_count: max_debris_count,
+        max_debris_generation_rate: max_debris_generation_rate,
+        score_multiplier: score_multiplier,
+        upgrade_params: GameParams.default_params().upgrade_params
+      })
+    )
   end
 end

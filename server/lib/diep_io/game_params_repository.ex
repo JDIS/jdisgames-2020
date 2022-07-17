@@ -19,7 +19,7 @@ defmodule DiepIO.GameParamsRepository do
         nil
 
       schema ->
-        %GameParams{
+        GameParams.new(%{
           max_debris_count: schema.max_debris_count,
           max_debris_generation_rate: schema.max_debris_generation_rate,
           score_multiplier: schema.score_multiplier,
@@ -54,7 +54,7 @@ defmodule DiepIO.GameParamsRepository do
               upgrade_rate: schema.upgrade_params.projectile_time_to_live.upgrade_rate
             }
           }
-        }
+        })
     end
   end
 

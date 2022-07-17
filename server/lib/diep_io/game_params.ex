@@ -24,6 +24,17 @@ defmodule DiepIO.GameParams do
   @enforce_keys [:number_of_ticks, :max_debris_count, :max_debris_generation_rate, :score_multiplier, :upgrade_params]
   defstruct [:number_of_ticks, :max_debris_count, :max_debris_generation_rate, :score_multiplier, :upgrade_params]
 
+  @spec new(%{
+          number_of_ticks: integer(),
+          max_debris_count: integer(),
+          max_debris_generation_rate: float(),
+          score_multiplier: float(),
+          upgrade_params: upgrade_params()
+        }) :: t()
+  def new(opts) do
+    struct!(__MODULE__, opts)
+  end
+
   @spec default_params() :: t()
   def default_params do
     %__MODULE__{

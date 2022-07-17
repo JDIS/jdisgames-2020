@@ -8,21 +8,24 @@ defmodule DiepIOWeb.AdminControllerTest do
   alias DiepIO.UpgradeParams
 
   setup do
-    GameParamsRepository.save_game_params("main_game", %GameParams{
-      number_of_ticks: 1,
-      max_debris_count: 200,
-      max_debris_generation_rate: 0.5,
-      score_multiplier: 2.5,
-      upgrade_params: %{
-        speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
-      }
-    })
+    GameParamsRepository.save_game_params(
+      "main_game",
+      GameParams.new(%{
+        number_of_ticks: 1,
+        max_debris_count: 200,
+        max_debris_generation_rate: 0.5,
+        score_multiplier: 2.5,
+        upgrade_params: %{
+          speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
+        }
+      })
+    )
 
     %{game_name: "main_game"}
   end
@@ -37,21 +40,24 @@ defmodule DiepIOWeb.AdminControllerTest do
   end
 
   test "GET /admin renders the game params data attributes for the main game", %{conn: conn} do
-    GameParamsRepository.save_game_params("main_game", %GameParams{
-      number_of_ticks: 100,
-      max_debris_count: 200,
-      max_debris_generation_rate: 0.5,
-      score_multiplier: 2.5,
-      upgrade_params: %{
-        speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
-      }
-    })
+    GameParamsRepository.save_game_params(
+      "main_game",
+      GameParams.new(%{
+        number_of_ticks: 100,
+        max_debris_count: 200,
+        max_debris_generation_rate: 0.5,
+        score_multiplier: 2.5,
+        upgrade_params: %{
+          speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
+        }
+      })
+    )
 
     conn =
       conn
@@ -63,21 +69,24 @@ defmodule DiepIOWeb.AdminControllerTest do
   end
 
   test "GET /admin renders the game params data attributes for the secondary game", %{conn: conn} do
-    GameParamsRepository.save_game_params("secondary_game", %GameParams{
-      number_of_ticks: 100,
-      max_debris_count: 200,
-      max_debris_generation_rate: 0.5,
-      score_multiplier: 2.5,
-      upgrade_params: %{
-        speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-        projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
-      }
-    })
+    GameParamsRepository.save_game_params(
+      "secondary_game",
+      GameParams.new(%{
+        number_of_ticks: 100,
+        max_debris_count: 200,
+        max_debris_generation_rate: 0.5,
+        score_multiplier: 2.5,
+        upgrade_params: %{
+          speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
+        }
+      })
+    )
 
     conn =
       conn

@@ -22,7 +22,7 @@ defmodule DiepIO.GameParamsRepositoryTest do
 
       GameParamsRepository.save_game_params(
         game_name,
-        %GameParams{
+        GameParams.new(%{
           number_of_ticks: expected_game_params.number_of_ticks,
           max_debris_count: expected_game_params.max_debris_count,
           max_debris_generation_rate: expected_game_params.max_debris_generation_rate,
@@ -36,7 +36,7 @@ defmodule DiepIO.GameParamsRepositoryTest do
             hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
             projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
           }
-        }
+        })
       )
 
       [fetched_params] = Repo.all(GameParamsSchema)
@@ -51,7 +51,7 @@ defmodule DiepIO.GameParamsRepositoryTest do
 
   @spec game_params_fixture :: GameParams.t()
   defp game_params_fixture do
-    %GameParams{
+    GameParams.new(%{
       max_debris_count: 10,
       max_debris_generation_rate: 0.5,
       score_multiplier: 1.0,
@@ -65,7 +65,7 @@ defmodule DiepIO.GameParamsRepositoryTest do
         hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
         projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
       }
-    }
+    })
   end
 
   @spec setup_stored_params(String.t()) :: GameParams.t()
