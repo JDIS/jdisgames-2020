@@ -3,10 +3,25 @@ defmodule DiepIOWeb.AdminControllerTest do
 
   use DiepIOWeb.ConnCase, async: false
 
+  alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
 
   setup do
-    GameParamsRepository.save_game_params("main_game", 1, 200, 0.5, 2.5)
+    GameParamsRepository.save_game_params("main_game", %GameParams{
+      number_of_ticks: 1,
+      max_debris_count: 200,
+      max_debris_generation_rate: 0.5,
+      score_multiplier: 2.5,
+      upgrade_params: %{
+        speed: %{base_value: 10, upgrade_rate: 0.5},
+        max_hp: %{base_value: 10, upgrade_rate: 0.5},
+        projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
+        body_damage: %{base_value: 10, upgrade_rate: 0.5},
+        fire_rate: %{base_value: 10, upgrade_rate: 0.5},
+        hp_regen: %{base_value: 10, upgrade_rate: 0.5},
+        projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+      }
+    })
 
     %{game_name: "main_game"}
   end
@@ -17,11 +32,25 @@ defmodule DiepIOWeb.AdminControllerTest do
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
       |> get(Routes.admin_path(conn, :index))
 
-    assert html_response(conn, 200) =~ "<div id=\"admin\">"
+    assert html_response(conn, 200) =~ "<div id=\"admin\""
   end
 
   test "GET /admin renders the game params data attributes for the main game", %{conn: conn} do
-    GameParamsRepository.save_game_params("main_game", 100, 200, 0.5, 2.5)
+    GameParamsRepository.save_game_params("main_game", %GameParams{
+      number_of_ticks: 100,
+      max_debris_count: 200,
+      max_debris_generation_rate: 0.5,
+      score_multiplier: 2.5,
+      upgrade_params: %{
+        speed: %{base_value: 10, upgrade_rate: 0.5},
+        max_hp: %{base_value: 10, upgrade_rate: 0.5},
+        projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
+        body_damage: %{base_value: 10, upgrade_rate: 0.5},
+        fire_rate: %{base_value: 10, upgrade_rate: 0.5},
+        hp_regen: %{base_value: 10, upgrade_rate: 0.5},
+        projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+      }
+    })
 
     conn =
       conn
@@ -33,7 +62,21 @@ defmodule DiepIOWeb.AdminControllerTest do
   end
 
   test "GET /admin renders the game params data attributes for the secondary game", %{conn: conn} do
-    GameParamsRepository.save_game_params("secondary_game", 100, 200, 0.5, 2.5)
+    GameParamsRepository.save_game_params("secondary_game", %GameParams{
+      number_of_ticks: 100,
+      max_debris_count: 200,
+      max_debris_generation_rate: 0.5,
+      score_multiplier: 2.5,
+      upgrade_params: %{
+        speed: %{base_value: 10, upgrade_rate: 0.5},
+        max_hp: %{base_value: 10, upgrade_rate: 0.5},
+        projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
+        body_damage: %{base_value: 10, upgrade_rate: 0.5},
+        fire_rate: %{base_value: 10, upgrade_rate: 0.5},
+        hp_regen: %{base_value: 10, upgrade_rate: 0.5},
+        projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+      }
+    })
 
     conn =
       conn

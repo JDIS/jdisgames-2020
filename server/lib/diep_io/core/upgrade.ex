@@ -44,4 +44,17 @@ defmodule DiepIO.Core.Upgrade do
   def rates do
     Map.new(@upgrade_descriptions, fn {stat, {_, upgrade_rate}} -> {stat, upgrade_rate} end)
   end
+
+  @spec upgradable_stats :: MapSet.t(upgradable_stat())
+  def upgradable_stats,
+    do:
+      MapSet.new([
+        :speed,
+        :max_hp,
+        :projectile_damage,
+        :body_damage,
+        :fire_rate,
+        :hp_regen,
+        :projectile_time_to_live
+      ])
 end

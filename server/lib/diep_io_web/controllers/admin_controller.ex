@@ -1,6 +1,8 @@
 defmodule DiepIOWeb.AdminController do
   use DiepIOWeb, :controller
 
+  alias DiepIO.Core.Upgrade
+  alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
   alias DiepIO.GameSupervisor
 
@@ -56,6 +58,15 @@ defmodule DiepIOWeb.AdminController do
     max_debris_count = parse_integer(params["max_debris_count"]) || 400
     max_debris_generation_rate = parse_float(params["max_debris_generation_rate"]) || 0.15
     score_multiplier = parse_float(params["score_multiplier"]) || 1.0
+
+    GameParamsRepository.save_game_params(game_name, %GameParams{
+      number_of_ticks: number_of_ticks,
+      max_debris_count: max_debris_count,
+      max_debris_generation_rate: max_debris_generation_rate,
+      score_multiplier: score_multiplier,
+      upgrade_params: GameParams.default_params().upgrade_params
+    })
+  end
 
     GameParamsRepository.save_game_params(
       game_name,

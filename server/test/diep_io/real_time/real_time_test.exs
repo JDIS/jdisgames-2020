@@ -14,7 +14,16 @@ defmodule RealTimeTest do
     number_of_ticks: 1000,
     max_debris_count: 400,
     max_debris_generation_rate: 0.15,
-    score_multiplier: 1.0
+    score_multiplier: 1.0,
+    upgrade_params: %{
+      speed: %{base_value: 10, upgrade_rate: 0.5},
+      max_hp: %{base_value: 10, upgrade_rate: 0.5},
+      projectile_damage: %{base_value: 10, upgrade_rate: 0.5},
+      body_damage: %{base_value: 10, upgrade_rate: 0.5},
+      fire_rate: %{base_value: 10, upgrade_rate: 0.5},
+      hp_regen: %{base_value: 10, upgrade_rate: 0.5},
+      projectile_time_to_live: %{base_value: 10, upgrade_rate: 0.5}
+    }
   }
   @game_name :what_a_name
   @number_of_users 200
@@ -47,10 +56,7 @@ defmodule RealTimeTest do
     :ok =
       GameParamsRepository.save_game_params(
         Atom.to_string(@game_name),
-        @game_params.number_of_ticks,
-        @game_params.max_debris_count,
-        @game_params.max_debris_generation_rate,
-        @game_params.score_multiplier
+        @game_params
       )
 
     {:ok, pid} = Gameloop.start_link(opts)
