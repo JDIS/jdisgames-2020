@@ -1,51 +1,51 @@
-name: Elixir Quality Checks
+# name: Elixir Quality Checks
 
-on:
-  pull_request:
-    branches:
-      - '**'
-  push:
-    branches:
-      - master
+# on:
+#   pull_request:
+#     branches:
+#       - '**'
+#   push:
+#     branches:
+#       - master
 
-defaults:
-  run:
-    working-directory: server
+# defaults:
+#   run:
+#     working-directory: server
 
-jobs:
-  quality_checks:
-    name: Formatting, Credo, and Unused Deps
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        elixir: ["1.13.4"]
-        otp: ["24.3.3"]
+# jobs:
+#   quality_checks:
+#     name: Formatting, Credo, and Unused Deps
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         elixir: ["1.13.4"]
+#         otp: ["24.3.3"]
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
 
-      - name: Setup Elixir Project
-        uses: ./.github/actions/elixir-setup
-        with:
-          elixir-version: ${{ matrix.elixir }}
-          otp-version: ${{ matrix.otp }}
-          build-app: false
+#       - name: Setup Elixir Project
+#         uses: ./.github/actions/elixir-setup
+#         with:
+#           elixir-version: ${{ matrix.elixir }}
+#           otp-version: ${{ matrix.otp }}
+#           build-app: false
 
-      - name: Check for unused deps
-        run: mix deps.unlock --check-unused
-      - name: Check code formatting
-        run: mix format --check-formatted
-        # Check formatting even if there were unused deps so that
-        # we give devs as much feedback as possible & save some time.
-        if: always()
-      - name: Run Credo
-        run: mix credo --strict
-        # Run Credo even if formatting or the unused deps check failed
-        if: always()
-      - name: Check for compile-time dependencies
-        run: mix xref graph --label compile-connected --fail-above 0
-        if: always()
-      - name: Check for security vulnerabilities in Phoenix project
-        run: mix sobelow
-        if: always()
+#       - name: Check for unused deps
+#         run: mix deps.unlock --check-unused
+#       - name: Check code formatting
+#         run: mix format --check-formatted
+#         # Check formatting even if there were unused deps so that
+#         # we give devs as much feedback as possible & save some time.
+#         if: always()
+#       - name: Run Credo
+#         run: mix credo --strict
+#         # Run Credo even if formatting or the unused deps check failed
+#         if: always()
+#       - name: Check for compile-time dependencies
+#         run: mix xref graph --label compile-connected --fail-above 0
+#         if: always()
+#       - name: Check for security vulnerabilities in Phoenix project
+#         run: mix sobelow
+#         if: always()

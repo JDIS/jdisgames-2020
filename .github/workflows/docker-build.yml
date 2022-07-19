@@ -13,7 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Login to ghcr
+      run: docker login ghcr.io --username jdis-bot --password ${{ github.token }}
+
     - uses: actions/checkout@v2
+
     - name: Build Docker image
       working-directory: ./server
-      run: docker build .
+      run: docker build . -t ghcr.io/jdis/jdisgames-2020:$(git rev-parse --short "$GITHUB_SHA")
+
+    - name: Push image
+      run: docker push ghcr.io/jdis/jdisgames-2020
