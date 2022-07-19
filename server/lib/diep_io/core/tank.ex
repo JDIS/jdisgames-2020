@@ -6,11 +6,11 @@ defmodule DiepIO.Core.Tank do
   alias :math, as: Math
 
   @base_stats %{
-    max_hp: 100,
     speed: 10,
-    fire_rate: 25,
+    max_hp: 100,
     projectile_damage: 20,
     body_damage: 20,
+    fire_rate: 25,
     hp_regen: 0.3,
     projectile_time_to_live: 30
   }

@@ -8,7 +8,7 @@ defmodule DiepIO.Gameloop do
   alias DiepIO.{ActionStorage, GameParamsRepository, PubSub, ScoreRepository, UsersRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Clock, GameState}
-  alias DiepIOSchemas.GameParams
+  alias DiepIO.GameParams
   alias :erlang, as: Erlang
   require Logger
 

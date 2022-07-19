@@ -1,6 +1,8 @@
 defmodule GameloopTest do
   use DiepIO.DataCase, async: false
 
+  alias DiepIO.GameParams
+  alias DiepIO.UpgradeParams
   alias DiepIO.{ActionStorage, Gameloop, GameParamsRepository, ScoreRepository, UsersRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIO.Core.{Action, Clock, GameState}
@@ -24,10 +26,21 @@ defmodule GameloopTest do
     :ok =
       GameParamsRepository.save_game_params(
         Atom.to_string(game_name),
-        game_params.number_of_ticks,
-        game_params.max_debris_count,
-        game_params.max_debris_generation_rate,
-        game_params.score_multiplier
+        GameParams.new(%{
+          number_of_ticks: game_params.number_of_ticks,
+          max_debris_count: game_params.max_debris_count,
+          max_debris_generation_rate: game_params.max_debris_generation_rate,
+          score_multiplier: game_params.score_multiplier,
+          upgrade_params: %{
+            speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+            projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
+          }
+        })
       )
 
     {

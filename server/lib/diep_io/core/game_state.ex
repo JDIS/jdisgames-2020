@@ -6,7 +6,7 @@ defmodule DiepIO.Core.GameState do
 
   alias DiepIO.Collisions
   alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, HotZone, Position, Projectile, Tank, Upgrade}
-  alias DiepIOSchemas.GameParams
+  alias DiepIO.GameParams
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
