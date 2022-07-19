@@ -17,10 +17,8 @@ jobs:
 
       - name: Set image tag
         run: |
-          SHORT_SHA=$(git rev-parse --short "$GITHUB_SHA")
-          echo ${SHORT_SHA}
-          IMAGE_TAG="ghcr.io/jdis/jdisgames-2020:${SHORT_SHA}"
-          echo "IMAGE_TAG=${IMAGE_TAG}"" >> $GITHUB_ENV
+          IMAGE_TAG="ghcr.io/jdis/jdisgames-2020:$(git rev-parse --short \"$GITHUB_SHA\")"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
           echo ${IMAGE_TAG}
       
       - name: Login to ghcr
