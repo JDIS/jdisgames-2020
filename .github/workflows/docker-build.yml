@@ -12,14 +12,17 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
 
+    - uses: actions/checkout@v2
+
     steps:
     - name: Set image tag
-      run: echo "IMAGE_TAG=ghcr.io/jdis/jdisgames-2020:$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+      run: |
+        IMAGE_TAG=ghcr.io/jdis/jdisgames-2020:$(git rev-parse --short "$GITHUB_SHA")"
+        echo ${IMAGE_TAG} >> $GITHUB_ENV
+        echo ${IMAGE_TAG}
     
     - name: Login to ghcr
       run: docker login ghcr.io --username jdis-bot --password ${{ github.token }}
-
-    - uses: actions/checkout@v2
 
     - name: Build Docker image
       working-directory: ./server
