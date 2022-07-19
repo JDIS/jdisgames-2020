@@ -2,20 +2,11 @@ defmodule DiepIO.Core.Tank do
   @moduledoc false
 
   alias DiepIO.Core.{Entity, Position, Projectile, Upgrade}
+  alias DiepIO.GameParams
   alias DiepIO.Helpers.Angle
   alias :math, as: Math
 
-  @base_stats %{
-    speed: 10,
-    max_hp: 100,
-    projectile_damage: 20,
-    body_damage: 20,
-    fire_rate: 25,
-    hp_regen: 0.3,
-    projectile_time_to_live: 30
-  }
-
-  @derive Jason.Encoder
+  @derive {Jason.Encoder, except: [:upgrade_params]}
   @enforce_keys [
     :id,
     :name,
@@ -28,7 +19,8 @@ defmodule DiepIO.Core.Tank do
     :hp_regen,
     :score,
     :has_died,
-    :has_triple_gun
+    :has_triple_gun,
+    :upgrade_params
   ]
   defstruct [
     :id,
@@ -45,6 +37,7 @@ defmodule DiepIO.Core.Tank do
     :body_damage,
     :hp_regen,
     :projectile_time_to_live,
+    :upgrade_params,
     has_died: false,
     cooldown: 0,
     experience: 0,
@@ -81,7 +74,8 @@ defmodule DiepIO.Core.Tank do
           cannon_angle: number(),
           has_died: boolean,
           projectile_time_to_live: integer,
-          has_triple_gun: boolean
+          has_triple_gun: boolean,
+          upgrade_params: GameParams.upgrade_params()
         }
 
   defimpl Entity do
@@ -97,23 +91,24 @@ defmodule DiepIO.Core.Tank do
     def get_body_damage(tank), do: tank.body_damage
   end
 
-  @spec new(integer, String.t()) :: t()
-  def new(id, name) do
+  @spec new(integer, String.t(), GameParams.upgrade_params()) :: t()
+  def new(id, name, upgrade_params) do
     %__MODULE__{
       id: id,
       name: name,
-      current_hp: @base_stats[:max_hp],
-      max_hp: @base_stats[:max_hp],
-      speed: @base_stats[:speed],
+      current_hp: upgrade_params[:max_hp].base_value,
+      max_hp: upgrade_params[:max_hp].base_value,
+      speed: upgrade_params[:speed].base_value,
       position: Position.random(),
       score: 0,
       has_died: false,
-      fire_rate: @base_stats[:fire_rate],
-      projectile_damage: @base_stats[:projectile_damage],
-      body_damage: @base_stats[:body_damage],
-      hp_regen: @base_stats[:hp_regen],
-      projectile_time_to_live: @base_stats[:projectile_time_to_live],
-      has_triple_gun: false
+      fire_rate: upgrade_params[:fire_rate].base_value,
+      projectile_damage: upgrade_params[:projectile_damage].base_value,
+      body_damage: upgrade_params[:body_damage].base_value,
+      hp_regen: upgrade_params[:hp_regen].base_value,
+      projectile_time_to_live: upgrade_params[:projectile_time_to_live].base_value,
+      has_triple_gun: false,
+      upgrade_params: upgrade_params
     }
   end
 
@@ -237,29 +232,11 @@ defmodule DiepIO.Core.Tank do
   @spec buy_projectile_time_to_live_upgrade(t()) :: t()
   def buy_projectile_time_to_live_upgrade(tank), do: buy_upgrade(tank, :projectile_time_to_live)
 
-  @spec default_hp() :: integer
-  def default_hp, do: @base_stats[:max_hp]
-
-  @spec default_speed() :: integer
-  def default_speed, do: @base_stats[:speed]
-
-  @spec default_fire_rate() :: number
-  def default_fire_rate, do: @base_stats[:fire_rate]
-
-  @spec default_projectile_damage() :: integer
-  def default_projectile_damage, do: @base_stats[:projectile_damage]
-
   @spec default_radius() :: integer()
   def default_radius, do: 35
 
-  @spec default_body_damage() :: integer()
-  def default_body_damage, do: @base_stats[:body_damage]
-
-  @spec default_hp_regen() :: number
-  def default_hp_regen, do: @base_stats[:hp_regen]
-
-  @spec default_initial_projectile_time_to_live() :: integer
-  def default_initial_projectile_time_to_live, do: @base_stats[:projectile_time_to_live]
+  @spec respawn(t()) :: t()
+  def respawn(tank), do: new(tank.id, tank.name, tank.upgrade_params)
 
   defp buy_upgrade(%__MODULE__{upgrade_tokens: upgrade_tokens} = tank, _stat)
        when upgrade_tokens <= 0 do
@@ -270,7 +247,7 @@ defmodule DiepIO.Core.Tank do
     tank
     |> remove_from_value(:upgrade_tokens, 1)
     |> increase_stat_level(stat)
-    |> calculate_new_stat_value(stat)
+    |> calculate_new_stat_value(stat, tank.upgrade_params)
   end
 
   def add_triple_gun(tank) do
@@ -289,10 +266,9 @@ defmodule DiepIO.Core.Tank do
     %{tank | upgrade_levels: Map.update!(tank.upgrade_levels, stat, &(&1 + 1))}
   end
 
-  defp calculate_new_stat_value(tank, stat) do
-    base_value = @base_stats[stat]
+  defp calculate_new_stat_value(tank, stat, upgrade_params) do
     level = tank.upgrade_levels[stat]
-    new_value = Upgrade.calculate_stat_value(stat, base_value, level)
+    new_value = Upgrade.calculate_stat_value(stat, level, upgrade_params)
     set_value(tank, stat, new_value)
   end
 

@@ -97,16 +97,25 @@ defmodule DiepIOWeb.AdminControllerTest do
              "<div id=\"secondaryGameParams\" data-number-of-ticks=\"100\" data-max-debris-count=\"200\" data-max-debris-generation-rate=\"0.5\" data-score-multiplier=\"2.5\""
   end
 
-  test "GET /admin/save saves the game parameters", %{conn: conn, game_name: game_name} do
+  test "POST /admin/save saves the game parameters", %{conn: conn, game_name: game_name} do
     conn
-    |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-    |> get(
+    |> authorize_conn()
+    |> post(
       Routes.admin_path(conn, :save_params,
         ticks: "15",
         game_name: game_name,
         max_debris_count: 10,
         max_debris_generation_rate: 0.5,
-        score_multiplier: 2.0
+        score_multiplier: 2.0,
+        upgrade_params: %{
+          speed: %{baseValue: 10, upgradeRate: 0.5},
+          max_hp: %{baseValue: 10, upgradeRate: 0.5},
+          projectile_damage: %{baseValue: 10, upgradeRate: 0.5},
+          body_damage: %{baseValue: 10, upgradeRate: 0.5},
+          fire_rate: %{baseValue: 10, upgradeRate: 0.5},
+          hp_regen: %{baseValue: 10, upgradeRate: 0.5},
+          projectile_time_to_live: %{baseValue: 10, upgradeRate: 0.5}
+        }
       )
     )
 
@@ -118,14 +127,14 @@ defmodule DiepIOWeb.AdminControllerTest do
     assert game_params.score_multiplier == 2.0
   end
 
-  test "GET /admin/start starts the required game and /admin/kill kills it", %{
+  test "POST /admin/start starts the required game and /admin/kill kills it", %{
     conn: conn,
     game_name: game_name
   } do
     conn =
       conn
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get(Routes.admin_path(conn, :start_game, ticks: "50", game_name: game_name))
+      |> post(Routes.admin_path(conn, :start_game, ticks: "50", game_name: game_name))
 
     assert "/admin" = redir_path = redirected_to(conn, 302)
     conn = get(recycle(conn), redir_path)
@@ -138,14 +147,14 @@ defmodule DiepIOWeb.AdminControllerTest do
     assert html_response(conn, 200) =~ "Game &quot;#{game_name}&quot; killed"
   end
 
-  test "GET /admin/start starts the required game and /admin/stop stops it after game", %{
+  test "POST /admin/start starts the required game and /admin/stop stops it after game", %{
     conn: conn,
     game_name: game_name
   } do
     conn =
       conn
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get(Routes.admin_path(conn, :start_game, ticks: "1", game_name: game_name))
+      |> post(Routes.admin_path(conn, :start_game, ticks: "1", game_name: game_name))
 
     assert "/admin" = redir_path = redirected_to(conn, 302)
     conn = get(recycle(conn), redir_path)
@@ -154,7 +163,7 @@ defmodule DiepIOWeb.AdminControllerTest do
     conn =
       build_conn()
       |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-      |> get(Routes.admin_path(conn, :stop_game), %{game_name: game_name})
+      |> post(Routes.admin_path(conn, :stop_game), %{game_name: game_name})
 
     assert "/admin" = redir_path = redirected_to(conn, 302)
     conn = get(recycle(conn), redir_path)
@@ -175,7 +184,7 @@ defmodule DiepIOWeb.AdminControllerTest do
   defp call_kill(conn, game_name) do
     build_conn()
     |> put_req_header("authorization", "Basic " <> Base.encode64("admin:admin"))
-    |> get(Routes.admin_path(conn, :kill_game, game_name: game_name))
+    |> post(Routes.admin_path(conn, :kill_game, game_name: game_name))
   end
 
   defp authorize_conn(conn), do: put_req_header(conn, "authorization", "Basic " <> Base.encode64("admin:admin"))

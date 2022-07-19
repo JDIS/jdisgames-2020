@@ -2,10 +2,11 @@ defmodule CollisionsTest do
   use ExUnit.Case
 
   alias DiepIO.Collisions
+  alias DiepIO.GameParams
   alias DiepIO.Core.{Entity, Tank}
 
   setup do
-    origin_tank = Tank.new(1, "origin_tank") |> Tank.move({0, 0})
+    origin_tank = Tank.new(1, "origin_tank", GameParams.default_params().upgrade_params) |> Tank.move({0, 0})
 
     [origin_tank: origin_tank]
   end

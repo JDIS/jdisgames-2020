@@ -2,8 +2,8 @@
   <div>
     <h1>Admin</h1>
     <div id="game-settings-container">
-      <GameSettings game_title="Main game" game_name="main_game" :params="gameParams.main" />
-      <GameSettings game_title="Secondary game" game_name="secondary_game" :params="gameParams.secondary" />
+      <GameSettings game_title="Main game" game_name="main_game" :params="gameParams.main" :csrfToken="csrfToken" />
+      <GameSettings game_title="Secondary game" game_name="secondary_game" :params="gameParams.secondary" :csrfToken="csrfToken" />
     </div>
   </div>
 </template>
@@ -16,7 +16,7 @@ export default {
   data() {
     return {};
   },
-  props: ["gameParams"],
+  props: ["gameParams", "csrfToken"],
   watch: {},
   computed: {},
   mounted() {},
