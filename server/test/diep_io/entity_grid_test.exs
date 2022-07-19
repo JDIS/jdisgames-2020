@@ -1,9 +1,9 @@
 defmodule EntityGridTest do
   use ExUnit.Case
 
-  alias DiepIO.GameParams
   alias DiepIO.Core.Tank
   alias DiepIO.EntityGrid
+  alias DiepIO.GameParams
 
   @tile_size 100
 

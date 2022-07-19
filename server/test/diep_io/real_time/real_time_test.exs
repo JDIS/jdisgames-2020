@@ -4,8 +4,8 @@ defmodule RealTimeTest do
   @moduletag :RT
   @moduletag timeout: 335_000
 
-  alias DiepIO.GameParams
   alias DiepIO.Core.Action
+  alias DiepIO.GameParams
   alias DiepIO.{ActionStorage, Gameloop, GameParamsRepository, Repo, UsersRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIOSchemas.User
