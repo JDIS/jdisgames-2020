@@ -7,6 +7,7 @@
 #game-settings-container {
     display: flex;
     justify-content: center;
+    gap: 16px;
 }
 
 #game-settings-container>.game-settings-wrapper:not(:first-child) {
@@ -15,30 +16,53 @@
 
 .game-settings {
     display: inline-block;
-    margin: auto;
     border: 3px solid lightgrey;
     border-radius: 5%;
-    padding: 10px;
+    padding: 12px;
 }
 
-.label-input-wrapper input {
+.game-settings input {
     max-width: 100px;
+    padding: 0px 4px;
+    height: 30px;
     margin-bottom: 0;
-    margin-left: 5px;
 }
 
 .label-input-wrapper label {
     margin-bottom: 0;
+    font-weight: normal;
 }
 
 .label-input-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    margin-left: 4px;
 }
 
 .game-settings-title {
     font-weight: bold;
     font-size: large;
+}
+
+.game-settings fieldset {
+    margin-left: 0;
+}
+
+.game-settings legend {
+    padding-left: 0;
+}
+
+.upgrade-params-table {
+    margin-left: 4px;
+}
+
+.upgrade-params-table td {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.upgrade-params-table th:first-child {
+    text-transform: capitalize;
 }

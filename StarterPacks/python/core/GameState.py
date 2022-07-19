@@ -5,7 +5,7 @@ from core.Clock import Clock
 from core.Debris import Debris
 from core.Projectile import Projectile
 from core.Tank import Tank
-from core.Upgrades import UpgradeRates
+from core.Upgrades import UpgradeParams
 from core.HotZone import HotZone
 
 
@@ -22,7 +22,7 @@ class GameState:
     map_height: int
     clock: Clock
 
-    upgrade_rates: UpgradeRates
+    upgrade_params: UpgradeParams
     game_id: int
     is_ranked: bool
     """

@@ -13,6 +13,8 @@ defmodule GameStateTest do
     Tank
   }
 
+  alias DiepIO.GameParams
+
   alias DiepIOSchemas.User
 
   @max_ticks 324
@@ -22,11 +24,6 @@ defmodule GameStateTest do
   @game_name :test_game
   @game_id 123
   @clock Clock.new(@tick_rate, @max_ticks)
-  @game_params %{
-    max_debris_count: 0,
-    max_debris_generation_rate: 0.15,
-    score_multiplier: 1
-  }
 
   setup do
     [
@@ -38,7 +35,7 @@ defmodule GameStateTest do
           false,
           false,
           @clock,
-          @game_params
+          GameParams.default_params()
         )
     ]
   end
@@ -52,11 +49,7 @@ defmodule GameStateTest do
         false,
         false,
         @clock,
-        %{
-          max_debris_count: 10,
-          max_debris_generation_rate: 0.15,
-          score_multiplier: 1
-        }
+        GameParams.default_params()
       )
 
     assert %GameState{
@@ -229,12 +222,14 @@ defmodule GameStateTest do
   test "handle_collisions/1 decreases hp of colliding tanks" do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, @game_params)
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, GameParams.default_params())
     game_state = move_tanks_to_origin(game_state)
 
     expected_tanks =
       game_state.tanks
-      |> Map.new(fn {id, tank} -> {id, Tank.hit(tank, Tank.default_body_damage())} end)
+      |> Map.new(fn {id, tank} ->
+        {id, Tank.hit(tank, GameParams.default_params().upgrade_params.body_damage.base_value)}
+      end)
 
     assert GameState.handle_collisions(game_state).tanks == expected_tanks
   end
@@ -242,7 +237,7 @@ defmodule GameStateTest do
   test "handle_collisions/1 does not remove tanks that are not colliding with other tanks" do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, @game_params)
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, GameParams.default_params())
 
     game_state = move_tanks_out_of_collision(game_state)
 
@@ -291,7 +286,10 @@ defmodule GameStateTest do
     {_tank, debris, game_state} = setup_tank_debris_collision()
 
     updated_game_state = GameState.handle_collisions(game_state)
-    assert updated_game_state.debris == [Debris.hit(debris, Tank.default_body_damage())]
+
+    assert updated_game_state.debris == [
+             Debris.hit(debris, GameParams.default_params().upgrade_params.body_damage.base_value)
+           ]
   end
 
   test "handle_collisions/1 removes debris that die after collision with tank" do
@@ -367,7 +365,7 @@ defmodule GameStateTest do
 
   test "handle_collisions/1 gives points according to the score multiplier" do
     game_state =
-      setup_tank_tank_collision(%{@game_params | score_multiplier: 2})
+      setup_tank_tank_collision(%{GameParams.default_params() | score_multiplier: 2})
       |> update_single_tank(@user_id, fn tank -> Map.replace!(tank, :body_damage, tank.max_hp) end)
       |> GameState.handle_collisions()
 
@@ -465,7 +463,7 @@ defmodule GameStateTest do
     %{game_state | projectiles: Enum.map(game_state.projectiles, func)}
   end
 
-  defp setup_tank_tank_collision(game_params \\ @game_params) do
+  defp setup_tank_tank_collision(game_params \\ GameParams.default_params()) do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
 
@@ -476,7 +474,7 @@ defmodule GameStateTest do
   defp setup_tank_in_hot_zone do
     user1 = %User{name: @user_name, id: @user_id}
 
-    GameState.new("game_name", [user1], 0, false, false, @clock, @game_params)
+    GameState.new("game_name", [user1], 0, false, false, @clock, GameParams.default_params())
     |> move_tanks_to_center()
   end
 
@@ -484,7 +482,7 @@ defmodule GameStateTest do
     user1 = %User{name: @user_name, id: @user_id}
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
 
-    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, @game_params)
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, GameParams.default_params())
 
     tanks =
       game_state.tanks
@@ -501,7 +499,7 @@ defmodule GameStateTest do
     user1 = %User{name: @user_name, id: @user_id}
     # User 2 only serves as the projectile's owner
     user2 = %User{name: @user_name <> "2", id: @user_id + 1}
-    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, @game_params)
+    game_state = GameState.new("game_name", [user1, user2], 0, false, false, @clock, GameParams.default_params())
 
     tank1 = Map.fetch!(game_state.tanks, user1.id)
     tank2 = Map.fetch!(game_state.tanks, user2.id)
@@ -515,7 +513,7 @@ defmodule GameStateTest do
 
   defp setup_tank_debris_collision(debris_size \\ :large) do
     user = %User{name: @user_name, id: @user_id}
-    game_state = GameState.new("game_name", [user], 0, false, false, @clock, @game_params)
+    game_state = GameState.new("game_name", [user], 0, false, false, @clock, GameParams.default_params())
 
     tank = Map.fetch!(game_state.tanks, user.id)
 
@@ -530,7 +528,7 @@ defmodule GameStateTest do
   defp setup_projectile_debris_collision(debris_size \\ :large) do
     user = %User{name: @user_name, id: @user_id}
     projectile = Projectile.new(user.id, {0, 0}, 0, 20, 30)
-    game_state = GameState.new("game_name", [user], 0, false, false, @clock, @game_params)
+    game_state = GameState.new("game_name", [user], 0, false, false, @clock, GameParams.default_params())
 
     debris = Debris.new(debris_size)
     debris = %{debris | position: Entity.get_position(projectile)}

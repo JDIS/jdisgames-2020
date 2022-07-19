@@ -10,12 +10,22 @@ defmodule GameloopTest do
   alias :ets, as: Ets
 
   setup do
-    game_params = %{
-      max_debris_count: 400,
-      max_debris_generation_rate: 0.15,
-      score_multiplier: 1,
-      number_of_ticks: 10
-    }
+    game_params =
+      GameParams.new(%{
+        number_of_ticks: 10,
+        max_debris_count: 400,
+        max_debris_generation_rate: 0.15,
+        score_multiplier: 1,
+        upgrade_params: %{
+          speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
+          projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
+        }
+      })
 
     tank_id = 1
     game_name = :test_game
@@ -26,21 +36,7 @@ defmodule GameloopTest do
     :ok =
       GameParamsRepository.save_game_params(
         Atom.to_string(game_name),
-        GameParams.new(%{
-          number_of_ticks: game_params.number_of_ticks,
-          max_debris_count: game_params.max_debris_count,
-          max_debris_generation_rate: game_params.max_debris_generation_rate,
-          score_multiplier: game_params.score_multiplier,
-          upgrade_params: %{
-            speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-            max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-            projectile_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-            body_damage: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-            fire_rate: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-            hp_regen: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
-            projectile_time_to_live: %UpgradeParams{base_value: 10, upgrade_rate: 0.5}
-          }
-        })
+        game_params
       )
 
     {

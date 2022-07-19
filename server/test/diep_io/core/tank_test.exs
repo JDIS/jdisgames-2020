@@ -2,6 +2,7 @@ defmodule TankTest do
   use ExUnit.Case, async: true
 
   alias DiepIO.Core.{Position, Tank}
+  alias DiepIO.GameParams
   alias DiepIO.Helpers.Angle
 
   @tank_name "Tank"
@@ -9,11 +10,13 @@ defmodule TankTest do
 
   setup do
     [
-      tank: Tank.new(@tank_id, @tank_name)
+      tank: Tank.new(@tank_id, @tank_name, GameParams.default_params().upgrade_params)
     ]
   end
 
   test "new/1 creates a tank", %{tank: tank} do
+    default_upgrade_params = GameParams.default_params().upgrade_params
+
     assert %Tank{
              id: @tank_id,
              name: @tank_name,
@@ -35,19 +38,20 @@ defmodule TankTest do
              upgrade_tokens: 0,
              position: {_, _},
              target: nil,
-             destination: nil
+             destination: nil,
+             upgrade_params: ^default_upgrade_params
            } = tank
 
-    assert current_hp == Tank.default_hp()
-    assert max_hp == Tank.default_hp()
-    assert speed == Tank.default_speed()
-    assert fire_rate == Tank.default_fire_rate()
-    assert projectile_damage == Tank.default_projectile_damage()
-    assert body_damage == Tank.default_body_damage()
+    assert current_hp == default_upgrade_params.max_hp.base_value
+    assert max_hp == default_upgrade_params.max_hp.base_value
+    assert speed == default_upgrade_params.speed.base_value
+    assert fire_rate == default_upgrade_params.fire_rate.base_value
+    assert projectile_damage == default_upgrade_params.projectile_damage.base_value
+    assert body_damage == default_upgrade_params.body_damage.base_value
   end
 
   test "hit/2 damages the given tank", %{tank: tank} do
-    assert Tank.hit(tank, 10).current_hp == Tank.default_hp() - 10
+    assert Tank.hit(tank, 10).current_hp == GameParams.default_params().upgrade_params.max_hp.base_value - 10
   end
 
   test "heal/2 restores the given tank's hp", %{tank: tank} do
@@ -56,11 +60,11 @@ defmodule TankTest do
       |> Tank.hit(10)
       |> Tank.heal(10)
 
-    assert healed_tank.current_hp == Tank.default_hp()
+    assert healed_tank.current_hp == GameParams.default_params().upgrade_params.max_hp.base_value
   end
 
   test "heal/2 does not overheal the given tank", %{tank: tank} do
-    assert Tank.heal(tank, 10).current_hp == Tank.default_hp()
+    assert Tank.heal(tank, 10).current_hp == GameParams.default_params().upgrade_params.max_hp.base_value
   end
 
   test "add_experience/2 increases the given tank's xp", %{tank: tank} do
@@ -158,12 +162,12 @@ defmodule TankTest do
 
     {_, [projectile]} = Tank.shoot(tank)
 
-    assert projectile.time_to_live > Tank.default_initial_projectile_time_to_live()
+    assert projectile.time_to_live > GameParams.default_params().upgrade_params.projectile_time_to_live.base_value
   end
 
   test "shoot/1 creates three projectiles if the tank has the upgrade", %{} do
     tank =
-      Tank.new(@tank_id, @tank_name)
+      Tank.new(@tank_id, @tank_name, GameParams.default_params().upgrade_params)
       |> Tank.add_triple_gun()
       |> Tank.set_target(Position.random())
 
@@ -283,5 +287,12 @@ defmodule TankTest do
       |> Tank.set_target(expected_target)
 
     assert new_tank.target == expected_target
+  end
+
+  test "respawn/0 creates a new tank with the same name and ID", %{tank: tank} do
+    respawned = Tank.respawn(tank)
+
+    assert %{Tank.new(tank.id, tank.name, tank.upgrade_params) | position: respawned.position} == respawned
+    assert respawned.position != tank.position
   end
 end

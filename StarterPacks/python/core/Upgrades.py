@@ -19,19 +19,28 @@ class Upgrade(Enum):
 
 
 @dataclass()
-class UpgradeRates:
+class UpgradeProperties:
     """
-    Rates at which an upgrade boost the stats of a tank. Ex if body_damage rate is 1.20 and
-    you have 50 body damage, upgrading it will result in 50 * 1.20 = 60 body damage.
+    Parameters governing how upgradable stats are calculated.
+
+    base_value: The stat value when upgrade is at level 0:
+
+    upgrade_rate: Rate at which an upgrade boost the stats of a tank.
     """
 
-    body_damage: float
-    fire_rate: float
-    max_hp: float
-    speed: float
-    projectile_damage: float
-    hp_regen: float
-    projectile_time_to_live: float
+    base_value: float
+    upgrade_rate: float
+
+
+@dataclass()
+class UpgradeParams:
+    body_damage: UpgradeProperties
+    fire_rate: UpgradeProperties
+    max_hp: UpgradeProperties
+    speed: UpgradeProperties
+    projectile_damage: UpgradeProperties
+    hp_regen: UpgradeProperties
+    projectile_time_to_live: UpgradeProperties
 
 
 @dataclass()

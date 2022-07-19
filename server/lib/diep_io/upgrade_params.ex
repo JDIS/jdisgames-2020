@@ -6,6 +6,7 @@ defmodule DiepIO.UpgradeParams do
           base_value: number()
         }
 
+  @derive Jason.Encoder
   @enforce_keys [:upgrade_rate, :base_value]
   defstruct [:upgrade_rate, :base_value]
 end

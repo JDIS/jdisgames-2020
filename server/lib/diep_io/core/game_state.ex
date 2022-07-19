@@ -5,7 +5,7 @@ defmodule DiepIO.Core.GameState do
   """
 
   alias DiepIO.Collisions
-  alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, HotZone, Position, Projectile, Tank, Upgrade}
+  alias DiepIO.Core.{Action, Clock, Debris, Entity, GameMap, HotZone, Position, Projectile, Tank}
   alias DiepIO.GameParams
   alias DiepIOSchemas.User
   alias :rand, as: Rand
@@ -23,7 +23,6 @@ defmodule DiepIO.Core.GameState do
     :tanks,
     :map_width,
     :map_height,
-    :upgrade_rates,
     :game_id,
     :debris,
     :max_debris_count,
@@ -34,6 +33,7 @@ defmodule DiepIO.Core.GameState do
     :clock,
     :score_multiplier,
     :hot_zone,
+    :upgrade_params,
     should_stop?: false
   ]
 
@@ -45,8 +45,6 @@ defmodule DiepIO.Core.GameState do
           max_debris_generation_rate: float(),
           map_width: integer(),
           map_height: integer(),
-          # Not used internally, but required to be sent to the clients
-          upgrade_rates: Upgrade.upgrade_rates(),
           game_id: integer(),
           is_ranked: boolean(),
           projectiles: [Projectile.t()],
@@ -54,27 +52,28 @@ defmodule DiepIO.Core.GameState do
           clock: Clock.t(),
           score_multiplier: float(),
           hot_zone: HotZone.t(),
-          should_stop?: boolean()
+          should_stop?: boolean(),
+          upgrade_params: GameParams.upgrade_params()
         }
 
   @spec new(atom(), [User.t()], integer(), boolean(), boolean(), Clock.t(), GameParams.t()) :: t()
   def new(name, users, game_id, is_ranked, monitor_performance?, clock, game_params) do
     %__MODULE__{
       name: name,
-      tanks: initialize_tanks(users),
+      tanks: initialize_tanks(users, game_params.upgrade_params),
       debris: initialize_debris(game_params.max_debris_count),
       max_debris_count: game_params.max_debris_count,
       max_debris_generation_rate: game_params.max_debris_generation_rate,
       map_width: GameMap.width(),
       map_height: GameMap.height(),
-      upgrade_rates: Upgrade.rates(),
       game_id: game_id,
       is_ranked: is_ranked,
       projectiles: [],
       monitor_performance?: monitor_performance?,
       clock: clock,
       score_multiplier: game_params.score_multiplier,
-      hot_zone: HotZone.new(GameMap.center())
+      hot_zone: HotZone.new(GameMap.center()),
+      upgrade_params: game_params.upgrade_params
     }
   end
 
@@ -432,7 +431,7 @@ defmodule DiepIO.Core.GameState do
         tank
 
       true ->
-        Tank.new(tank.id, tank.name)
+        Tank.respawn(tank)
         |> Tank.add_experience(Kernel.floor(tank.experience * @experience_loss_rate))
         |> Tank.mark_as_dead()
     end
@@ -465,8 +464,8 @@ defmodule DiepIO.Core.GameState do
     for _ <- 1..count, do: Debris.new(Enum.random(@debris_size_probability))
   end
 
-  defp initialize_tanks(users),
-    do: users |> Map.new(fn user -> {user.id, Tank.new(user.id, user.name)} end)
+  defp initialize_tanks(users, upgrade_params),
+    do: users |> Map.new(fn user -> {user.id, Tank.new(user.id, user.name, upgrade_params)} end)
 
   defp initialize_debris(max_debris_count), do: create_debris(max_debris_count)
 
