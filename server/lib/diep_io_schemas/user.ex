@@ -13,6 +13,7 @@ defmodule DiepIOSchemas.User do
   schema "users" do
     field(:name, :string)
     field(:secret_key, :string)
+    has_many(:scores, DiepIOSchemas.Score)
 
     timestamps()
   end

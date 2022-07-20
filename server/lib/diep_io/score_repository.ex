@@ -14,7 +14,9 @@ defmodule DiepIO.ScoreRepository do
   """
   @spec get_scores() :: [Score.t()]
   def get_scores do
-    Repo.all(Score)
+    Score
+    |> preload([:user])
+    |> Repo.all()
   end
 
   @doc """

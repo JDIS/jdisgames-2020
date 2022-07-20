@@ -40,6 +40,6 @@ defmodule DebrisTest do
   end
 
   test "get_points/1 gives the correct amount of points", %{debris: debris} do
-    assert Debris.get_points(debris) == 50
+    assert Debris.get_points(debris) == 40
   end
 end

@@ -15,7 +15,7 @@ defmodule DiepIO.Core.GameState do
   @experience_loss_rate 0.9
   @experience_score_ratio_on_kill 0.2
   @minimum_score_on_kill 100
-  @hot_zone_points_per_tick 10
+  @hot_zone_points_per_tick 6
 
   @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
   defstruct [

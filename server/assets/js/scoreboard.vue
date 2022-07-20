@@ -62,7 +62,7 @@
                     }
                 })
                 this.sortedScores.forEach(score => {
-                    datasets[score.user_id]["label"] = score.user_id
+                    datasets[score.user_id]["label"] = score.user_name
                     if(datasets[score.user_id]["data"].length < 1) {
                         datasets[score.user_id]["data"]
                             .push(score.score)

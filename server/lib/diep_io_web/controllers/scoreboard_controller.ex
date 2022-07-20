@@ -9,7 +9,12 @@ defmodule DiepIOWeb.ScoreboardController do
   end
 
   defp encode_score(score) do
-    {encoded, _} = Map.split(score, ~W(game_id score user_id inserted_at)a)
-    encoded
+    %{
+      game_id: score.game_id,
+      score: score.score,
+      inserted_at: score.inserted_at,
+      user_id: score.user.id,
+      user_name: score.user.name
+    }
   end
 end
