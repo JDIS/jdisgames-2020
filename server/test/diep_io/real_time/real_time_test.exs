@@ -5,17 +5,13 @@ defmodule RealTimeTest do
   @moduletag timeout: 335_000
 
   alias DiepIO.Core.Action
+  alias DiepIO.GameParams
   alias DiepIO.{ActionStorage, Gameloop, GameParamsRepository, Repo, UsersRepository}
   alias DiepIO.Performance.Monitor, as: PerformanceMonitor
   alias DiepIOSchemas.User
   alias :rand, as: Rand
 
-  @game_params %{
-    number_of_ticks: 1000,
-    max_debris_count: 400,
-    max_debris_generation_rate: 0.15,
-    score_multiplier: 1.0
-  }
+  @game_params %{GameParams.default_params() | number_of_ticks: 1000}
   @game_name :what_a_name
   @number_of_users 200
 
@@ -47,10 +43,7 @@ defmodule RealTimeTest do
     :ok =
       GameParamsRepository.save_game_params(
         Atom.to_string(@game_name),
-        @game_params.number_of_ticks,
-        @game_params.max_debris_count,
-        @game_params.max_debris_generation_rate,
-        @game_params.score_multiplier
+        @game_params
       )
 
     {:ok, pid} = Gameloop.start_link(opts)

@@ -82,7 +82,7 @@
           <%= DiepIO.Core.GameState.experience_score_ratio_on_kill() %>) points
         </strong>
       </td>
-      <td><strong>Variable (minimum <%= DiepIO.Core.Tank.default_hp() %> HP)</strong></td>
+      <td><strong>Variable (minimum <%= @game_params.upgrade_params.max_hp.base_value %> HP)</strong></td>
     </tr>
   </table>
 
@@ -132,42 +132,43 @@
         <strong><%= DiepIO.Core.GameState.experience_loss_rate() * 100 %></strong>% de son XP lors qu'il
         <em>respawn</em>.
       </td>
-      <td><strong><%= DiepIO.Core.Tank.default_hp() %> HP</strong></td>
+      <td><strong><%= @game_params.upgrade_params.max_hp.base_value %> HP</strong></td>
     </tr>
     <tr>
       <td>💣 Projectile damage</td>
       <td>Le nombre de HP qu'un projectile enlève à une entité (débris ou tank) qu'il touche.</td>
-      <td><strong><%= DiepIO.Core.Tank.default_projectile_damage() %> HP</strong></td>
+      <td><strong><%= @game_params.upgrade_params.projectile_damage.base_value %> HP</strong></td>
     </tr>
     <tr>
       <td>🕒 Fire rate</td>
       <td>Nombre de <em>ticks</em> entre chaque tir. <em>Cooldown</em> du tir de cannon.</td>
-      <td><strong><%= DiepIO.Core.Tank.default_fire_rate() %> <em>ticks</em></strong></td>
+      <td><strong><%= @game_params.upgrade_params.fire_rate.base_value %> <em>ticks</em></strong></td>
     </tr>
     <tr>
       <td>🐇 Speed</td>
       <td>Vitesse de déplacement en unités par <em>tick</em>.</td>
-      <td><strong><%= DiepIO.Core.Tank.default_speed() %> unités par <em>tick</em></strong></td>
+      <td><strong><%= @game_params.upgrade_params.speed.base_value %> unités par <em>tick</em></strong></td>
     </tr>
     <tr>
       <td>👊 Body damage</td>
       <td>
         Lors d'une collision, le nombre de dégâts infligés à l'adversaire (débris ou tank), pour chaque <em>tick</em>
         où il y a collision. Également, une collision avec un débris inflige au tank
-        <strong><%= DiepIO.Core.Debris.default_body_damage() %></strong> dommage par <em>tick</em> où il y a collision.
+        <strong><%= @game_params.upgrade_params.body_damage.base_value %></strong> dommage par <em>tick</em>
+        où il y a collision.
       </td>
-      <td><strong><%= DiepIO.Core.Tank.default_body_damage() %> HP</strong></td>
+      <td><strong><%= @game_params.upgrade_params.body_damage.base_value %> HP</strong></td>
     </tr>
     <tr>
       <td>💞 HP regen</td>
       <td>Quantité d'HP regénéré chaque <em>tick</em>.</td>
-      <td><strong><%= DiepIO.Core.Tank.default_hp_regen() %> HP par <em>tick</em></strong></td>
+      <td><strong><%= @game_params.upgrade_params.hp_regen.base_value %> HP par <em>tick</em></strong></td>
     </tr>
     <tr>
       <td>🚀 Projectile time to live</td>
       <td>Durée de vie d'un projectile en <em>ticks</em>.</td>
       <td>
-        <strong><%= DiepIO.Core.Tank.default_initial_projectile_time_to_live() %> unités par <em>tick</em></strong>
+        <strong><%= @game_params.upgrade_params.projectile_time_to_live.base_value %> unités par <em>tick</em></strong>
       </td>
     </tr>
   </table>

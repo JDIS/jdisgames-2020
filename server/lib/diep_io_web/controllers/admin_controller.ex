@@ -1,12 +1,15 @@
 defmodule DiepIOWeb.AdminController do
   use DiepIOWeb, :controller
 
+  alias DiepIO.Core.Upgrade
+  alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
   alias DiepIO.GameSupervisor
+  alias DiepIO.UpgradeParams
 
   def index(conn, _params) do
-    main_game_params = GameParamsRepository.get_game_params("main_game")
-    secondary_game_params = GameParamsRepository.get_game_params("secondary_game")
+    main_game_params = GameParamsRepository.get_game_params("main_game") || GameParams.default_params()
+    secondary_game_params = GameParamsRepository.get_game_params("secondary_game") || GameParams.default_params()
 
     render(conn, "index.html", main_game_params: main_game_params, secondary_game_params: secondary_game_params)
   end
@@ -59,10 +62,23 @@ defmodule DiepIOWeb.AdminController do
 
     GameParamsRepository.save_game_params(
       game_name,
-      number_of_ticks,
-      max_debris_count,
-      max_debris_generation_rate,
-      score_multiplier
+      GameParams.new(%{
+        number_of_ticks: number_of_ticks,
+        max_debris_count: max_debris_count,
+        max_debris_generation_rate: max_debris_generation_rate,
+        score_multiplier: score_multiplier,
+        upgrade_params:
+          Map.new(Upgrade.upgradable_stats(), fn stat -> {stat, parse_upgrade_params(params, Atom.to_string(stat))} end)
+      })
     )
+  end
+
+  defp parse_upgrade_params(params, upgrade_name) do
+    upgrade_params = params["upgrade_params"]
+
+    %UpgradeParams{
+      base_value: parse_float(upgrade_params[upgrade_name]["baseValue"]),
+      upgrade_rate: parse_float(upgrade_params[upgrade_name]["upgradeRate"])
+    }
   end
 end

@@ -3,11 +3,12 @@ defmodule EntityGridTest do
 
   alias DiepIO.Core.Tank
   alias DiepIO.EntityGrid
+  alias DiepIO.GameParams
 
   @tile_size 100
 
   setup do
-    tank = Tank.new(1, "tank")
+    tank = Tank.new(1, "tank", GameParams.default_params().upgrade_params)
 
     [tank: tank]
   end
