@@ -15,7 +15,7 @@ defmodule DiepIOSchemas.Score do
   schema "scores" do
     field(:game_id, :integer)
     field(:score, :integer)
-    field(:user_id, :id)
+    belongs_to(:user, DiepIOSchemas.User)
 
     timestamps()
   end
