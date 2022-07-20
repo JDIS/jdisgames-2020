@@ -27,7 +27,8 @@ defmodule DiepIO.ScoreRepositoryTest do
 
     test "get_scores/0 returns all scores", %{user: user} do
       score = score_fixture(%{user_id: user.id})
-      assert ScoreRepository.get_scores() == [score]
+      [db_score] = ScoreRepository.get_scores()
+      assert [db_score.score] == [score.score]
     end
 
     test "add_score/1 with valid data creates a score", %{user: user} do

@@ -329,14 +329,17 @@ defmodule GameStateTest do
 
   test "handle_collisions/1 gives points to tanks that destroyed debris by colliding" do
     {_tank, debris, game_state} = setup_tank_debris_collision(:small)
-    updated_game_state = GameState.handle_collisions(game_state)
+
+    updated_game_state =
+      GameState.handle_collisions(game_state)
+      |> GameState.handle_collisions()
 
     assert get_tank(updated_game_state, @user_id).score ==
              get_tank(game_state, @user_id).score + Debris.get_points(debris)
   end
 
   test "handle_collisions/1 gives points to tanks that destroyed debris by shooting" do
-    {_projectile, debris, game_state} = setup_projectile_debris_collision(:small)
+    {_projectile, debris, game_state} = setup_projectile_debris_collision(:small, 200)
     updated_game_state = GameState.handle_collisions(game_state)
 
     assert get_tank(updated_game_state, @user_id).score ==
@@ -379,7 +382,7 @@ defmodule GameStateTest do
       setup_tank_in_hot_zone()
       |> GameState.handle_collisions()
 
-    assert game_state.tanks[@user_id].score == 10
+    assert game_state.tanks[@user_id].score == 6
   end
 
   test "handle_collisions/1 does not give points in 2 tanks are in the hot zone" do
@@ -527,9 +530,9 @@ defmodule GameStateTest do
     {tank, debris, game_state}
   end
 
-  defp setup_projectile_debris_collision(debris_size \\ :large) do
+  defp setup_projectile_debris_collision(debris_size \\ :large, projectile_damage \\ 20) do
     user = %User{name: @user_name, id: @user_id}
-    projectile = Projectile.new(user.id, {0, 0}, 0, 20, 30)
+    projectile = Projectile.new(user.id, {0, 0}, 0, projectile_damage, 30)
     game_state = GameState.new("game_name", [user], 0, false, false, @clock, @game_params)
 
     debris = Debris.new(debris_size)
