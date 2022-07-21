@@ -16,6 +16,7 @@ defmodule DiepIO.Core.GameState do
   @experience_score_ratio_on_kill 0.2
   @minimum_score_on_kill 100
   @hot_zone_points_per_tick 6
+  @triple_gun_ticks_threshold 1000
 
   @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
   defstruct [
@@ -160,12 +161,13 @@ defmodule DiepIO.Core.GameState do
   @spec handle_tanks(t(), [Action.t()]) :: t()
   def handle_tanks(game_state, actions) do
     game_state
+    |> handle_ticks_alive()
     |> handle_actions(actions)
     |> handle_movement()
     |> handle_shoot()
   end
 
-  defp handle_actions(game_state, actions) do
+  def handle_actions(game_state, actions) do
     Enum.reduce(actions, game_state, &handle_action/2)
   end
 
@@ -214,6 +216,27 @@ defmodule DiepIO.Core.GameState do
     |> Tank.set_destination(action.destination)
   end
 
+  defp handle_ticks_alive(game_state) do
+    updated_tanks =
+      game_state.tanks
+      |> Map.values()
+      |> Enum.map(fn
+        tank ->
+          updated_tank = tank
+          |> Tank.increase_ticks_alive(1)
+
+          updated_tank_gun = if updated_tank.ticks_alive >= @triple_gun_ticks_threshold do
+             Tank.add_triple_gun(updated_tank)
+          else
+            updated_tank
+          end
+
+          {updated_tank_gun.id, updated_tank_gun}
+      end)
+      |> Map.new()
+    %{game_state | tanks: updated_tanks}
+  end
+
   defp handle_movement(game_state) do
     updated_tanks =
       game_state.tanks
@@ -237,7 +260,7 @@ defmodule DiepIO.Core.GameState do
     %{game_state | tanks: updated_tanks}
   end
 
-  defp handle_shoot(game_state) do
+  def handle_shoot(game_state) do
     game_state.tanks
     |> Map.values()
     |> Enum.reduce(game_state, fn
@@ -470,4 +493,6 @@ defmodule DiepIO.Core.GameState do
   defp initialize_debris(max_debris_count), do: create_debris(max_debris_count)
 
   def experience_loss_rate, do: @experience_loss_rate
+
+  def triple_gun_ticks_threshold, do: @triple_gun_ticks_threshold
 end

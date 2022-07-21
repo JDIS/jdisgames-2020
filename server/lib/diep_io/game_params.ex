@@ -40,7 +40,7 @@ defmodule DiepIO.GameParams do
     %__MODULE__{
       number_of_ticks: 2000,
       max_debris_count: 400,
-      max_debris_generation_rate: 0.15,
+      max_debris_generation_rate: 0.05,
       score_multiplier: 1.0,
       upgrade_params: %{
         speed: %UpgradeParams{upgrade_rate: 0.3, base_value: 10},
