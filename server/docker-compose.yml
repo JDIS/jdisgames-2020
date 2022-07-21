@@ -3,6 +3,8 @@ version: "3.3"
 services:
   db:
     image: postgres:12.1-alpine
+    volumes:
+      - /etc/jdisgames2020/postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: jdisgames2020
       POSTGRES_PASSWORD: jdisgames2020
