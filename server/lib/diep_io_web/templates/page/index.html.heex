@@ -124,6 +124,7 @@
       <td><strong>Spec</strong></td>
       <td><strong>Description</strong></td>
       <td><strong>Valeur par défaut</strong></td>
+      <td><strong>Upgrade rate</strong></td>
     </tr>
     <tr>
       <td>❤️ HP</td>
@@ -133,21 +134,25 @@
         <em>respawn</em>.
       </td>
       <td><strong><%= @game_params.upgrade_params.max_hp.base_value %> HP</strong></td>
+      <td><strong><%= @game_params.upgrade_params.max_hp.upgrade_rate %></strong></td>
     </tr>
     <tr>
       <td>💣 Projectile damage</td>
       <td>Le nombre de HP qu'un projectile enlève à une entité (débris ou tank) qu'il touche.</td>
       <td><strong><%= @game_params.upgrade_params.projectile_damage.base_value %> HP</strong></td>
+      <td><strong><%= @game_params.upgrade_params.projectile_damage.upgrade_rate %></strong></td>
     </tr>
     <tr>
       <td>🕒 Fire rate</td>
       <td>Nombre de <em>ticks</em> entre chaque tir. <em>Cooldown</em> du tir de cannon.</td>
       <td><strong><%= @game_params.upgrade_params.fire_rate.base_value %> <em>ticks</em></strong></td>
+      <td><strong><%= @game_params.upgrade_params.fire_rate.upgrade_rate %>*</strong></td>
     </tr>
     <tr>
       <td>🐇 Speed</td>
       <td>Vitesse de déplacement en unités par <em>tick</em>.</td>
       <td><strong><%= @game_params.upgrade_params.speed.base_value %> unités par <em>tick</em></strong></td>
+      <td><strong><%= @game_params.upgrade_params.speed.upgrade_rate %></strong></td>
     </tr>
     <tr>
       <td>👊 Body damage</td>
@@ -158,11 +163,13 @@
         où il y a collision.
       </td>
       <td><strong><%= @game_params.upgrade_params.body_damage.base_value %> HP</strong></td>
+      <td><strong><%= @game_params.upgrade_params.body_damage.upgrade_rate %></strong></td>
     </tr>
     <tr>
       <td>💞 HP regen</td>
       <td>Quantité d'HP regénéré chaque <em>tick</em>.</td>
       <td><strong><%= @game_params.upgrade_params.hp_regen.base_value %> HP par <em>tick</em></strong></td>
+      <td><strong><%= @game_params.upgrade_params.hp_regen.upgrade_rate %></strong></td>
     </tr>
     <tr>
       <td>🚀 Projectile time to live</td>
@@ -170,14 +177,19 @@
       <td>
         <strong><%= @game_params.upgrade_params.projectile_time_to_live.base_value %> unités par <em>tick</em></strong>
       </td>
+      <td>
+        <strong><%= @game_params.upgrade_params.projectile_time_to_live.upgrade_rate %></strong>
+      </td>
     </tr>
   </table>
 
   <p>
     La valeur de chaque caractéristique est calculée selon la formule suivante:
-    <em>valeur par défaut + (valeur par défaut * upgrade_rate * level)</em>.
+    <em>valeur par défaut + (valeur_par_défaut * upgrade_rate * level)</em>.
+    <br />
+    *SAUF pour le fire_rate, qui est calculé selon le principe d'hability haste (inspiré de League of Legends):
+    <em>cooldown = valeur_par_défaut * (1 / (1 + (upgrade_rate * level)))</em>.
   </p>
-  <p>Les <em>upgrade rates</em> seront envoyés à votre bot dans le statut de la partie.</p>
 
   <h3>🌎 La carte 🌎</h3>
   <p>

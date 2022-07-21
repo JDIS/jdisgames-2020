@@ -223,15 +223,29 @@ defmodule TankTest do
     assert upgraded_tank.fire_rate < tank.fire_rate
   end
 
+  test "buy_fire_rate_upgrade decreases fire_rate in a non-linear fashion", %{tank: tank} do
+    upgraded_tank_1 =
+      tank
+      |> Tank.add_upgrade_tokens(1)
+      |> Tank.buy_fire_rate_upgrade()
+
+    upgraded_tank_2 =
+      upgraded_tank_1
+      |> Tank.add_upgrade_tokens(1)
+      |> Tank.buy_fire_rate_upgrade()
+
+    assert tank.fire_rate - upgraded_tank_1.fire_rate != upgraded_tank_1.fire_rate - upgraded_tank_2.fire_rate
+  end
+
   test "buy_fire_rate_upgrade does not decrease fire_rate below 0", %{tank: tank} do
     upgraded_tank =
-      Enum.reduce(0..100//1, tank, fn _, tank ->
+      Enum.reduce(0..1000//1, tank, fn _, tank ->
         tank
         |> Tank.add_upgrade_tokens(1)
         |> Tank.buy_fire_rate_upgrade()
       end)
 
-    assert upgraded_tank.fire_rate == 0
+    assert upgraded_tank.fire_rate >= 0
   end
 
   test "buy_body_damage_upgrade/1 increases tank's body damage", %{tank: tank} do
