@@ -222,18 +222,21 @@ defmodule DiepIO.Core.GameState do
       |> Map.values()
       |> Enum.map(fn
         tank ->
-          updated_tank = tank
-          |> Tank.increase_ticks_alive(1)
+          updated_tank =
+            tank
+            |> Tank.increase_ticks_alive(1)
 
-          updated_tank_gun = if updated_tank.ticks_alive >= @triple_gun_ticks_threshold do
-             Tank.add_triple_gun(updated_tank)
-          else
-            updated_tank
-          end
+          updated_tank_gun =
+            if updated_tank.ticks_alive >= @triple_gun_ticks_threshold do
+              Tank.add_triple_gun(updated_tank)
+            else
+              updated_tank
+            end
 
           {updated_tank_gun.id, updated_tank_gun}
       end)
       |> Map.new()
+
     %{game_state | tanks: updated_tanks}
   end
 

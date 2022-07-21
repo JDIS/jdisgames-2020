@@ -445,15 +445,17 @@ defmodule GameStateTest do
       |> Enum.map(fn
         tank -> tank.ticks_alive
       end)
+
     new_game_state =
       game_state
       |> GameState.handle_tanks([])
 
-    new_tank_ticks = new_game_state.tanks
-    |> Map.values()
-    |> Enum.map(fn
-      tank -> tank.ticks_alive - 1
-    end)
+    new_tank_ticks =
+      new_game_state.tanks
+      |> Map.values()
+      |> Enum.map(fn
+        tank -> tank.ticks_alive - 1
+      end)
 
     assert old_tanks_ticks == new_tank_ticks
   end

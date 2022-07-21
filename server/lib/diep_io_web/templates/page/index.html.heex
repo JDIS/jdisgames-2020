@@ -214,12 +214,17 @@
   <p>
     À tout moment, il ne peut y avoir qu'un maximum de <strong><%= @game_params.max_debris_count %></strong>
     débris sur la carte.
-    Les débris réapparaissent sur la carte au fil du temps. Moins il y a de débris sur la carte, plus ils réapparaissent rapidement. Chaque <em>tick</em>, chaque débris manquant a <strong><%= round(@game_params.max_debris_generation_rate * 100) %>%</strong> de chance de respawn.
+    Les débris réapparaissent sur la carte au fil du temps. Moins il y a de débris sur la carte, plus ils réapparaissent rapidement. Chaque
+    <em>tick</em>, chaque débris manquant a
+    <strong><%= round(@game_params.max_debris_generation_rate * 100) %>%</strong> de chance de respawn.
   </p>
 
   <h3>🥉 Le cannon triple 🥉</h3>
   <p>
-    Lorsqu'un tank est en vie depuis <strong><%= DiepIO.Core.GameState.triple_gun_ticks_threshold() %> <em>ticks</em></strong>, il obtient <strong>automatiquement</strong> un cannon triple, qui tire deux projectiles supplémentaires à précisément <strong> + et - 1 radian</strong> par rapport à sa cible. Ce cannon triple disparait si le tank meurt.
+    Lorsqu'un tank est en vie depuis
+    <strong><%= DiepIO.Core.GameState.triple_gun_ticks_threshold() %> <em>ticks</em></strong>, il obtient
+    <strong>automatiquement</strong> un cannon triple, qui tire deux projectiles supplémentaires à précisément
+    <strong>+ et - 1 radian</strong> par rapport à sa cible. Ce cannon triple disparait si le tank meurt.
   </p>
 
   <h3>🔭 Information disponible pour les bots 🔭</h3>
