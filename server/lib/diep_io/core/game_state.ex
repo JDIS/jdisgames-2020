@@ -432,6 +432,7 @@ defmodule DiepIO.Core.GameState do
 
       true ->
         Tank.respawn(tank)
+        |> Tank.increase_score(tank.score)
         |> Tank.add_experience(Kernel.floor(tank.experience * @experience_loss_rate))
         |> Tank.mark_as_dead()
     end
