@@ -27,7 +27,11 @@ defmodule DiepIO.Core.Upgrade do
         :float -> &Float.round(&1, 2)
       end
 
-    raw_value = base_value + base_value * upgrade_rate * level
+    raw_value =
+      case stat do
+        :fire_rate -> base_value * (1 / (1 + upgrade_rate * level))
+        _ -> base_value + base_value * upgrade_rate * level
+      end
 
     raw_value
     |> max(0.0)
