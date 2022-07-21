@@ -3,7 +3,7 @@ const Bot = require('./Bot')
 const { Socket } = require("phoenix")
 require('websocket-polyfill')
 
-const DEFAULT_BASE_URL = "ws://127.0.0.1:4000/socket"
+const DEFAULT_BASE_URL = "wss://jdis-ia.dinf.usherbrooke.ca/socket"
 const MIN_TICKS_PER_SECOND = 3
 
 const q = require('queue')({ autostart: true, concurrency: 1, timeout: 1000 / MIN_TICKS_PER_SECOND })
@@ -84,7 +84,7 @@ async function start({ secret, isRanked, backendUrl }) {
 program
   .requiredOption('-s, --secret <secret>', 'The secret which authenticates your bot')
   .option('-r, --is_ranked', 'Whether the bot should connect to the ranked game (true) or the practice one (false)', true)
-  .option('-u, --backend_url', 'The url of the backend server', DEFAULT_BASE_URL)
+  .option('-u, --backend_url <url>', 'The url of the backend server', DEFAULT_BASE_URL)
 
 program.parse()
 

@@ -4,9 +4,9 @@ from typing import Tuple
 
 
 class DebrisType(Enum):
-    SMALL = ":small"
-    MEDIUM = ":medium"
-    LARGE = ":large"
+    SMALL = "small"
+    MEDIUM = "medium"
+    LARGE = "large"
 
 
 @dataclass()

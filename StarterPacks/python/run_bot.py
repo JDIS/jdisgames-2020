@@ -12,7 +12,7 @@ from bot import MyBot
 from core import GameState
 from networking import Socket
 
-DEFAULT_BASE_URL = "ws://127.0.0.1:4000/socket"
+DEFAULT_BASE_URL = "wss://jdis-ia.dinf.usherbrooke.ca/socket"
 
 
 def get_game_name(is_ranked):

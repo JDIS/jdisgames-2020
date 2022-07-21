@@ -12,7 +12,7 @@ class Upgrade(Enum):
     MAX_HP_UPGRADE = "max_hp"
     BODY_DAMAGE_UPGRADE = "body_damage"
     HP_REGEN = "hp_regen"
-    projectile_time_to_live = "projectile_time_to_live"
+    PROJECTILE_TIME_TO_LIVE = "projectile_time_to_live"
 
     def __str__(self):
         return self.value
@@ -23,7 +23,7 @@ class UpgradeProperties:
     """
     Parameters governing how upgradable stats are calculated.
 
-    base_value: The stat value when upgrade is at level 0:
+    base_value: The stat value when upgrade is at level 0.
 
     upgrade_rate: Rate at which an upgrade boost the stats of a tank.
     """

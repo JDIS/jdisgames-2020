@@ -9,7 +9,7 @@ class Tank:
     """
     Represents a tank (you or enemy) and all its stats.
     """
-    id: str
+    id: int
     name: str
     max_hp: int
     current_hp: float
@@ -28,9 +28,9 @@ class Tank:
     cooldown: int
     experience: int
     cannon_angle: float
-    projectile_time_to_live: int
     """ degrees """
 
+    projectile_time_to_live: int
     upgrade_tokens: int
     upgrade_levels: Upgrades
     has_triple_gun: bool
