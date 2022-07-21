@@ -1,9 +1,9 @@
 defmodule EntityGridTest do
   use ExUnit.Case
 
-  alias DiepIO.Core.Tank
   alias DiepIO.Core.HotZone
   alias DiepIO.Core.Position
+  alias DiepIO.Core.Tank
   alias DiepIO.EntityGrid
   alias DiepIO.GameParams
 
