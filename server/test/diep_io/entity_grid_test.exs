@@ -2,6 +2,8 @@ defmodule EntityGridTest do
   use ExUnit.Case
 
   alias DiepIO.Core.Tank
+  alias DiepIO.Core.HotZone
+  alias DiepIO.Core.Position
   alias DiepIO.EntityGrid
   alias DiepIO.GameParams
 
@@ -31,6 +33,22 @@ defmodule EntityGridTest do
     }
 
     assert EntityGrid.new([tank], @tile_size) == expected_result
+  end
+
+  test "new/2 returns a map with full coverage of entities bigger than a single tile" do
+    hot_zone = HotZone.new(Position.new(0, 0))
+
+    expected_grid =
+      for x <- -2..2//1,
+          y <- -2..2//1,
+          into: %{} do
+        {{x, y}, MapSet.new([hot_zone])}
+      end
+
+    tile_size = div(hot_zone.radius, 2)
+    grid = EntityGrid.new([hot_zone], tile_size)
+
+    assert grid == expected_grid
   end
 
   test "get_set_for_coords/2 returns the list of entities for the given tile coordinates", %{
