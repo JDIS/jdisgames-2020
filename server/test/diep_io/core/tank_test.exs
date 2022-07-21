@@ -224,11 +224,10 @@ defmodule TankTest do
   end
 
   test "buy_fire_rate_upgrade decreases fire_rate in a non-linear fashion", %{tank: tank} do
-
     upgraded_tank_1 =
-        tank
-        |> Tank.add_upgrade_tokens(1)
-        |> Tank.buy_fire_rate_upgrade()
+      tank
+      |> Tank.add_upgrade_tokens(1)
+      |> Tank.buy_fire_rate_upgrade()
 
     upgraded_tank_2 =
       upgraded_tank_1
