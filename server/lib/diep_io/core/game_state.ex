@@ -217,7 +217,8 @@ defmodule DiepIO.Core.GameState do
   end
 
   defp handle_ticks_alive(game_state) do
-    updated_tanks = Map.new(game_state.tanks, fn
+    updated_tanks =
+      Map.new(game_state.tanks, fn
         {_, tank} ->
           updated_tank =
             tank

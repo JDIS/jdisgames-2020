@@ -439,7 +439,8 @@ defmodule GameStateTest do
   test "handle_tanks/1 increase ticks alive of tanks by one", %{
     game_state: game_state
   } do
-    old_tanks_ticks = Enum.map(game_state.tanks, fn
+    old_tanks_ticks =
+      Enum.map(game_state.tanks, fn
         {_, tank} -> tank.ticks_alive
       end)
 
@@ -447,7 +448,8 @@ defmodule GameStateTest do
       game_state
       |> GameState.handle_tanks([])
 
-    new_tank_ticks = Enum.map(new_game_state.tanks, fn
+    new_tank_ticks =
+      Enum.map(new_game_state.tanks, fn
         {_, tank} -> tank.ticks_alive - 1
       end)
 
