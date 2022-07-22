@@ -123,7 +123,8 @@ defmodule GameStateTest do
   test "handle_shoot/2 does nothing if target is nil", %{game_state: game_state} do
     updated_state =
       game_state
-      |> GameState.handle_tanks([Action.new(@user_id, target: nil)])
+      |> GameState.handle_actions([Action.new(@user_id, target: nil)])
+      |> GameState.handle_shoot()
 
     assert updated_state == game_state
   end
@@ -446,6 +447,26 @@ defmodule GameStateTest do
       assert state_with_damaged_tanks.tanks[id].current_hp <
                state_with_healed_tanks.tanks[id].current_hp
     end
+  end
+
+  test "handle_tanks/1 increase ticks alive of tanks by one", %{
+    game_state: game_state
+  } do
+    old_tanks_ticks =
+      Enum.map(game_state.tanks, fn
+        {_, tank} -> tank.ticks_alive
+      end)
+
+    new_game_state =
+      game_state
+      |> GameState.handle_tanks([])
+
+    new_tank_ticks =
+      Enum.map(new_game_state.tanks, fn
+        {_, tank} -> tank.ticks_alive - 1
+      end)
+
+    assert old_tanks_ticks == new_tank_ticks
   end
 
   defp get_tank(game_state, id) do

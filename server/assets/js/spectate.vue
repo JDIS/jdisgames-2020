@@ -52,6 +52,10 @@
                                 <td>🆙 Upgrade tokens available </td>
                                 <td><strong>{{focusedPlayer.upgrade_tokens}}</strong></td>
                             </tr>
+                            <tr>
+                                <td>😇 # of ticks alive </td>
+                                <td><strong>{{focusedPlayer.ticks_alive}}</strong></td>
+                            </tr>
 
                         </table>
                     </div>
@@ -180,6 +184,8 @@
         },
         methods: {
             startRendering(gameState) {
+                const hotZone = new HotZone(gameState.hot_zone)
+                this.mainCanvas.add(hotZone.toCanvas)
                 Object.keys(gameState.tanks).forEach((id) => {
                     const tank = new Tank(gameState.tanks[id])
                     this.mainCanvas.add(tank.toCanvas)
@@ -188,8 +194,7 @@
                     this.elements.tanks[id] = tank
                 })
 
-                const hotZone = new HotZone(gameState.hot_zone)
-                this.mainCanvas.add(hotZone.toCanvas)
+                
                 this.minimap.add(fabric.util.object.clone(hotZone.toCanvas))
 
                 this.autoSpectate = true

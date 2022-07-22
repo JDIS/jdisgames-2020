@@ -39,7 +39,8 @@ defmodule TankTest do
              position: {_, _},
              target: nil,
              destination: nil,
-             upgrade_params: ^default_upgrade_params
+             upgrade_params: ^default_upgrade_params,
+             ticks_alive: 0
            } = tank
 
     assert current_hp == default_upgrade_params.max_hp.base_value
@@ -303,10 +304,23 @@ defmodule TankTest do
     assert new_tank.target == expected_target
   end
 
-  test "respawn/0 creates a new tank with the same name and ID", %{tank: tank} do
+  test "respawn/1 creates a new tank with the same name and ID", %{tank: tank} do
     respawned = Tank.respawn(tank)
 
     assert %{Tank.new(tank.id, tank.name, tank.upgrade_params) | position: respawned.position} == respawned
     assert respawned.position != tank.position
+  end
+
+  test "respawn/1 sets ticks_alive to 0", %{tank: tank} do
+    old_tank = Tank.increase_ticks_alive(tank, 50)
+    respawned = Tank.respawn(old_tank)
+
+    assert respawned.ticks_alive == 0
+  end
+
+  test "increase_ticks_alive/2 increases a tank's ticks_alive property", %{tank: tank} do
+    new_tank = Tank.increase_ticks_alive(tank, 50)
+
+    assert new_tank.ticks_alive == tank.ticks_alive + 50
   end
 end

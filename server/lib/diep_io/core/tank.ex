@@ -52,7 +52,8 @@ defmodule DiepIO.Core.Tank do
       hp_regen: 0,
       projectile_time_to_live: 0
     },
-    has_triple_gun: false
+    has_triple_gun: false,
+    ticks_alive: 0
   ]
 
   @type t :: %__MODULE__{
@@ -75,7 +76,8 @@ defmodule DiepIO.Core.Tank do
           has_died: boolean,
           projectile_time_to_live: integer,
           has_triple_gun: boolean,
-          upgrade_params: GameParams.upgrade_params()
+          upgrade_params: GameParams.upgrade_params(),
+          ticks_alive: integer
         }
 
   defimpl Entity do
@@ -108,7 +110,8 @@ defmodule DiepIO.Core.Tank do
       hp_regen: upgrade_params[:hp_regen].base_value,
       projectile_time_to_live: upgrade_params[:projectile_time_to_live].base_value,
       has_triple_gun: false,
-      upgrade_params: upgrade_params
+      upgrade_params: upgrade_params,
+      ticks_alive: 0
     }
   end
 
@@ -156,6 +159,11 @@ defmodule DiepIO.Core.Tank do
   @spec increase_score(t(), integer()) :: t()
   def increase_score(tank, amount) do
     add_to_value(tank, :score, amount)
+  end
+
+  @spec increase_ticks_alive(t(), integer()) :: t()
+  def increase_ticks_alive(tank, amount) do
+    add_to_value(tank, :ticks_alive, amount)
   end
 
   @spec shoot(t()) :: {t(), [Projectile.t() | nil]}

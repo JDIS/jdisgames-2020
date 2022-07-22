@@ -25,6 +25,7 @@ export class Tank {
         this.id = serverTank.id
         this.cannon_angle = serverTank.cannon_angle
         this.projectile_time_to_live = serverTank.projectile_time_to_live
+        this.ticks_alive = serverTank.ticks_alive
         this.body = this.createFabricObj(serverTank)
         this.name = new FabricText(serverTank.name, serverTank.position[0] * GAME_RATIO, (serverTank.position[1] * GAME_RATIO) + NAME_OFFSET)
         this.healthBar = new HealthBar(serverTank)
@@ -79,6 +80,7 @@ export class Tank {
         this.position = {x: newServerTank.position[0] * GAME_RATIO, y: newServerTank.position[1] * GAME_RATIO}
         this.upgrade_levels = newServerTank.upgrade_levels
         this.projectile_time_to_live = newServerTank.projectile_time_to_live
+        this.ticks_alive = newServerTank.ticks_alive
         const combatLevel = Object.values(newServerTank.upgrade_levels).reduce((accumulator, value) => accumulator + value)
         this.combatLevel.fabricObj.set('text', combatLevel.toString())
 
