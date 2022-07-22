@@ -6,7 +6,7 @@ defmodule DiepIO.Repo.Migrations.EditUpgradeParams2 do
       modify(:upgrade_params, :map,
         null: false,
         default: %{
-          speed: %{upgrade_rate: 0.3, base_value: 10},
+          speed: %{upgrade_rate: 0.2, base_value: 10},
           max_hp: %{upgrade_rate: 0.3, base_value: 50},
           projectile_damage: %{upgrade_rate: 0.3, base_value: 20},
           body_damage: %{upgrade_rate: 0.3, base_value: 20},
