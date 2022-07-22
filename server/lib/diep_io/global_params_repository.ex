@@ -1,4 +1,6 @@
 defmodule DiepIO.GlobalParamsRepository do
+  @moduledoc false
+
   alias DiepIO.Repo
   alias DiepIOSchemas.GlobalParams
 

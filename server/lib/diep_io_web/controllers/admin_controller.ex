@@ -4,8 +4,8 @@ defmodule DiepIOWeb.AdminController do
   alias DiepIO.Core.Upgrade
   alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
-  alias DiepIO.GlobalParamsRepository
   alias DiepIO.GameSupervisor
+  alias DiepIO.GlobalParamsRepository
   alias DiepIO.UpgradeParams
 
   def index(conn, _params) do
