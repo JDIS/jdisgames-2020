@@ -37,12 +37,33 @@ echo "Seeding database before starting..."
 DIEP_SECRET_KEY_BASE=$(cat secret_key.txt) bin/diep_io eval "DiepIORelease.seed"
 ```
 
-## Https
+## Déploiment
 
-### Certificat
+### Https
+
+#### Certificat
 
 On va devoir générer un certificat en utilisant Let's Encrypt. On va ensuite devoir mettre le certificate bundle (le certificat + le CA chain) à `/etc/jdisgames2020/cert/cert.pem` et la clé privée à `/etc/jdisgames2020/cert/key.pem`.
 
-### URL
+#### URL
 
 Il va falloir configurer le host avec la variable d'environnement `DIEP_HOST`.
+
+### Mettre à jour le déploiment
+
+1. Builder une image docker: `docker build . -t ghcr.io/jdis/jdisgames-2020`
+1. [Se connecter à Github Container Registry si ce n'est pas déjà fait](#se-connecter-à-github-container-registry)
+1. Pousser l'image sur Github Container Registry: `docker push ghcr.io/jdis/jdisgames-2020`
+1. Se connecter sur le serveur
+1. [Se connecter à Github Container Registry si ce n'est pas déjà fait](#se-connecter-à-github-container-registry)
+1. Télécharger l'image: `docker pull ghcr.io/jdis/jdisgames-2020`
+1. Naviguer dans le dossier du serveur: `cd /jdisgames-2020/server`
+1. Arrêter le serveur: `docker compose stop`
+1. Supprimer le container du serveur: `docker rm server-server-1`
+1. Repartir le serveur: `docker compose up`
+
+#### Se connecter à Github Container Registry
+
+1. `docker login ghcr.io`
+1. username: courriel de son compte github
+1. password: un [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) avec la permission "write:packages"
