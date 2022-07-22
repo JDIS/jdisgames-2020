@@ -21,17 +21,6 @@ function handleError(e) {
   process.exit()
 }
 
-function handleChannelPayload(rawPayload, callback) {
-  const [join_ref, ref, topic, event, payload] = JSON.parse(rawPayload, (key, value) => {
-    if (key === "id" && typeof (value) == "string") {
-      return BigInt(value)
-    }
-    return value
-  })
-
-  return callback({ join_ref, ref, topic, event, payload })
-}
-
 async function initializeChannel(socketEndpoint, socketOptions, channelTopic, backendUrl) {
   return new Promise((resolve) => {
     const url = `${backendUrl}/${socketEndpoint}`
@@ -57,7 +46,7 @@ async function initializeActionChannel(secret, isRanked, backendUrl) {
 }
 
 async function initializeGameStateChannel(isRanked, backendUrl) {
-  return await initializeChannel('spectate', { decode: handleChannelPayload }, `game_state:${getGameName(isRanked)}`, backendUrl)
+  return await initializeChannel('spectate', { }, `game_state:${getGameName(isRanked)}`, backendUrl)
 }
 
 async function start({ secret, isRanked, backendUrl }) {

@@ -13,7 +13,7 @@ class DebrisType(Enum):
 class Debris:
     """ Debris in the map to be destroyed for points and experience """
 
-    id: int
+    id: str
     current_hp: int
     max_hp: int
     size: DebrisType

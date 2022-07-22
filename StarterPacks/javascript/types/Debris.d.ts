@@ -9,7 +9,7 @@ export default interface Debris {
     Debris in the map to be destroyed for points and experience
   */
 
-  id: number
+  id: string
   current_hp: number
   max_hp: number
   size: DebrisType
