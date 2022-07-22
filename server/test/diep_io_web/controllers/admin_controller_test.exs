@@ -5,6 +5,7 @@ defmodule DiepIOWeb.AdminControllerTest do
 
   alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
+  alias DiepIO.GlobalParamsRepository
   alias DiepIO.UpgradeParams
 
   setup do
@@ -179,6 +180,16 @@ defmodule DiepIOWeb.AdminControllerTest do
       |> get(Routes.admin_path(conn, :index))
 
     assert response(conn, 401)
+  end
+
+  test "POST /admin/save-global saves the global parameters", %{conn: conn} do
+    conn
+    |> authorize_conn()
+    |> post(Routes.admin_path(conn, :save_global_params), %{enable_scoreboard_auth: "on"})
+
+    global_params = GlobalParamsRepository.get_params()
+
+    assert global_params.enable_scoreboard_auth == true
   end
 
   defp call_kill(conn, game_name) do

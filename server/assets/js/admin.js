@@ -44,7 +44,10 @@ const props = {
     main: getGameSettings(mainGameParamsElement),
     secondary: getGameSettings(secondaryGameParamsElement)
   },
-  csrfToken: document.getElementById("admin").getAttribute("data-csrf-token")
+  csrfToken: document.getElementById("admin").getAttribute("data-csrf-token"),
+  globalParams: {
+    enableScoreboardAuth: JSON.parse(document.getElementById("admin").getAttribute("data-enable-scoreboard-auth"))
+  }
 }
 
 createApp(Admin, props).mount("#admin");
