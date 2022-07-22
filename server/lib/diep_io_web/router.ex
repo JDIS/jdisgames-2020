@@ -38,9 +38,8 @@ defmodule DiepIOWeb.Router do
     get("/", PageController, :scoreboard)
   end
 
-  # Other scopes may use custom stacks.
-  scope "/api", DiepIOWeb do
-    pipe_through(:api)
+  scope "/api/scoreboard", DiepIOWeb do
+    pipe_through([:api, :scoreboard_auth])
 
     resources("/scoreboard", ScoreboardController, only: [:index])
   end
