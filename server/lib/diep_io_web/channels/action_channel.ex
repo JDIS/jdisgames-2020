@@ -3,8 +3,8 @@ defmodule DiepIOWeb.ActionChannel do
   use DiepIOWeb, :channel
 
   alias DiepIO.ActionStorage
-  alias DiepIO.Core.Position
   alias DiepIO.Core.Action
+  alias DiepIO.Core.Position
   alias DiepIOWeb.Presence
 
   intercept(["presence_diff"])

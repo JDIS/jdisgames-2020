@@ -13,13 +13,14 @@ defmodule DiepIOWeb.ActionChannelTest do
   @input %{
     tank_id: @tank_id,
     destination: [25, 34],
-    purchase: nil
+    target: [25, 34],
+    purchase: "speed"
   }
   @action %Action{
     tank_id: @tank_id,
     destination: {25, 34},
-    purchase: nil,
-    target: nil
+    purchase: :speed,
+    target: {25, 34}
   }
 
   setup %{test: test} do
