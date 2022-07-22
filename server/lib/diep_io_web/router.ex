@@ -1,6 +1,7 @@
 defmodule DiepIOWeb.Router do
   use DiepIOWeb, :router
   alias DiepIOWeb.AuthenticationPlug
+  alias DiepIOWeb.ScoreboardAuthPlug
   import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
@@ -20,17 +21,25 @@ defmodule DiepIOWeb.Router do
     plug(AuthenticationPlug)
   end
 
+  pipeline :scoreboard_auth do
+    plug(ScoreboardAuthPlug)
+  end
+
   scope "/", DiepIOWeb do
     pipe_through(:browser)
 
     get("/", PageController, :index)
     get("/spectate", PageController, :spectate)
-    get("/scoreboard", PageController, :scoreboard)
   end
 
-  # Other scopes may use custom stacks.
-  scope "/api", DiepIOWeb do
-    pipe_through(:api)
+  scope "/scoreboard", DiepIOWeb do
+    pipe_through([:browser, :scoreboard_auth])
+
+    get("/", PageController, :scoreboard)
+  end
+
+  scope "/api/scoreboard", DiepIOWeb do
+    pipe_through([:api, :scoreboard_auth])
 
     resources("/scoreboard", ScoreboardController, only: [:index])
   end
@@ -44,6 +53,7 @@ defmodule DiepIOWeb.Router do
     post("/stop", AdminController, :stop_game)
     post("/kill", AdminController, :kill_game)
     post("/save", AdminController, :save_params)
+    post("/save-global", AdminController, :save_global_params)
   end
 
   scope "/team-registration", DiepIOWeb do

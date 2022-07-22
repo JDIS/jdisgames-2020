@@ -5,13 +5,19 @@ defmodule DiepIOWeb.AdminController do
   alias DiepIO.GameParams
   alias DiepIO.GameParamsRepository
   alias DiepIO.GameSupervisor
+  alias DiepIO.GlobalParamsRepository
   alias DiepIO.UpgradeParams
 
   def index(conn, _params) do
     main_game_params = GameParamsRepository.get_game_params("main_game") || GameParams.default_params()
     secondary_game_params = GameParamsRepository.get_game_params("secondary_game") || GameParams.default_params()
+    global_params = GlobalParamsRepository.get_params()
 
-    render(conn, "index.html", main_game_params: main_game_params, secondary_game_params: secondary_game_params)
+    render(conn, "index.html",
+      main_game_params: main_game_params,
+      secondary_game_params: secondary_game_params,
+      global_params: global_params
+    )
   end
 
   def start_game(conn, %{"game_name" => game_name}) do
@@ -34,6 +40,11 @@ defmodule DiepIOWeb.AdminController do
   def kill_game(conn, %{"game_name" => game_name} = _params) do
     :ok = GameSupervisor.kill_game(game_name)
     finish_call(conn, "Game \"#{game_name}\" killed.")
+  end
+
+  def save_global_params(conn, params) do
+    :ok = GlobalParamsRepository.save_params(params["enable_scoreboard_auth"] == "on")
+    finish_call(conn, "Global parameters saved.")
   end
 
   defp finish_call(conn, message) do

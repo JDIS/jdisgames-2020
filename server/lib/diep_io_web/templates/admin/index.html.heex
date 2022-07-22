@@ -1,4 +1,8 @@
-<div id="admin" data-csrf-token={Plug.CSRFProtection.get_csrf_token()}></div>
+<div
+  id="admin"
+  data-csrf-token={Plug.CSRFProtection.get_csrf_token()}
+  data-enable-scoreboard-auth={"#{@global_params.enable_scoreboard_auth}"}
+/>
 
 <%= for {elementId, params} <- [{"mainGameParams", @main_game_params}, {"secondaryGameParams", @secondary_game_params}],
 				params != nil do %>

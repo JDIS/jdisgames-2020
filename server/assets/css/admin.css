@@ -28,11 +28,6 @@
     margin-bottom: 0;
 }
 
-.label-input-wrapper label {
-    margin-bottom: 0;
-    font-weight: normal;
-}
-
 .label-input-wrapper {
     display: flex;
     justify-content: space-between;
