@@ -186,7 +186,7 @@ export class Tank {
             width: 15 * GAME_RATIO,
             height: 27 * GAME_RATIO,
             fill: 'black',
-            left: 40 * GAME_RATIO,
+            left: 55 * GAME_RATIO,
             centeredRotation: false,
             originX: 'center',
             originY: 'center',
