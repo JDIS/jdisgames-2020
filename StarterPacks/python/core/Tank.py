@@ -34,3 +34,4 @@ class Tank:
     upgrade_tokens: int
     upgrade_levels: Upgrades
     has_triple_gun: bool
+    ticks_alive: int
