@@ -422,6 +422,19 @@ defmodule GameStateTest do
     assert tank.has_died == false
   end
 
+  test "handle_tank_death/1 maintains the score of dead tanks", %{game_state: game_state} do
+    initial_tank = %Tank{get_tank(game_state, @user_id) | score: 100}
+    game_state = %GameState{game_state | tanks: %{@user_id => initial_tank}}
+
+    tank =
+      game_state
+      |> kill_tanks()
+      |> GameState.handle_tank_death()
+      |> get_tank(@user_id)
+
+    assert tank.score == initial_tank.score
+  end
+
   test "handle_hp_regen/1 heals every tanks", %{game_state: game_state} do
     state_with_damaged_tanks =
       game_state
