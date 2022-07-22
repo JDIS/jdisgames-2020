@@ -173,7 +173,10 @@
     </tr>
     <tr>
       <td>🚀 Projectile time to live</td>
-      <td>Durée de vie d'un projectile en <em>ticks</em>.</td>
+      <td>
+        Durée de vie d'un projectile en <em>ticks</em>. La vitesse d'un projectile est de
+        <strong><%= DiepIO.Core.Projectile.default_speed() %> unités par <em>tick</em></strong>.
+      </td>
       <td>
         <strong><%= @game_params.upgrade_params.projectile_time_to_live.base_value %> unités par <em>tick</em></strong>
       </td>
@@ -213,7 +216,9 @@
   <h3>🔺 Les débris 🔻</h3>
   <p>
     À tout moment, il ne peut y avoir qu'un maximum de <strong><%= @game_params.max_debris_count %></strong>
-    débris sur la carte.
+    débris sur la carte. La proportion de débris est d'environ: <strong><%= round(4 / 7 * 100) %>% petit</strong>,
+    <strong><%= round(2 / 7 * 100) %>% moyen</strong> et <strong><%= round(1 / 7 * 100) %>% gros</strong>
+    .
     Les débris réapparaissent sur la carte au fil du temps. Moins il y a de débris sur la carte, plus ils réapparaissent rapidement. Chaque
     <em>tick</em>, chaque débris manquant a
     <strong><%= round(@game_params.max_debris_generation_rate * 100) %>%</strong> de chance de respawn.

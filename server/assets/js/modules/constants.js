@@ -4,7 +4,7 @@ export const LARGE_DEBRIS_RADIUS = 35 * GAME_RATIO;
 export const MEDIUM_DEBRIS_RADIUS = 30 * GAME_RATIO;
 export const SMALL_DEBRIS_RADIUS = 25 * GAME_RATIO;
 export const PROJECTILE_RADIUS = 15 * GAME_RATIO;
-export const TANK_RADIUS = 35 * GAME_RATIO
+export const TANK_RADIUS = 50 * GAME_RATIO
 export const HOT_ZONE_RADIUS = 500 * GAME_RATIO
 
 export const GRID_SIZE = 250 * GAME_RATIO
@@ -16,8 +16,8 @@ export const MAX_ZOOM = 4
 export const MIN_ZOOM = 0.05
 export const GRID_STROKE = 1 * GAME_RATIO
 export const GRID_COLOR = 'rgb(150,150,150)'
-export const NAME_OFFSET = -70 * GAME_RATIO
-export const HEALTH_OFFSET = 50 * GAME_RATIO
+export const NAME_OFFSET = -80 * GAME_RATIO
+export const HEALTH_OFFSET = 65 * GAME_RATIO
 export const HEALTHBAR_WIDTH = 50 * GAME_RATIO
 export const SELECTED_TANK_OUTLINE_COLOR = 'rgb(0,255,0)'
 // in ms

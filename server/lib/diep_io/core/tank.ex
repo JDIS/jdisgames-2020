@@ -241,7 +241,7 @@ defmodule DiepIO.Core.Tank do
   def buy_projectile_time_to_live_upgrade(tank), do: buy_upgrade(tank, :projectile_time_to_live)
 
   @spec default_radius() :: integer()
-  def default_radius, do: 35
+  def default_radius, do: 50
 
   @spec respawn(t()) :: t()
   def respawn(tank), do: new(tank.id, tank.name, tank.upgrade_params)

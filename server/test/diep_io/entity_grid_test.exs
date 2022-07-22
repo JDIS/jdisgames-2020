@@ -16,8 +16,14 @@ defmodule EntityGridTest do
   end
 
   test "new/2 returns a map of the list of entities per tile", %{tank: tank} do
-    tank = Tank.move(tank, {div(@tile_size, 2), div(@tile_size, 2)})
-    expected_result = %{{0, 0} => MapSet.new([tank])}
+    tank = Tank.move(tank, {50, 50})
+
+    expected_result = %{
+      {0, 0} => MapSet.new([tank]),
+      {0, 1} => MapSet.new([tank]),
+      {1, 0} => MapSet.new([tank]),
+      {1, 1} => MapSet.new([tank])
+    }
 
     assert EntityGrid.new([tank], @tile_size) == expected_result
   end
