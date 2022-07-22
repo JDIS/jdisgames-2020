@@ -4,16 +4,16 @@ from typing import Tuple
 
 
 class DebrisType(Enum):
-    SMALL = ":small"
-    MEDIUM = ":medium"
-    LARGE = ":large"
+    SMALL = "small"
+    MEDIUM = "medium"
+    LARGE = "large"
 
 
 @dataclass()
 class Debris:
     """ Debris in the map to be destroyed for points and experience """
 
-    id: int
+    id: str
     current_hp: int
     max_hp: int
     size: DebrisType

@@ -29,11 +29,15 @@ npm start -- -s <SECRET TOKEN> -r false
 
 Pour programmer l'agent intelligent, le seul endroit où vous devez écrire du code est la fonction [`tick` dans Bot.js](./Bot.js). Vous pouvez créer de nouvelles méthodes, classes et fichiers à votre convenance, mais une modification de tout autre fichier inclus dans le projet risque fortement de causer des problèmes qui empêcheront le bon fonctionnement de votre agent.
 
+### Typescript
+
+Le code vous est fourni en Javascript afin d'être accessible au plus grand nombre, mais il va de soi que vous êtes libres de le convertir en Typescript si vous désirez faire usage des interfaces fournies dans le dossier `types/`. Il est cependant de votre responsabilité de configurer le projet pour interpréter votre code Typescript.
+
 ## Fonctionnement de l'agent
 
-Une fois l'agent et sa partie correspondante démarrés, la fonction `tick` sera automatiquement appelée à intervalles réguliers. Elle recevra en paramètre l'état complet de la partie à ce moment.
+Une fois l'agent et sa partie correspondante démarrés, la fonction `tick` sera automatiquement appelée à intervalles réguliers. Elle recevra en paramètre l'état complet de la partie à ce moment. Voir l'interface [GameState](types/GameState.d.ts) pour plus d'informations sur le contenu de ce paramètre.
 
-La fonction `tick` doit retourner un objet d'action, qui indiquera ce que votre agent doit faire.
+La fonction `tick` doit retourner un objet d'action, qui indiquera ce que votre agent doit faire. Voir l'interface [Action](types/Action.d.ts) pour plus d'informations sur le format du retour.
 
 ### Comportement en cas d'erreur
 
