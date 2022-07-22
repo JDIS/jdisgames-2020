@@ -217,11 +217,8 @@ defmodule DiepIO.Core.GameState do
   end
 
   defp handle_ticks_alive(game_state) do
-    updated_tanks =
-      game_state.tanks
-      |> Map.values()
-      |> Enum.map(fn
-        tank ->
+    updated_tanks = Map.new(game_state.tanks, fn
+        {_, tank} ->
           updated_tank =
             tank
             |> Tank.increase_ticks_alive(1)
@@ -235,7 +232,6 @@ defmodule DiepIO.Core.GameState do
 
           {updated_tank_gun.id, updated_tank_gun}
       end)
-      |> Map.new()
 
     %{game_state | tanks: updated_tanks}
   end
