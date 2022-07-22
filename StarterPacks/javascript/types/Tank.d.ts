@@ -22,4 +22,5 @@ export default interface Tank {
   upgrade_tokens: number
   upgrade_levels: Upgrades
   has_triple_gun: boolean
+  ticks_alive: number
 }
