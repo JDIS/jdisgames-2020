@@ -40,31 +40,24 @@ defmodule DiepIO.EntityGrid do
   defp build_tiles_map([head | rest], tile_size, tiles_map) do
     {entity_x, entity_y} = Entity.get_position(head)
     entity_radius = Entity.get_radius(head)
-    base_x = div(entity_x, tile_size)
-    base_y = div(entity_y, tile_size)
 
-    up_condition = entity_y - entity_radius <= base_y * tile_size
-    down_condition = entity_y + entity_radius >= (base_y + 1) * tile_size
-    left_condition = entity_x - entity_radius <= base_x * tile_size
-    right_condition = entity_x + entity_radius >= (base_x + 1) * tile_size
+    entity_left_edge = entity_x - entity_radius
+    entity_top_edge = entity_y - entity_radius
+    entity_right_edge = entity_x + entity_radius
+    entity_bottom_edge = entity_y + entity_radius
 
-    neighbour_checks = [
-      {true, {base_x, base_y}},
-      {up_condition, {base_x, base_y - 1}},
-      {down_condition, {base_x, base_y - 1}},
-      {left_condition, {base_x - 1, base_y}},
-      {right_condition, {base_x + 1, base_y}},
-      {up_condition and left_condition, {base_x - 1, base_y - 1}},
-      {up_condition and right_condition, {base_x + 1, base_y - 1}},
-      {down_condition and left_condition, {base_x - 1, base_y - 1}},
-      {down_condition and right_condition, {base_x + 1, base_y - 1}}
-    ]
+    low_tile_x = floor(entity_left_edge / tile_size)
+    low_tile_y = floor(entity_top_edge / tile_size)
+    high_tile_x = floor(entity_right_edge / tile_size)
+    high_tile_y = floor(entity_bottom_edge / tile_size)
 
-    tiles_map =
-      neighbour_checks
-      |> Enum.filter(fn {is_in_tile, _} -> is_in_tile end)
-      |> Enum.map(fn {_cond, coords} -> coords end)
-      |> Enum.reduce(tiles_map, &insert_entity(&2, &1, head))
+    entity_tiles =
+      for tile_x <- low_tile_x..high_tile_x//1,
+          tile_y <- low_tile_y..high_tile_y//1 do
+        {tile_x, tile_y}
+      end
+
+    tiles_map = Enum.reduce(entity_tiles, tiles_map, &insert_entity(&2, &1, head))
 
     build_tiles_map(rest, tile_size, tiles_map)
   end
