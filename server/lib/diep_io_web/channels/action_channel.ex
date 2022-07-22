@@ -3,6 +3,7 @@ defmodule DiepIOWeb.ActionChannel do
   use DiepIOWeb, :channel
 
   alias DiepIO.ActionStorage
+  alias DiepIO.Core.Position
   alias DiepIO.Core.Action
   alias DiepIOWeb.Presence
 
@@ -47,8 +48,7 @@ defmodule DiepIOWeb.ActionChannel do
 
   defp parse_position(action, key) do
     case Map.get(action, key) do
-      nil -> nil
-      position -> List.to_tuple(position)
+      [x, y] when is_integer(x) and is_integer(y) -> Position.new(x, y)
     end
   end
 
@@ -65,7 +65,6 @@ defmodule DiepIOWeb.ActionChannel do
       "body_damage" -> :body_damage
       "hp_regen" -> :hp_regen
       "projectile_time_to_live" -> :projectile_time_to_live
-      _ -> nil
     end
   end
 
