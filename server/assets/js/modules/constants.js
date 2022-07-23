@@ -5,7 +5,7 @@ export const MEDIUM_DEBRIS_RADIUS = 30 * GAME_RATIO;
 export const SMALL_DEBRIS_RADIUS = 25 * GAME_RATIO;
 export const PROJECTILE_RADIUS = 15 * GAME_RATIO;
 export const TANK_RADIUS = 50 * GAME_RATIO
-export const HOT_ZONE_RADIUS = 500 * GAME_RATIO
+export const HOT_ZONE_RADIUS = 1000 * GAME_RATIO
 
 export const GRID_SIZE = 250 * GAME_RATIO
 export const MAP_WIDTH = 5000 * GAME_RATIO
