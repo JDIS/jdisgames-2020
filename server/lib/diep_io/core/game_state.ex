@@ -191,13 +191,29 @@ defmodule DiepIO.Core.GameState do
   defp handle_purchase(tank, action) do
     upgrade_func =
       case action.purchase do
-        :speed -> &Tank.buy_speed_upgrade/1
-        :fire_rate -> &Tank.buy_fire_rate_upgrade/1
-        :projectile_damage -> &Tank.buy_projectile_damage_upgrade/1
-        :max_hp -> &Tank.buy_max_hp_upgrade/1
-        :body_damage -> &Tank.buy_body_damage_upgrade/1
-        :hp_regen -> &Tank.buy_hp_regen_upgrade/1
-        :projectile_time_to_live -> &Tank.buy_projectile_time_to_live_upgrade/1
+        :speed ->
+          &Tank.buy_speed_upgrade/1
+
+        :fire_rate ->
+          &Tank.buy_fire_rate_upgrade/1
+
+        :projectile_damage ->
+          &Tank.buy_projectile_damage_upgrade/1
+
+        :max_hp ->
+          fn tank ->
+            upgraded_tank = Tank.buy_max_hp_upgrade(tank)
+            Tank.heal(upgraded_tank, upgraded_tank.max_hp - tank.max_hp)
+          end
+
+        :body_damage ->
+          &Tank.buy_body_damage_upgrade/1
+
+        :hp_regen ->
+          &Tank.buy_hp_regen_upgrade/1
+
+        :projectile_time_to_live ->
+          &Tank.buy_projectile_time_to_live_upgrade/1
       end
 
     tank
