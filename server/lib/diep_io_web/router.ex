@@ -41,7 +41,7 @@ defmodule DiepIOWeb.Router do
   scope "/api/scoreboard", DiepIOWeb do
     pipe_through([:api, :scoreboard_auth])
 
-    resources("/scoreboard", ScoreboardController, only: [:index])
+    resources("/", ScoreboardController, only: [:index])
   end
 
   scope "/admin", DiepIOWeb do
