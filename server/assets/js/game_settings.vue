@@ -32,8 +32,8 @@
         <tbody>
           <tr v-for="(upgradeParams, upgradeName) in upgrade_params">
             <th>{{ upgradeName.replace(/_/g, ' ') }}</th>
-            <td><input type="number" :name="`upgrade_params[${upgradeName}][baseValue]`" v-model="upgradeParams.baseValue" step="0.1"/></td>
-            <td><input type="number" :name="`upgrade_params[${upgradeName}][upgradeRate]`" v-model="upgradeParams.upgradeRate" step="0.01"/></td>
+            <td><input type="number" :name="`upgrade_params[${upgradeName}][baseValue]`" v-model="upgradeParams.baseValue" /></td>
+            <td><input type="number" :name="`upgrade_params[${upgradeName}][upgradeRate]`" v-model="upgradeParams.upgradeRate" /></td>
           </tr>
         </tbody>
       </table>
