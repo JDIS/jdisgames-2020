@@ -12,6 +12,7 @@ defmodule DiepIOSchemas.GameParamsSchema do
           max_debris_count: integer(),
           max_debris_generation_rate: float(),
           score_multiplier: float(),
+          hot_zone_points: integer(),
           upgrade_params: upgrade_params()
         }
   @type upgrade_params :: %{
@@ -31,6 +32,7 @@ defmodule DiepIOSchemas.GameParamsSchema do
     field(:max_debris_count, :integer)
     field(:max_debris_generation_rate, :float)
     field(:score_multiplier, :float)
+    field(:hot_zone_points, :integer)
 
     embeds_one :upgrade_params, Upgrades, on_replace: :update, primary_key: false do
       embeds_one :speed, UpgradeParamsSchema, on_replace: :update

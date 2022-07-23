@@ -24,6 +24,7 @@ defmodule DiepIO.GameParamsRepository do
           max_debris_generation_rate: schema.max_debris_generation_rate,
           score_multiplier: schema.score_multiplier,
           number_of_ticks: schema.number_of_ticks,
+          hot_zone_points: schema.hot_zone_points,
           upgrade_params: %{
             speed: %UpgradeParams{
               base_value: schema.upgrade_params.speed.base_value,
@@ -71,9 +72,17 @@ defmodule DiepIO.GameParamsRepository do
         max_debris_count: game_params.max_debris_count,
         max_debris_generation_rate: game_params.max_debris_generation_rate,
         score_multiplier: game_params.score_multiplier,
+        hot_zone_points: game_params.hot_zone_points,
         upgrade_params: Map.new(game_params.upgrade_params, fn {stat, params} -> {stat, Map.from_struct(params)} end)
       },
-      [:game_name, :number_of_ticks, :max_debris_count, :max_debris_generation_rate, :score_multiplier]
+      [
+        :game_name,
+        :number_of_ticks,
+        :max_debris_count,
+        :max_debris_generation_rate,
+        :score_multiplier,
+        :hot_zone_points
+      ]
     )
     |> cast_embed(:upgrade_params, with: &game_upgrades_changeset/2)
     |> validate_required([
@@ -82,7 +91,8 @@ defmodule DiepIO.GameParamsRepository do
       :max_debris_count,
       :max_debris_generation_rate,
       :score_multiplier,
-      :upgrade_params
+      :upgrade_params,
+      :hot_zone_points
     ])
     |> Repo.insert!(on_conflict: :replace_all, conflict_target: :game_name)
 

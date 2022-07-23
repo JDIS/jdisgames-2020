@@ -70,6 +70,7 @@ defmodule DiepIOWeb.AdminController do
     max_debris_count = parse_integer(params["max_debris_count"]) || 400
     max_debris_generation_rate = parse_float(params["max_debris_generation_rate"]) || 0.15
     score_multiplier = parse_float(params["score_multiplier"]) || 1.0
+    hot_zone_points = parse_integer(params["hot_zone_points"])
 
     GameParamsRepository.save_game_params(
       game_name,
@@ -78,6 +79,7 @@ defmodule DiepIOWeb.AdminController do
         max_debris_count: max_debris_count,
         max_debris_generation_rate: max_debris_generation_rate,
         score_multiplier: score_multiplier,
+        hot_zone_points: hot_zone_points,
         upgrade_params:
           Map.new(Upgrade.upgradable_stats(), fn stat -> {stat, parse_upgrade_params(params, Atom.to_string(stat))} end)
       })

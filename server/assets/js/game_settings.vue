@@ -19,6 +19,10 @@
       Score multiplier:
       <input type="number" name="score_multiplier" v-model="score_multiplier" min="1" step="0.01" />
     </label>
+    <label class="label-input-wrapper">
+      Hot zone points:
+      <input type="number" name="hot_zone_points" v-model="hot_zone_points" min="1" step="0.01" />
+    </label>
     <fieldset>
       <legend>Upgrade parameters</legend>
       <table class="upgrade-params-table">
@@ -54,6 +58,7 @@ export default {
       debris_generation_rate: this.$props.params.maxDebrisGenerationRate,
       ticks: this.$props.params.numberOfTicks,
       score_multiplier: this.$props.params.scoreMultiplier,
+      hot_zone_points: this.$props.params.hotZonePoints,
       upgrade_params: {
         speed: this.$props.params.upgradeParams.speed,
         max_hp: this.$props.params.upgradeParams.max_hp,

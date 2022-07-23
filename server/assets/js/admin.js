@@ -32,6 +32,7 @@ function getGameSettings(element) {
     maxDebrisCount: parseInt(element.getAttribute("data-max-debris-count")),
     maxDebrisGenerationRate: parseFloat(element.getAttribute("data-max-debris-generation-rate")),
     scoreMultiplier: parseFloat(element.getAttribute("data-score-multiplier")),
+    hotZonePoints: parseInt(element.getAttribute("data-hot-zone-points")),
     upgradeParams
   }
 }

@@ -15,7 +15,6 @@ defmodule DiepIO.Core.GameState do
   @experience_loss_rate 0.9
   @experience_score_ratio_on_kill 0.2
   @minimum_score_on_kill 100
-  @hot_zone_points_per_tick 6
   @triple_gun_ticks_threshold 1000
 
   @derive {Jason.Encoder, except: [:should_stop?, :monitor_performance?]}
@@ -35,6 +34,7 @@ defmodule DiepIO.Core.GameState do
     :score_multiplier,
     :hot_zone,
     :upgrade_params,
+    :hot_zone_points,
     should_stop?: false
   ]
 
@@ -54,6 +54,7 @@ defmodule DiepIO.Core.GameState do
           score_multiplier: float(),
           hot_zone: HotZone.t(),
           should_stop?: boolean(),
+          hot_zone_points: integer(),
           upgrade_params: GameParams.upgrade_params()
         }
 
@@ -74,6 +75,7 @@ defmodule DiepIO.Core.GameState do
       clock: clock,
       score_multiplier: game_params.score_multiplier,
       hot_zone: HotZone.new(GameMap.center()),
+      hot_zone_points: game_params.hot_zone_points,
       upgrade_params: game_params.upgrade_params
     }
   end
@@ -366,7 +368,7 @@ defmodule DiepIO.Core.GameState do
     updated_tanks =
       case tanks_in_zone do
         [tank_in_zone] ->
-          Map.update!(game_state.tanks, tank_in_zone.id, &Tank.increase_score(&1, hot_zone_points_per_tick()))
+          Map.update!(game_state.tanks, tank_in_zone.id, &Tank.increase_score(&1, game_state.hot_zone_points))
 
         _ ->
           game_state.tanks
@@ -430,8 +432,6 @@ defmodule DiepIO.Core.GameState do
   def minimum_score_on_kill, do: @minimum_score_on_kill
 
   def experience_score_ratio_on_kill, do: @experience_score_ratio_on_kill
-
-  def hot_zone_points_per_tick, do: @hot_zone_points_per_tick
 
   defp handle_projectiles_collision(projectiles, collided_projectiles) do
     projectiles

@@ -92,7 +92,7 @@
       <p>
         La zone chaude au milieu de la carte accorde des points supplémentaires lorsqu'un joueur s'y trouve,
         mais seulement s'il y est seul. Le joueur se trouvant seul dans cette zone recevra
-        <strong><%= DiepIO.Core.GameState.hot_zone_points_per_tick() %> points par tick</strong>
+        <strong><%= @game_params.hot_zone_points %> points par tick</strong>
         . À noter que cette zone
         n'augmentera <strong>pas</strong> votre expérience, seulement votre score.
       </p>

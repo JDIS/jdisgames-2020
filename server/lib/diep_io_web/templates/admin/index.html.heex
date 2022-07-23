@@ -12,6 +12,7 @@
     data-max-debris-count={params.max_debris_count}
     data-max-debris-generation-rate={params.max_debris_generation_rate}
     data-score-multiplier={params.score_multiplier}
+    data-hot-zone-points={params.hot_zone_points}
     {Enum.flat_map(DiepIO.Core.Upgrade.upgradable_stats(), fn stat ->
       [
         {"data-upgrade-base_value-#{stat}", Map.fetch!(params.upgrade_params, stat).base_value},

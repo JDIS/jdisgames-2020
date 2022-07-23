@@ -8,6 +8,7 @@ defmodule DiepIO.GameParams do
           max_debris_count: integer(),
           max_debris_generation_rate: float(),
           score_multiplier: float(),
+          hot_zone_points: integer(),
           upgrade_params: upgrade_params()
         }
 
@@ -21,14 +22,29 @@ defmodule DiepIO.GameParams do
           projectile_time_to_live: UpgradeParams.t()
         }
 
-  @enforce_keys [:number_of_ticks, :max_debris_count, :max_debris_generation_rate, :score_multiplier, :upgrade_params]
-  defstruct [:number_of_ticks, :max_debris_count, :max_debris_generation_rate, :score_multiplier, :upgrade_params]
+  @enforce_keys [
+    :number_of_ticks,
+    :max_debris_count,
+    :max_debris_generation_rate,
+    :score_multiplier,
+    :upgrade_params,
+    :hot_zone_points
+  ]
+  defstruct [
+    :number_of_ticks,
+    :max_debris_count,
+    :max_debris_generation_rate,
+    :score_multiplier,
+    :upgrade_params,
+    :hot_zone_points
+  ]
 
   @spec new(%{
           number_of_ticks: integer(),
           max_debris_count: integer(),
           max_debris_generation_rate: float(),
           score_multiplier: float(),
+          hot_zone_points: integer(),
           upgrade_params: upgrade_params()
         }) :: t()
   def new(opts) do
@@ -42,6 +58,7 @@ defmodule DiepIO.GameParams do
       max_debris_count: 400,
       max_debris_generation_rate: 0.05,
       score_multiplier: 1.0,
+      hot_zone_points: 6,
       upgrade_params: %{
         speed: %UpgradeParams{upgrade_rate: 0.3, base_value: 10},
         max_hp: %UpgradeParams{upgrade_rate: 0.3, base_value: 100},
