@@ -144,6 +144,11 @@
             }
         },
         mounted() {
+
+            setInterval(() => {
+                location.reload()
+            }, 1000 * 60 * 2);
+            
             this.mainCanvas = initFabricAndCreateMainCanvas()
             this.mainCanvas.setZoom(this.zoom)
             window.addEventListener('resize', this.resizeCanvas, false)
