@@ -42,7 +42,12 @@ async function initializeChannel(socketEndpoint, socketOptions, channelTopic, ba
 }
 
 async function initializeActionChannel(secret, isRanked, backendUrl) {
-  return await initializeChannel('bot', { params: { secret }}, `action:${getGameName(isRanked)}`, backendUrl)
+  const channel = await initializeChannel('bot', { params: { secret }}, `action:${getGameName(isRanked)}`, backendUrl)
+  channel.onError((reason) => {
+    console.error(`Channel encountered an error: ${JSON.stringify(reason)}`);
+    process.exit();
+  })
+  return channel
 }
 
 async function initializeGameStateChannel(isRanked, backendUrl) {
@@ -72,11 +77,11 @@ async function start({ secret, isRanked, backendUrl }) {
 
 program
   .requiredOption('-s, --secret <secret>', 'The secret which authenticates your bot')
-  .option('-r, --is_ranked', 'Whether the bot should connect to the ranked game (true) or the practice one (false)', true)
+  .option('-r, --no-ranked', 'Connects to the secondary game instead of the ranked one')
   .option('-u, --backend_url <url>', 'The url of the backend server', DEFAULT_BASE_URL)
 
 program.parse()
 
 const options = program.opts()
 
-start({ secret: options.secret, isRanked: options.is_ranked, backendUrl: options.backend_url })
+start({ secret: options.secret, isRanked: options.ranked, backendUrl: options.backend_url })

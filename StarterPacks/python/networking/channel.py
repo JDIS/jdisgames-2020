@@ -14,6 +14,7 @@ class Channel:
         self._callbacks = {}
         self._ref_counter = itertools.count()
         self._pushes = {}
+        self._onError = None
 
     async def __aenter__(self):
         await self.join()
@@ -53,10 +54,17 @@ class Channel:
         await push._send()
         return push
 
+    def on_error(self, callback):
+        self._on_error = callback
+
     def _register_push(self, push):
         self._pushes[push._ref] = push
 
     def _handle_message(self, message):
+        if message.event == "phx_error":
+            if self._on_error is not None:
+                self._on_error(message.payload)
+            
         if message.event == "phx_reply":
             if self._pushes.get(message.ref):
                 self._pushes[message.ref]._handle_reply(message)

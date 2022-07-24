@@ -18,6 +18,10 @@ DEFAULT_BASE_URL = "wss://jdis-ia.dinf.usherbrooke.ca/socket"
 def get_game_name(is_ranked):
     return "main_game" if is_ranked else "secondary_game"
 
+def handle_error(reason):
+    print(f"Channel encountered an error: {reason}")
+    quit()
+
 
 async def start(secret_key, loop, is_ranked, backend_url):
     bot_url = f"{backend_url}/bot/websocket?secret={secret_key}"
@@ -29,6 +33,8 @@ async def start(secret_key, loop, is_ranked, backend_url):
         async with Socket(spectate_url) as spectate_socket:
             async with bot_socket.channel(f"action:{game_name}") as action_channel:
                 async with spectate_socket.channel(f"game_state:{game_name}") as game_state_channel:
+
+                    action_channel.on_error(handle_error)
 
                     queue: Queue = Queue(maxsize=1)
 

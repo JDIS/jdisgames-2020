@@ -7,6 +7,7 @@ Ce projet contient tout le nécessaire pour programmer un agent intelligent en J
 L'agent a été testé avec la version 16 de NodeJS. Il est possible qu'il fonctionne avec d'autres versions de NodeJS, mais les organisateurs n'offriront aucun support en cas de problème.
 
 Exécutez la commande suivante pour installer les dépendances du projet:
+
 ```bash
 npm i
 ```
@@ -14,15 +15,17 @@ npm i
 ## Démarrer l'agent
 
 Pour démarrer l'agent, il suffit d'exécuter la commande suivante:
+
 ```bash
 npm start -- -s <SECRET TOKEN>
 ```
 
 Assurez-vous de remplacer `<SECRET TOKEN>` avec la clé secrète qui vous a été fournie lors de votre inscription.
 
-Par défaut, le bot se connectera à la partie classée. Il est possible de se connecter à la partie d'entrainement avec l'option `-r false`:
+Par défaut, le bot se connectera à la partie classée. Il est possible de se connecter à la partie d'entrainement avec l'option `-r`:
+
 ```bash
-npm start -- -s <SECRET TOKEN> -r false
+npm start -- -s <SECRET TOKEN> -r
 ```
 
 ## Programmer l'agent
@@ -49,4 +52,4 @@ La fonction tick sera appelée 3 fois par seconde. Cela signifie qu'elle devra r
 
 Par exemple, si votre agent prend 350ms pour calculer une action, 1 mise à jour sur deux sera sautée. Si votre agent prend 900ms pour calculer une action, 2 mises à jour sur 3 seront sautées (vous n'aurez accès qu'à 1 mise à jour par seconde).
 
-__Cela signifie qu'il est de votre responsabilité de surveiller la performance et surtout l'absence de boucles infinies dans votre implémentation__. En cas de problèmes de performance de votre agent, rien ne vous l'indiquera. Vous devrez bâtir vos propres mécanismes de surveillance, par exemple via de la journalisation.
+**Cela signifie qu'il est de votre responsabilité de surveiller la performance et surtout l'absence de boucles infinies dans votre implémentation**. En cas de problèmes de performance de votre agent, rien ne vous l'indiquera. Vous devrez bâtir vos propres mécanismes de surveillance, par exemple via de la journalisation.

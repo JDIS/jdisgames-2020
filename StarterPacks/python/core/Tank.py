@@ -16,7 +16,7 @@ class Tank:
     speed: int
     """ x, y """
     position: Tuple[int, int]
-    direction: Optional[Tuple[int, int]]
+    destination: Optional[Tuple[int, int]]
     target: Optional[Tuple[int, int]]
 
     score: int

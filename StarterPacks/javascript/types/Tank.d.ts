@@ -7,7 +7,7 @@ export default interface Tank {
   current_hp: number
   speed: number
   position: [number, number]
-  direction?: [number, number]
+  destination?: [number, number]
   target?: [number, number]
   score: number
   fire_rate: number
