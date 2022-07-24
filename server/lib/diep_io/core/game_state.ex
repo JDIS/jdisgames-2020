@@ -384,7 +384,11 @@ defmodule DiepIO.Core.GameState do
     updated_tanks =
       case tanks_in_zone do
         [tank_in_zone] ->
-          Map.update!(game_state.tanks, tank_in_zone.id, &Tank.increase_score(&1, game_state.hot_zone_points))
+          Map.update!(
+            game_state.tanks,
+            tank_in_zone.id,
+            &Tank.increase_score(&1, trunc(game_state.hot_zone_points * game_state.score_multiplier))
+          )
 
         _ ->
           game_state.tanks
