@@ -36,7 +36,7 @@
         },
         computed: {
             sortedScores() {
-              return this.scores.sort((a, b) => a.game_id < b.game_id ? -1 : 1)
+              return this.scores.sort((a, b) => a.inserted_at < b.inserted_at ? -1 : 1)
             },
             uniqueGameId() {
                 const unique = new Set()
