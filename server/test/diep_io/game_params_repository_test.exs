@@ -27,6 +27,7 @@ defmodule DiepIO.GameParamsRepositoryTest do
           max_debris_count: expected_game_params.max_debris_count,
           max_debris_generation_rate: expected_game_params.max_debris_generation_rate,
           score_multiplier: expected_game_params.score_multiplier,
+          hot_zone_points: expected_game_params.hot_zone_points,
           upgrade_params: %{
             speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
             max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
@@ -56,6 +57,7 @@ defmodule DiepIO.GameParamsRepositoryTest do
       max_debris_generation_rate: 0.5,
       score_multiplier: 1.0,
       number_of_ticks: 10,
+      hot_zone_points: 5,
       upgrade_params: %{
         speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
         max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
@@ -78,6 +80,7 @@ defmodule DiepIO.GameParamsRepositoryTest do
       max_debris_generation_rate: game_params.max_debris_generation_rate,
       score_multiplier: game_params.score_multiplier,
       number_of_ticks: game_params.number_of_ticks,
+      hot_zone_points: game_params.hot_zone_points,
       upgrade_params: %{
         speed: %UpgradeParamsSchema{
           base_value: game_params.upgrade_params.speed.base_value,

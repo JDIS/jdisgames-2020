@@ -16,6 +16,7 @@ defmodule GameloopTest do
         max_debris_count: 400,
         max_debris_generation_rate: 0.15,
         score_multiplier: 1,
+        hot_zone_points: 5,
         upgrade_params: %{
           speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
           max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},

@@ -16,6 +16,7 @@ defmodule DiepIOWeb.AdminControllerTest do
         max_debris_count: 200,
         max_debris_generation_rate: 0.5,
         score_multiplier: 2.5,
+        hot_zone_points: 2,
         upgrade_params: %{
           speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
           max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
@@ -48,6 +49,7 @@ defmodule DiepIOWeb.AdminControllerTest do
         max_debris_count: 200,
         max_debris_generation_rate: 0.5,
         score_multiplier: 2.5,
+        hot_zone_points: 2,
         upgrade_params: %{
           speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
           max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
@@ -77,6 +79,7 @@ defmodule DiepIOWeb.AdminControllerTest do
         max_debris_count: 200,
         max_debris_generation_rate: 0.5,
         score_multiplier: 2.5,
+        hot_zone_points: 2,
         upgrade_params: %{
           speed: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
           max_hp: %UpgradeParams{base_value: 10, upgrade_rate: 0.5},
@@ -108,6 +111,7 @@ defmodule DiepIOWeb.AdminControllerTest do
         max_debris_count: 10,
         max_debris_generation_rate: 0.5,
         score_multiplier: 2.0,
+        hot_zone_points: 2,
         upgrade_params: %{
           speed: %{baseValue: 10, upgradeRate: 0.5},
           max_hp: %{baseValue: 10, upgradeRate: 0.5},

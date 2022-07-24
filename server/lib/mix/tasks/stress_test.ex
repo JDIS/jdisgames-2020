@@ -66,7 +66,7 @@ defmodule Mix.Tasks.StressTest do
     bot_config = @starter_packs[language]
 
     Port.open({:spawn_executable, System.find_executable(bot_config[:executable_name])},
-      args: [bot_config[:entrypoint_file_name], "-s", secret_key],
+      args: [bot_config[:entrypoint_file_name], "-s", secret_key, "-u", "ws://localhost:4000/socket"],
       cd: @starter_packs_base_path,
       parallelism: true
     )
