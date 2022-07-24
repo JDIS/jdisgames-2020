@@ -4,7 +4,7 @@ defmodule DiepIO.Core.HotZone do
   alias DiepIO.Core.Entity
   alias DiepIO.Core.Position
 
-  @default_radius 1000
+  @default_radius 750
 
   @derive Jason.Encoder
   @enforce_keys [:position]
