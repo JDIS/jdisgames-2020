@@ -55,18 +55,18 @@ defmodule DiepIO.GameParams do
   def default_params do
     %__MODULE__{
       number_of_ticks: 2000,
-      max_debris_count: 400,
+      max_debris_count: 200,
       max_debris_generation_rate: 0.05,
       score_multiplier: 1.0,
       hot_zone_points: 6,
       upgrade_params: %{
         speed: %UpgradeParams{upgrade_rate: 0.3, base_value: 10},
-        max_hp: %UpgradeParams{upgrade_rate: 0.3, base_value: 100},
+        max_hp: %UpgradeParams{upgrade_rate: 0.3, base_value: 50},
         projectile_damage: %UpgradeParams{upgrade_rate: 0.3, base_value: 20},
         body_damage: %UpgradeParams{upgrade_rate: 0.3, base_value: 20},
-        fire_rate: %UpgradeParams{upgrade_rate: 0.15, base_value: 25},
-        hp_regen: %UpgradeParams{upgrade_rate: 0.3, base_value: 0.3},
-        projectile_time_to_live: %UpgradeParams{upgrade_rate: 0.1, base_value: 30}
+        fire_rate: %UpgradeParams{upgrade_rate: 0.2, base_value: 25},
+        hp_regen: %UpgradeParams{upgrade_rate: 0.3, base_value: 0.25},
+        projectile_time_to_live: %UpgradeParams{upgrade_rate: 0.15, base_value: 30}
       }
     }
   end
